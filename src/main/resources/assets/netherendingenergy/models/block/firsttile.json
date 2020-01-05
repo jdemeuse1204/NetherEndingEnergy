@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "netherendingenergy:block/firsttile",
+    "north": "netherendingenergy:block/firsttile_front",
+    "south": "netherendingenergy:block/firsttile",
+    "east": "netherendingenergy:block/firsttile",
+    "west": "netherendingenergy:block/firsttile",
+    "up": "netherendingenergy:block/firsttile",
+    "down": "netherendingenergy:block/firsttile"
+  }
+}

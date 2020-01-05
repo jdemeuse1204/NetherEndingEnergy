@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xxx",
+    " # ",
+    " # "
+  ],
+  "key": {
+    "x": {
+      "item": "minecraft:cobblestone"
+    },
+    "#": {
+      "item": "netherendingenergy:firstblock"
+    }
+  },
+  "result": {
+    "item": "netherendingenergy:firstitem"
+  }
+}

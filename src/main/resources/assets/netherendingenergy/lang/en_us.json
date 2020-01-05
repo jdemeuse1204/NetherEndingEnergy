@@ -1,0 +1,9 @@
+{
+  "item.netherendingenergy.firstitem":  "First Item",
+
+  "block.netherendingenergy.firstblock": "First Block",
+  "block.netherendingenergy.firsttile": "First Tile",
+
+  "_comment": "Creative Tabs",
+  "itemGroup.netherendingenergy": "Nether Ending Energy"
+}
