@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xxx",
+    "dmd",
+    "xxx"
+  ],
+  "key": {
+    "x": {
+      "item": "forge:ingots/iron"
+    },
+    "m": {
+      "item": "netherendingenergy:terra_machine_casing"
+    },
+    "d": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "result": {
+    "item": "netherendingenergy:terra_reactor_core"
+  }
+}

@@ -1,5 +1,6 @@
 package com.agrejus.netherendingenergy.blocks;
 
+import com.agrejus.netherendingenergy.RegistryNames;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -22,14 +23,13 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-// Only Demonstates directionality of images on block
-public class FirstTile extends Block {
-    public FirstTile() {
+public class TerraReactorCoreBlock extends Block {
+    public TerraReactorCoreBlock() {
         super(Properties.create(Material.IRON)
-                .sound(SoundType.ANVIL)
-                .hardnessAndResistance(2.0f)
-                .lightValue(14));
-        setRegistryName("firsttile");
+                .sound(SoundType.WOOD)
+                .hardnessAndResistance(.01f)
+                .lightValue(0));
+        setRegistryName(RegistryNames.TERRA_REACTOR_CORE);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class FirstTile extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new FirstBlockTile();
+        return new TerraReactorCoreTile();
     }
 
     @Override

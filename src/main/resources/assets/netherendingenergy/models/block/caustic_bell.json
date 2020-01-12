@@ -1,0 +1,6 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "netherendingenergy:block/caustic_bell"
+  }
+}

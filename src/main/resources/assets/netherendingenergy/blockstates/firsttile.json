@@ -1,10 +1,16 @@
 {
   "variants" : {
-    "facing=north": { "model": "netherendingenergy:block/firsttile" },
-    "facing=south": { "model": "netherendingenergy:block/firsttile", "y": 180 },
-    "facing=east": { "model": "netherendingenergy:block/firsttile", "y": 270 },
-    "facing=west": { "model": "netherendingenergy:block/firsttile", "y": 90 },
-    "facing=up": { "model": "netherendingenergy:block/firsttile", "x": -90 },
-    "facing=down": { "model": "netherendingenergy:block/firsttile", "x": 90 }
+    "facing=north,powered=false": { "model": "netherendingenergy:block/firsttile" },
+    "facing=south,powered=false": { "model": "netherendingenergy:block/firsttile", "y": 180 },
+    "facing=east,powered=false": { "model": "netherendingenergy:block/firsttile", "y": 270 },
+    "facing=west,powered=false": { "model": "netherendingenergy:block/firsttile", "y": 90 },
+    "facing=up,powered=false": { "model": "netherendingenergy:block/firsttile", "x": -90 },
+    "facing=down,powered=false": { "model": "netherendingenergy:block/firsttile", "x": 90 },
+    "facing=north,powered=true": { "model": "netherendingenergy:block/firsttile_powered" },
+    "facing=south,powered=true": { "model": "netherendingenergy:block/firsttile_powered", "y": 180 },
+    "facing=east,powered=true": { "model": "netherendingenergy:block/firsttile_powered", "y": 270 },
+    "facing=west,powered=true": { "model": "netherendingenergy:block/firsttile_powered", "y": 90 },
+    "facing=up,powered=true": { "model": "netherendingenergy:block/firsttile_powered", "x": -90 },
+    "facing=down,powered=true": { "model": "netherendingenergy:block/firsttile_powered", "x": 90 }
   }
 }

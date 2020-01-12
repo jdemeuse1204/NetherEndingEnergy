@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "x x",
+    "   ",
+    "xxx"
+  ],
+  "key": {
+    "x": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "result": {
+    "item": "netherendingenergy:terra_heat_sink"
+  }
+}

@@ -4,6 +4,11 @@
   "block.netherendingenergy.firstblock": "First Block",
   "block.netherendingenergy.firsttile": "First Tile",
 
+  "block.netherendingenergy.caustic_bell": "Caustic Bell",
+  "block.netherendingenergy.terra_reactor_core": "Terra Reactor Core",
+  "block.netherendingenergy.terra_heat_sink": "Terra Heat Sink",
+  "block.netherendingenergy.terra_machine_casing": "Machine Casing",
+
   "_comment": "Creative Tabs",
   "itemGroup.netherendingenergy": "Nether Ending Energy"
 }
