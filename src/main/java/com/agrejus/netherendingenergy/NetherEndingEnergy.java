@@ -38,6 +38,8 @@ public class NetherEndingEnergy {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    public static NetherEndingEnergy _instance;
+
     public NetherEndingEnergy() {
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
@@ -57,6 +59,8 @@ public class NetherEndingEnergy {
 
         Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve("netherendingenergy-client.toml"));
         Config.loadConfig(Config.COMMON_CONFIG, FMLPaths.CONFIGDIR.get().resolve("netherendingenergy-common.toml"));
+
+        _instance = this;
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -115,7 +119,6 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new TerraHeatSinkBlock());
             event.getRegistry().register(new TerraFurnaceGeneratorBlock());
             event.getRegistry().register(new TerraVaporCollectorBlock());
-
 
 
             // Chaotic
