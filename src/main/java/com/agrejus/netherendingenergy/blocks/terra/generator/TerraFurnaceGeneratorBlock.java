@@ -1,4 +1,4 @@
-package com.agrejus.netherendingenergy.blocks;
+package com.agrejus.netherendingenergy.blocks.terra.generator;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import net.minecraft.block.Block;
@@ -23,13 +23,13 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-public class TerraReactorCoreBlock extends Block {
-    public TerraReactorCoreBlock() {
+public class TerraFurnaceGeneratorBlock extends Block {
+    public TerraFurnaceGeneratorBlock() {
         super(Properties.create(Material.IRON)
                 .sound(SoundType.WOOD)
                 .hardnessAndResistance(.01f)
                 .lightValue(0));
-        setRegistryName(RegistryNames.TERRA_REACTOR_CORE);
+        setRegistryName(RegistryNames.TERRA_FURNACE_GENERATOR);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class TerraReactorCoreBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new TerraReactorCoreTile();
+        return new TerraFurnaceGeneratorTile();
     }
 
     @Override

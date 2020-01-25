@@ -1,12 +1,6 @@
 {
-  "parent": "block/cube",
+  "parent": "block/cube_all",
   "textures": {
-    "particle": "netherendingenergy:block/terra_reactor_core",
-    "north": "netherendingenergy:block/terra_reactor_core_front",
-    "south": "netherendingenergy:block/terra_reactor_core",
-    "east": "netherendingenergy:block/terra_reactor_core",
-    "west": "netherendingenergy:block/terra_reactor_core",
-    "up": "netherendingenergy:block/terra_reactor_core",
-    "down": "netherendingenergy:block/terra_reactor_core"
+    "all": "netherendingenergy:block/terra_reactor_core"
   }
 }

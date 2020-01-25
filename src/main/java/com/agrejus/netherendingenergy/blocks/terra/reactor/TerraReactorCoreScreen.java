@@ -1,4 +1,4 @@
-package com.agrejus.netherendingenergy.blocks;
+package com.agrejus.netherendingenergy.blocks.terra.reactor;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -8,11 +8,11 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-public class TerraFurnaceGeneratorScreen extends ContainerScreen<TerraFurnaceGeneratorContainer> {
+public class TerraReactorCoreScreen extends ContainerScreen<TerraReactorCoreContainer> {
 
-    private ResourceLocation GUI = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/terra_furnace_generator_gui.png");
+    private ResourceLocation GUI = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/terra_reactor_core_gui.png");
 
-    public TerraFurnaceGeneratorScreen(TerraFurnaceGeneratorContainer container, PlayerInventory inv, ITextComponent name) {
+    public TerraReactorCoreScreen(TerraReactorCoreContainer container, PlayerInventory inv, ITextComponent name) {
         super(container, inv, name);
     }
 

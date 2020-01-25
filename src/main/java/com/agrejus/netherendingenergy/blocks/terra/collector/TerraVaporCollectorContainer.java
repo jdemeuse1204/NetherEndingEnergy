@@ -1,5 +1,6 @@
-package com.agrejus.netherendingenergy.blocks;
+package com.agrejus.netherendingenergy.blocks.terra.collector;
 
+import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.common.interfaces.IVaporStorage;
 import com.agrejus.netherendingenergy.tools.CapabilityVapor;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;

@@ -1,4 +1,4 @@
-package com.agrejus.netherendingenergy.blocks;
+package com.agrejus.netherendingenergy.blocks.terra.collector;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import net.minecraft.block.Block;

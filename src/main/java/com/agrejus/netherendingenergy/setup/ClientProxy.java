@@ -1,6 +1,9 @@
 package com.agrejus.netherendingenergy.setup;
 
 import com.agrejus.netherendingenergy.blocks.*;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorScreen;
+import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorScreen;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.entity.player.PlayerEntity;

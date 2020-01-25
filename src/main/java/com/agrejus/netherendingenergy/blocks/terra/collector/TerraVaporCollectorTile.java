@@ -1,5 +1,7 @@
-package com.agrejus.netherendingenergy.blocks;
+package com.agrejus.netherendingenergy.blocks.terra.collector;
 
+import com.agrejus.netherendingenergy.blocks.ModBlocks;
+import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
 import com.agrejus.netherendingenergy.common.interfaces.FunctionBlockPosition;
 import com.agrejus.netherendingenergy.common.interfaces.IVaporStorage;
 import com.agrejus.netherendingenergy.tools.CapabilityVapor;
@@ -29,8 +31,10 @@ public class TerraVaporCollectorTile extends TileEntity implements ITickableTile
     private LazyOptional<IVaporStorage> vaporStorage = LazyOptional.of(this::createVapor);
     private List<CausticBellTile> surroundingCausticBells;
     private int counter;
+
     private final int maxVaporCapacity = 4000;
     private final int maxVaporTransfer = 100;
+    private final int efficency = 65;
 
     // Follow AbstractFurnaceTileEntity
     public TerraVaporCollectorTile() {

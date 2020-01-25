@@ -1,6 +1,19 @@
 package com.agrejus.netherendingenergy;
 
 import com.agrejus.netherendingenergy.blocks.*;
+import com.agrejus.netherendingenergy.blocks.flowers.CausticBellBlock;
+import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorBlock;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorContainer;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorTile;
+import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorBlock;
+import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorContainer;
+import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorTile;
+import com.agrejus.netherendingenergy.blocks.terra.heatsink.TerraHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.terra.machinecasing.TerraMachineCasingBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreContainer;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreTile;
 import com.agrejus.netherendingenergy.items.FirstItem;
 import com.agrejus.netherendingenergy.setup.ClientProxy;
 import com.agrejus.netherendingenergy.setup.IProxy;

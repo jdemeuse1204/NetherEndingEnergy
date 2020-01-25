@@ -1,5 +1,6 @@
-package com.agrejus.netherendingenergy.blocks;
+package com.agrejus.netherendingenergy.blocks.terra.generator;
 
+import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -18,7 +19,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-public class TerraReactorCoreContainer extends Container {
+public class TerraFurnaceGeneratorContainer extends Container {
 
     private TileEntity tileEntity;
     private PlayerEntity playerEntity;
@@ -26,8 +27,8 @@ public class TerraReactorCoreContainer extends Container {
 
     // Exists on both server and client
     // Has slots of inventory and their links
-    public TerraReactorCoreContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        super(ModBlocks.TERRA_REACTOR_CORE_CONTAINER, id);
+    public TerraFurnaceGeneratorContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        super(ModBlocks.TERRA_FURNACE_GENERATOR_CONTAINER, id);
         tileEntity = world.getTileEntity(pos);
         tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         this.playerEntity = playerEntity;
@@ -90,7 +91,7 @@ public class TerraReactorCoreContainer extends Container {
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
-        return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerEntity, ModBlocks.TERRA_REACTOR_CORE_BLOCK);
+        return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerEntity, ModBlocks.TERRA_FURNACE_GENERATOR_BLOCK);
     }
 
     @Override
