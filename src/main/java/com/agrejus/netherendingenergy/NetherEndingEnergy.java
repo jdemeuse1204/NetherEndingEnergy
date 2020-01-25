@@ -6,6 +6,7 @@ import com.agrejus.netherendingenergy.setup.ClientProxy;
 import com.agrejus.netherendingenergy.setup.IProxy;
 import com.agrejus.netherendingenergy.setup.ModSetup;
 import com.agrejus.netherendingenergy.setup.ServerProxy;
+import com.agrejus.netherendingenergy.tools.CapabilityVapor;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
@@ -61,6 +62,7 @@ public class NetherEndingEnergy {
     private void setup(final FMLCommonSetupEvent event) {
         setup.init();
         proxy.init();
+        CapabilityVapor.register();
     }
 
 /*    private void doClientStuff(final FMLClientSetupEvent event) {
@@ -98,8 +100,10 @@ public class NetherEndingEnergy {
     // Event bus for receiving Registry Events)
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents {
+
         @SubscribeEvent
         public static void onBlocksRegistry(final RegistryEvent.Register<Block> event) {
+
             // register a new block here
             event.getRegistry().register(new FirstBlock());
             event.getRegistry().register(new FirstTile());
@@ -109,10 +113,15 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new TerraMachineCasingBlock());
             event.getRegistry().register(new TerraReactorCoreBlock());
             event.getRegistry().register(new TerraHeatSinkBlock());
+            event.getRegistry().register(new TerraFurnaceGeneratorBlock());
+            event.getRegistry().register(new TerraVaporCollectorBlock());
+
+
 
             // Chaotic
 
             // Abyssal
+
         }
 
         @SubscribeEvent
@@ -130,6 +139,12 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_MACHINE_CASING, properties).setRegistryName(RegistryNames.TERRA_MACHINE_CASING));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_HEAT_SINK, properties).setRegistryName(RegistryNames.TERRA_HEAT_SINK));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_CORE_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));
+            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_FURNACE_GENERATOR_BLOCK, properties).setRegistryName(RegistryNames.TERRA_FURNACE_GENERATOR));
+            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_VAPOR_COLLECTOR_BLOCK, properties).setRegistryName(RegistryNames.TERRA_VAPOR_COLLECTOR));
+
+
+            // Items
+
         }
 
         @SubscribeEvent
@@ -139,6 +154,9 @@ public class NetherEndingEnergy {
             // New Stuff
             event.getRegistry().register(TileEntityType.Builder.create(CausticBellTile::new, ModBlocks.CAUSTIC_BELL_BLOCK).build(null).setRegistryName(RegistryNames.CAUSTIC_BELL));
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorCoreTile::new, ModBlocks.TERRA_REACTOR_CORE_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));
+            event.getRegistry().register(TileEntityType.Builder.create(TerraFurnaceGeneratorTile::new, ModBlocks.TERRA_FURNACE_GENERATOR_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_FURNACE_GENERATOR));
+            event.getRegistry().register(TileEntityType.Builder.create(TerraVaporCollectorTile::new, ModBlocks.TERRA_VAPOR_COLLECTOR_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_VAPOR_COLLECTOR));
+
         }
 
         @SubscribeEvent
@@ -153,6 +171,17 @@ public class NetherEndingEnergy {
                 BlockPos pos = data.readBlockPos();
                 return new TerraReactorCoreContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
             }).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));
+
+            event.getRegistry().register(IForgeContainerType.create((windowId, playerInventory, data) -> {
+                BlockPos pos = data.readBlockPos();
+                return new TerraFurnaceGeneratorContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
+            }).setRegistryName(RegistryNames.TERRA_FURNACE_GENERATOR));
+
+            event.getRegistry().register(IForgeContainerType.create((windowId, playerInventory, data) -> {
+                BlockPos pos = data.readBlockPos();
+                return new TerraVaporCollectorContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
+            }).setRegistryName(RegistryNames.TERRA_VAPOR_COLLECTOR));
+
         }
     }
 }

@@ -1,13 +1,17 @@
 {
   "item.netherendingenergy.firstitem":  "First Item",
 
+  "item.netherendingenergy.caustic_mash": "Caustic Mash",
+
   "block.netherendingenergy.firstblock": "First Block",
   "block.netherendingenergy.firsttile": "First Tile",
 
   "block.netherendingenergy.caustic_bell": "Caustic Bell",
   "block.netherendingenergy.terra_reactor_core": "Terra Reactor Core",
+  "block.netherendingenergy.terra_furnace_generator": "Terra Furnace Generator",
   "block.netherendingenergy.terra_heat_sink": "Terra Heat Sink",
-  "block.netherendingenergy.terra_machine_casing": "Machine Casing",
+  "block.netherendingenergy.terra_machine_casing": "Terra Machine Casing",
+  "block.netherendingenergy.terra_vapor_collector": "Terra Vapor Collector",
 
   "_comment": "Creative Tabs",
   "itemGroup.netherendingenergy": "Nether Ending Energy"

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xdx",
+    "xmx",
+    "xdx"
+  ],
+  "key": {
+    "x": {
+      "item": "forge:ingots/iron"
+    },
+    "d": {
+      "item": "minecraft:furnace"
+    },
+    "m": {
+      "item": "netherendingenergy:terra_machine_casing"
+    }
+  },
+  "result": {
+    "item": "netherendingenergy:terra_furnace_generator"
+  }
+}

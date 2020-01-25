@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iii",
+    "isi",
+    "ihi"
+  ],
+  "key": {
+    "s": {
+      "item": "minecraft:sand"
+    },
+    "h": {
+      "item": "minecraft:hopper"
+    },
+    "d": {
+      "item": "minecraft:diamond"
+    },
+    "": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "result": {
+    "item": "netherendingenergy:terra_vapor_collector"
+  }
+}

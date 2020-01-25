@@ -40,4 +40,20 @@ public class ModBlocks {
     public static TileEntityType<TerraReactorCoreTile> TERRA_REACTOR_CORE_TILE;
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_CORE)
     public static ContainerType<TerraReactorCoreContainer> TERRA_REACTOR_CORE_CONTAINER;
+
+    /* Generator */
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_FURNACE_GENERATOR)
+    public static TerraFurnaceGeneratorBlock TERRA_FURNACE_GENERATOR_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_FURNACE_GENERATOR)
+    public static TileEntityType<TerraFurnaceGeneratorTile> TERRA_FURNACE_GENERATOR_TILE;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_FURNACE_GENERATOR)
+    public static ContainerType<TerraFurnaceGeneratorContainer> TERRA_FURNACE_GENERATOR_CONTAINER;
+
+    /* Vapor Collector */
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_VAPOR_COLLECTOR)
+    public static TerraVaporCollectorBlock TERRA_VAPOR_COLLECTOR_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_VAPOR_COLLECTOR)
+    public static TileEntityType<TerraVaporCollectorTile> TERRA_VAPOR_COLLECTOR_TILE;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_VAPOR_COLLECTOR)
+    public static ContainerType<TerraVaporCollectorContainer> TERRA_VAPOR_COLLECTOR_CONTAINER;
 }

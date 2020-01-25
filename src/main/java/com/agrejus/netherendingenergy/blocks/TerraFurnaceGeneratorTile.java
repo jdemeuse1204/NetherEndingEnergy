@@ -2,37 +2,25 @@ package com.agrejus.netherendingenergy.blocks;
 
 import com.agrejus.netherendingenergy.Config;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -41,13 +29,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TerraReactorCoreTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public class TerraFurnaceGeneratorTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
     private LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
     private int counter;
-
-    public TerraReactorCoreTile() {
-        super(ModBlocks.TERRA_REACTOR_CORE_TILE);
+// Follow AbstractFurnaceTileEntity
+    public TerraFurnaceGeneratorTile() {
+        super(ModBlocks.TERRA_FURNACE_GENERATOR_TILE);
     }
 
     private IEnergyStorage createEnergy() {
@@ -83,7 +71,7 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
 
     @Override
     public void tick() {
-        //System.out.println("CORE");
+
         if (world.isRemote) {
             return;
         }
@@ -210,6 +198,6 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
     @Nullable
     @Override
     public Container createMenu(int worldId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new TerraReactorCoreContainer(worldId, world, pos, playerInventory, playerEntity);
+        return new TerraFurnaceGeneratorContainer(worldId, world, pos, playerInventory, playerEntity);
     }
 }
