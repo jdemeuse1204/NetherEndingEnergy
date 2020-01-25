@@ -6,6 +6,7 @@ import com.agrejus.netherendingenergy.setup.ClientProxy;
 import com.agrejus.netherendingenergy.setup.IProxy;
 import com.agrejus.netherendingenergy.setup.ModSetup;
 import com.agrejus.netherendingenergy.setup.ServerProxy;
+import com.agrejus.netherendingenergy.superchest.*;
 import com.agrejus.netherendingenergy.tools.CapabilityVapor;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
@@ -118,6 +119,13 @@ public class NetherEndingEnergy {
 
 
 
+
+
+
+
+
+            event.getRegistry().register(new BlockSuperchest());
+            event.getRegistry().register(new BlockSuperchestPart());
             // Chaotic
 
             // Abyssal
@@ -143,6 +151,14 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_VAPOR_COLLECTOR_BLOCK, properties).setRegistryName(RegistryNames.TERRA_VAPOR_COLLECTOR));
 
 
+
+
+
+
+
+
+            event.getRegistry().register(new BlockItem(ModBlocks.blockSuperchest, properties).setRegistryName("superchest"));
+            event.getRegistry().register(new BlockItem(ModBlocks.blockSuperchestPart, properties).setRegistryName("superchest_part"));
             // Items
 
         }
@@ -156,6 +172,16 @@ public class NetherEndingEnergy {
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorCoreTile::new, ModBlocks.TERRA_REACTOR_CORE_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));
             event.getRegistry().register(TileEntityType.Builder.create(TerraFurnaceGeneratorTile::new, ModBlocks.TERRA_FURNACE_GENERATOR_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_FURNACE_GENERATOR));
             event.getRegistry().register(TileEntityType.Builder.create(TerraVaporCollectorTile::new, ModBlocks.TERRA_VAPOR_COLLECTOR_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_VAPOR_COLLECTOR));
+
+
+
+
+
+
+
+
+            event.getRegistry().register(TileEntityType.Builder.create(TileSuperchest::new, ModBlocks.blockSuperchest).build(null).setRegistryName("superchest"));
+            event.getRegistry().register(TileEntityType.Builder.create(TileSuperchestPart::new, ModBlocks.blockSuperchestPart).build(null).setRegistryName("superchest_part"));
 
         }
 
@@ -182,6 +208,22 @@ public class NetherEndingEnergy {
                 return new TerraVaporCollectorContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
             }).setRegistryName(RegistryNames.TERRA_VAPOR_COLLECTOR));
 
+
+
+
+
+
+
+
+
+
+
+
+
+            event.getRegistry().register(IForgeContainerType.create((windowId, playerInventory, data) -> {
+                BlockPos pos = data.readBlockPos();
+                return new ContainerSuperchest(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
+            }).setRegistryName("superchest"));
         }
     }
 }

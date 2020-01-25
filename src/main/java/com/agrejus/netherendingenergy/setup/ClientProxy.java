@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.setup;
 
 import com.agrejus.netherendingenergy.blocks.*;
+import com.agrejus.netherendingenergy.superchest.GuiSuperchest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,6 +19,17 @@ public class ClientProxy implements IProxy {
 
 
         ScreenManager.registerFactory(ModBlocks.FIRSTTILE_CONTAINER, FirstTileScreen::new);
+
+
+
+
+
+
+
+
+
+
+        ScreenManager.registerFactory(ModBlocks.ContainerSuperChest, GuiSuperchest::new);
     }
 
     @Override

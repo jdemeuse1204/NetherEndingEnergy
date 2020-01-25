@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks;
 
 import com.agrejus.netherendingenergy.RegistryNames;
+import com.agrejus.netherendingenergy.superchest.*;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
@@ -56,4 +57,17 @@ public class ModBlocks {
     public static TileEntityType<TerraVaporCollectorTile> TERRA_VAPOR_COLLECTOR_TILE;
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_VAPOR_COLLECTOR)
     public static ContainerType<TerraVaporCollectorContainer> TERRA_VAPOR_COLLECTOR_CONTAINER;
+
+
+    @ObjectHolder("netherendingenergy:superchest")
+    public static BlockSuperchest blockSuperchest;
+    @ObjectHolder("netherendingenergy:superchest_part")
+    public static BlockSuperchestPart blockSuperchestPart;
+    @ObjectHolder("netherendingenergy:superchest")
+    public static TileEntityType<TileSuperchest> TYPE_SUPERCHEST;
+    @ObjectHolder("netherendingenergy:superchest_part")
+    public static TileEntityType<TileSuperchestPart> TYPE_SUPERCHEST_PART;
+    @ObjectHolder("netherendingenergy:firsttile")
+    public static ContainerType<ContainerSuperchest> ContainerSuperChest;
+
 }
