@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TerraReactorCoreTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public class TerraReactorCoreTile  extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
     private LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
     private int counter;
@@ -99,12 +99,10 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
         }
 
         // Generating Power when counter is greater than 0
-/*
         BlockState blockState = world.getBlockState(pos);
         if (blockState.get(BlockStateProperties.POWERED) != (counter > 0)) {
             world.setBlockState(pos, blockState.with(BlockStateProperties.POWERED, counter > 0), 3);
         }
-*/
 
         sendOutPower();
     }
