@@ -31,14 +31,15 @@ public class TerraVaporCollectorTile extends TileEntity implements ITickableTile
     private LazyOptional<IVaporStorage> vaporStorage = LazyOptional.of(this::createVapor);
     private List<CausticBellTile> surroundingCausticBells;
     private int counter;
+    private final TerraVaporCollectorBlock block;
 
-    private final int maxVaporCapacity = 4000;
-    private final int maxVaporTransfer = 100;
+    private final int maxVaporCapacity = 400000;
+    private final int maxVaporTransfer = 10000;
     private final int efficency = 65;
 
-    // Follow AbstractFurnaceTileEntity
     public TerraVaporCollectorTile() {
         super(ModBlocks.TERRA_VAPOR_COLLECTOR_TILE);
+        this.block = null;
     }
 
     private IVaporStorage createVapor() {
@@ -64,10 +65,11 @@ public class TerraVaporCollectorTile extends TileEntity implements ITickableTile
 
                 for (CausticBellTile bell : surroundingCausticBells) {
 
-                    float strength = bell.getStrength();
-                    float yield = bell.getYield(); // mB
+                    int strength = bell.getStrength();
+                    int yield = bell.getYield(); // mB
+                    int purity = bell.getPurity();
+                    int toAdd = (strength * yield) * purity;
 
-                    int toAdd = (int) (strength * yield);
                     vaporStorage.ifPresent(w -> ((CustomVaporStorage) w).addVapor(toAdd));
                 }
             }

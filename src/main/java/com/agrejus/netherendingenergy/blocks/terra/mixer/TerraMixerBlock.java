@@ -1,4 +1,4 @@
-package com.agrejus.netherendingenergy.blocks.terra.collector;
+package com.agrejus.netherendingenergy.blocks.terra.mixer;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import net.minecraft.block.Block;
@@ -23,14 +23,22 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-public class TerraVaporCollectorBlock extends Block {
+public class TerraMixerBlock extends Block {
 
-    public TerraVaporCollectorBlock() {
+    private int y;
+
+    public TerraMixerBlock() {
         super(Properties.create(Material.IRON)
                 .sound(SoundType.WOOD)
                 .hardnessAndResistance(.01f)
                 .lightValue(0));
-        setRegistryName(RegistryNames.TERRA_VAPOR_COLLECTOR);
+        setRegistryName(RegistryNames.TERRA_MIXER);
+
+        this.y = 0;
+    }
+
+    public int getY() {
+        return this.y;
     }
 
     @Override
@@ -41,14 +49,23 @@ public class TerraVaporCollectorBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new TerraVaporCollectorTile();
+        return new TerraMixerTile(this);
+    }
+
+    @Override
+    public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
+        this.y = 0;
+        super.onBlockHarvested(worldIn, pos, state, player);
     }
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        this.y = pos.getY();
         if (placer != null) {
             worldIn.setBlockState(pos, state.with(BlockStateProperties.FACING, getFacingFromEntity(pos, placer)), 2);
         }
+
+        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
     }
 
     @Override

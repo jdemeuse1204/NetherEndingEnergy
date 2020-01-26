@@ -54,17 +54,17 @@ public class TerraReactorCoreBlock extends Block {
         return new TerraReactorCoreTile();
     }
 
-/*    @Override
+    @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         if (placer != null) {
             worldIn.setBlockState(pos, state.with(BlockStateProperties.FACING, getFacingFromEntity(pos, placer)), 2);
         }
-    }*/
+    }
 
-/*    @Override
+    @Override
     public int getLightValue(BlockState state) {
         return state.get(BlockStateProperties.POWERED) ? super.getLightValue(state) : 0;
-    }*/
+    }
 
 /*    @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
@@ -83,9 +83,9 @@ public class TerraReactorCoreBlock extends Block {
         return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
     }*/
 
- /*   public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity placer) {
+    public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity placer) {
         return Direction.getFacingFromVector((float) (placer.posX - clickedBlock.getX()), (float) (placer.posY - clickedBlock.getY()), (float) (placer.posZ - clickedBlock.getZ()));
-    }*/
+    }
 
     @Override
     public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {

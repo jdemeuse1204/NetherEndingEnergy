@@ -9,92 +9,97 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
 
 public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
-    private float strength;
-    private float yield;
+    private int strength;
+    private int yield;
+    private int purity;
+
     private int counter;
     private Block blockBelow;
 
-    private HashMap<Block, Float> yieldBlockValues = new HashMap<Block, Float>() {{
-        // Overworld
-        put(Blocks.GRASS_BLOCK, 1.5f);
-        put(Blocks.DIRT, 1.5f);
-        put(Blocks.SAND, 1.3f);
-        put(Blocks.GRAVEL, 1.6f);
-        put(Blocks.STONE, 2f);
+    private HashMap<Block, Integer> yieldBlockValues = new HashMap<Block, Integer>() {{
+        // Overworld = 30
+        put(Blocks.GRASS_BLOCK, 1);
+        put(Blocks.DIRT, 1);
+        put(Blocks.SAND, 1);
+        put(Blocks.GRAVEL, 1);
+        put(Blocks.STONE, 1);
 
-        // Nether
-        put(Blocks.SOUL_SAND, 2f);
-        put(Blocks.NETHERRACK, 3f);
-        put(Blocks.NETHER_BRICKS, 2.5f);
-        put(Blocks.GLOWSTONE, .8f);
+        // Nether = 45
+        put(Blocks.SOUL_SAND, 4);
+        put(Blocks.NETHERRACK, 3);
+        put(Blocks.NETHER_BRICKS, 8);
+        put(Blocks.GLOWSTONE, 7);
 
-        // End
-        put(Blocks.END_STONE, 4f);
-        put(Blocks.PURPUR_BLOCK, 3f);
+        // End = 70
+        put(Blocks.END_STONE, 13);
+        put(Blocks.PURPUR_BLOCK, 16);
     }};
-    private HashMap<Block, Float> strengthBlockValues = new HashMap<Block, Float>() {{
+    private HashMap<Material, Integer> yieldMaterialValues = new HashMap<Material, Integer>() {{
+        put(Material.WOOD, 1);
+    }};
+
+    private HashMap<Block, Integer> strengthBlockValues = new HashMap<Block, Integer>() {{
         // Overworld
-        put(Blocks.GRASS_BLOCK, 1.5f);
-        put(Blocks.DIRT, 1.5f);
-        put(Blocks.SAND, 1f);
-        put(Blocks.GRAVEL, 1.4f);
-        put(Blocks.STONE, 2f);
+        put(Blocks.GRASS_BLOCK, 10);
+        put(Blocks.DIRT, 10);
+        put(Blocks.SAND, 11);
+        put(Blocks.GRAVEL, 12);
+        put(Blocks.STONE, 15);
 
         //Nether
-        put(Blocks.SOUL_SAND, 2f);
-        put(Blocks.NETHERRACK, 1f);
-        put(Blocks.NETHER_BRICKS, 1.5f);
-        put(Blocks.GLOWSTONE, 3.2f);
+        put(Blocks.SOUL_SAND, 25);
+        put(Blocks.NETHERRACK, 24);
+        put(Blocks.NETHER_BRICKS, 32);
+        put(Blocks.GLOWSTONE, 28);
 
         // End
-        put(Blocks.END_STONE, 2f);
-        put(Blocks.PURPUR_BLOCK, 3f);
+        put(Blocks.END_STONE, 38);
+        put(Blocks.PURPUR_BLOCK, 45);
+    }};
+    private HashMap<Material, Integer> strengthMaterialValues = new HashMap<Material, Integer>() {{
+        put(Material.WOOD, 11);
     }};
 
-    private HashMap<Material, Float> yieldMaterialValues = new HashMap<Material, Float>() {{
-        put(Material.WOOD, .8f);
+    private HashMap<Block, Integer> purityBlockValues = new HashMap<Block, Integer>() {{
+        // Overworld
+        put(Blocks.GRASS_BLOCK, 1);
+        put(Blocks.DIRT, 1);
+        put(Blocks.SAND, 1);
+        put(Blocks.GRAVEL, 1);
+        put(Blocks.STONE, 1);
+
+        //Nether
+        put(Blocks.SOUL_SAND, 5);
+        put(Blocks.NETHERRACK, 5);
+        put(Blocks.NETHER_BRICKS, 8);
+        put(Blocks.GLOWSTONE, 6);
+
+        // End
+        put(Blocks.END_STONE, 12);
+        put(Blocks.PURPUR_BLOCK, 18);
     }};
-    private HashMap<Material, Float> strengthMaterialValues = new HashMap<Material, Float>() {{
-        put(Material.WOOD, 2.2f);
+    private HashMap<Material, Integer> purityMaterialValues = new HashMap<Material, Integer>() {{
+        put(Material.WOOD, 1);
     }};
-
-
-    /* Overworld
-     * Dirt              Y=1.5,S=1.5
-     * Sand              Y=1.3,S=1.7
-     * Gravel            Y=1.6,S=1.4
-     * Stone             Y=1,S=2
-     * Wood              Y=.8,S=2.2
-     * */
-
-    /* Nether
-     * Soul Sand        Y=2,S=2
-     * Netherrack       Y=3,S=1
-     * Nether Brick     Y=2.5,S=1.5
-     * Glowstone        Y=.8,S=3.2
-     * */
-
-    /* End
-     * End Stone        Y=4,S=2
-     * Purpur           Y=3,S=3
-     * */
 
     public CausticBellTile() {
         super(ModBlocks.CAUSTIC_BELL_TILE);
     }
 
-    public float getStrength() {
+    public int getStrength() {
         return strength;
     }
 
-    public float getYield() {
+    public int getYield() {
         return yield;
+    }
+
+    public int getPurity() {
+        return purity;
     }
 
     @Override
@@ -122,6 +127,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
             blockBelow = world.getBlockState(position).getBlock();
             strength = getStrengthFromBlock(blockBelow);
             yield = getYieldFromBlock(blockBelow);
+            purity = getPurityFromBlock(blockBelow);
 
             markDirty();
 
@@ -129,7 +135,23 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         }
     }
 
-    private float getYieldFromBlock(Block block) {
+    private int getPurityFromBlock(Block block) {
+
+        if (purityBlockValues.containsKey(block)) {
+            return purityBlockValues.get(block);
+        }
+
+        BlockState state = block.getDefaultState();
+        Material material = block.getMaterial(state);
+
+        if (purityMaterialValues.containsKey(material)) {
+            return purityMaterialValues.get(material);
+        }
+
+        return 0;
+    }
+
+    private int getYieldFromBlock(Block block) {
 
         if (yieldBlockValues.containsKey(block)) {
             return yieldBlockValues.get(block);
@@ -142,10 +164,10 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
             return yieldMaterialValues.get(material);
         }
 
-        return 0f;
+        return 0;
     }
 
-    private Float getStrengthFromBlock(Block block) {
+    private int getStrengthFromBlock(Block block) {
 
         if (strengthBlockValues.containsKey(block)) {
             return strengthBlockValues.get(block);
@@ -158,6 +180,6 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
             return strengthMaterialValues.get(material);
         }
 
-        return 0f;
+        return 0;
     }
 }

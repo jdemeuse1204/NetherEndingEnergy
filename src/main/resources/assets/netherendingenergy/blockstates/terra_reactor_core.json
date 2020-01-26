@@ -12,43 +12,28 @@
       "unformed": {
       },
       "p000": {
-        "custom": { "flip-v": true },
         "model": "netherendingenergy:block/firstblock"
       },
       "p001": {
-        "custom": { "flip-v": true },
-        "model": "netherendingenergy:block/firstblock",
-        "transform": { "translation": [0, 0, -1]}
+        "model": "netherendingenergy:block/firstblock"
       },
       "p010": {
-        "custom": { "flip-v": true },
-        "model": "netherendingenergy:block/firstblock",
-        "transform": { "translation": [0, -1, 0]}
+        "model": "netherendingenergy:block/firstblock"
       },
       "p011": {
-        "custom": { "flip-v": true },
-        "model": "netherendingenergy:block/firstblock",
-        "transform": { "translation": [0, -1, -1]}
+        "model": "netherendingenergy:block/firstblock"
       },
       "p100": {
-        "custom": { "flip-v": true },
-        "model": "netherendingenergy:block/firstblock",
-        "transform": { "translation": [-1, 0, 0]}
+        "model": "netherendingenergy:block/firstblock"
       },
       "p101": {
-        "custom": { "flip-v": true },
-        "model": "netherendingenergy:block/firstblock",
-        "transform": { "translation": [-1, 0, -1]}
+        "model": "netherendingenergy:block/firstblock"
       },
       "p110": {
-        "custom": { "flip-v": true },
-        "model": "netherendingenergy:block/firstblock",
-        "transform": { "translation": [-1, -1, 0]}
+        "model": "netherendingenergy:block/firstblock"
       },
       "p111": {
-        "custom": { "flip-v": true },
-        "model": "netherendingenergy:block/firstblock",
-        "transform": { "translation": [-1, -1, -1]}
+        "model": "netherendingenergy:block/firstblock"
       }
     }
   }

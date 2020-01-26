@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy;
 
 import com.agrejus.netherendingenergy.blocks.*;
+import com.agrejus.netherendingenergy.blocks.abyss.heatsink.AbyssHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorBlock;
@@ -11,6 +12,9 @@ import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGenerat
 import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorTile;
 import com.agrejus.netherendingenergy.blocks.terra.heatsink.TerraHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.terra.machinecasing.TerraMachineCasingBlock;
+import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerBlock;
+import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerContainer;
+import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreContainer;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreTile;
@@ -128,13 +132,13 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new TerraHeatSinkBlock());
             event.getRegistry().register(new TerraFurnaceGeneratorBlock());
             event.getRegistry().register(new TerraVaporCollectorBlock());
-
+            event.getRegistry().register(new TerraMixerBlock());
 
 
             // Chaotic
 
             // Abyssal
-
+            event.getRegistry().register(new AbyssHeatSinkBlock());
         }
 
         @SubscribeEvent
@@ -154,7 +158,10 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_CORE_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_FURNACE_GENERATOR_BLOCK, properties).setRegistryName(RegistryNames.TERRA_FURNACE_GENERATOR));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_VAPOR_COLLECTOR_BLOCK, properties).setRegistryName(RegistryNames.TERRA_VAPOR_COLLECTOR));
+            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_MIXER_BLOCK, properties).setRegistryName(RegistryNames.TERRA_MIXER));
 
+            /* Abyss */
+            event.getRegistry().register(new BlockItem(ModBlocks.ABYSS_HEAT_SINK, properties).setRegistryName(RegistryNames.ABYSS_HEAT_SINK));
 
             // Items
 
@@ -169,6 +176,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorCoreTile::new, ModBlocks.TERRA_REACTOR_CORE_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));
             event.getRegistry().register(TileEntityType.Builder.create(TerraFurnaceGeneratorTile::new, ModBlocks.TERRA_FURNACE_GENERATOR_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_FURNACE_GENERATOR));
             event.getRegistry().register(TileEntityType.Builder.create(TerraVaporCollectorTile::new, ModBlocks.TERRA_VAPOR_COLLECTOR_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_VAPOR_COLLECTOR));
+            event.getRegistry().register(TileEntityType.Builder.create(TerraMixerTile::new, ModBlocks.TERRA_MIXER_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_MIXER));
 
         }
 
@@ -194,6 +202,11 @@ public class NetherEndingEnergy {
                 BlockPos pos = data.readBlockPos();
                 return new TerraVaporCollectorContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
             }).setRegistryName(RegistryNames.TERRA_VAPOR_COLLECTOR));
+
+            event.getRegistry().register(IForgeContainerType.create((windowId, playerInventory, data) -> {
+                BlockPos pos = data.readBlockPos();
+                return new TerraMixerContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
+            }).setRegistryName(RegistryNames.TERRA_MIXER));
 
         }
     }

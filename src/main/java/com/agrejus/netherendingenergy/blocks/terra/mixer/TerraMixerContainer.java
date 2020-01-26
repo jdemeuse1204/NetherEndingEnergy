@@ -1,4 +1,4 @@
-package com.agrejus.netherendingenergy.blocks.terra.collector;
+package com.agrejus.netherendingenergy.blocks.terra.mixer;
 
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.common.interfaces.IVaporStorage;
@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
-public class TerraVaporCollectorContainer extends Container {
+public class TerraMixerContainer extends Container {
 
     private TileEntity tileEntity;
     private PlayerEntity playerEntity;
@@ -23,8 +23,8 @@ public class TerraVaporCollectorContainer extends Container {
 
     // Exists on both server and client
     // Has slots of inventory and their links
-    public TerraVaporCollectorContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        super(ModBlocks.TERRA_VAPOR_COLLECTOR_CONTAINER, id);
+    public TerraMixerContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        super(ModBlocks.TERRA_MIXER_CONTAINER, id);
 
         this.tileEntity = world.getTileEntity(pos);
         this.playerEntity = playerEntity;
@@ -50,6 +50,6 @@ public class TerraVaporCollectorContainer extends Container {
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
-        return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerEntity, ModBlocks.TERRA_VAPOR_COLLECTOR_BLOCK);
+        return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerEntity, ModBlocks.TERRA_MIXER_BLOCK);
     }
 }
