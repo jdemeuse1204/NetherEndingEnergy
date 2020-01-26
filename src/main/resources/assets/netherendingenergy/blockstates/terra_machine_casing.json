@@ -1,5 +1,23 @@
 {
-  "variants" : {
-    "": { "model": "netherendingenergy:block/terra_machine_casing" }
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_all",
+    "textures": {
+      "all": "netherendingenergy:block/terra_machine_casing"
+    },
+    "transform": "forge:default-block"
+  },
+  "variants": {
+    "formed": {
+      "unformed": { },
+      "p000": { "model": "netherendingenergy:empty_model" },
+      "p001": { "model": "netherendingenergy:empty_model" },
+      "p010": { "model": "netherendingenergy:empty_model" },
+      "p011": { "model": "netherendingenergy:empty_model" },
+      "p100": { "model": "netherendingenergy:empty_model" },
+      "p101": { "model": "netherendingenergy:empty_model" },
+      "p110": { "model": "netherendingenergy:empty_model" },
+      "p111": { "model": "netherendingenergy:empty_model" }
+    }
   }
 }

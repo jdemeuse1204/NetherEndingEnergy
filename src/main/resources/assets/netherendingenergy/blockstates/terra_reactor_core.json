@@ -1,5 +1,40 @@
 {
-  "variants" : {
-    "": { "model": "netherendingenergy:block/terra_reactor_core" }
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_all",
+    "textures": {
+      "all": "netherendingenergy:block/terra_reactor_core"
+    },
+    "transform": "forge:default-block"
+  },
+  "variants": {
+    "formed": {
+      "unformed": {
+      },
+      "p000": {
+        "model": "netherendingenergy:block/firstblock"
+      },
+      "p001": {
+        "model": "netherendingenergy:block/firstblock"
+      },
+      "p010": {
+        "model": "netherendingenergy:block/firstblock"
+      },
+      "p011": {
+        "model": "netherendingenergy:block/firstblock"
+      },
+      "p100": {
+        "model": "netherendingenergy:block/firstblock"
+      },
+      "p101": {
+        "model": "netherendingenergy:block/firstblock"
+      },
+      "p110": {
+        "model": "netherendingenergy:block/firstblock"
+      },
+      "p111": {
+        "model": "netherendingenergy:block/firstblock"
+      }
+    }
   }
 }

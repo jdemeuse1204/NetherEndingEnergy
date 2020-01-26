@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iii",
+    "isi",
+    "ihi"
+  ],
+  "key": {
+    "s": {
+      "item": "minecraft:stone"
+    },
+    "h": {
+      "item": "minecraft:stick"
+    },
+    "": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "result": {
+    "item": "netherendingenergy:terra_mixer"
+  }
+}

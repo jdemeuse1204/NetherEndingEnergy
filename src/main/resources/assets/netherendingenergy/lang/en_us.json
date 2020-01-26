@@ -12,6 +12,7 @@
   "block.netherendingenergy.terra_heat_sink": "Terra Heat Sink",
   "block.netherendingenergy.terra_machine_casing": "Terra Machine Casing",
   "block.netherendingenergy.terra_vapor_collector": "Terra Vapor Collector",
+  "block.netherendingenergy.terra_mixer": "Terra Mixer",
 
   "_comment": "Creative Tabs",
   "itemGroup.netherendingenergy": "Nether Ending Energy"
