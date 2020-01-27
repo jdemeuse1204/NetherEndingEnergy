@@ -9,15 +9,17 @@
   },
   "variants": {
     "formed": {
-      "unformed": { },
-      "p000": { "model": "netherendingenergy:empty_model" },
-      "p001": { "model": "netherendingenergy:empty_model" },
-      "p010": { "model": "netherendingenergy:empty_model" },
-      "p011": { "model": "netherendingenergy:empty_model" },
-      "p100": { "model": "netherendingenergy:empty_model" },
-      "p101": { "model": "netherendingenergy:empty_model" },
-      "p110": { "model": "netherendingenergy:empty_model" },
-      "p111": { "model": "netherendingenergy:empty_model" }
+      "unformed": {
+        "model": "netherendingenergy:block/terra_machine_casing"
+      },
+      "p000": { "model": "netherendingenergy:block/firstblock" },
+      "p001": { "model": "netherendingenergy:block/firstblock" },
+      "p010": { "model": "netherendingenergy:block/firstblock" },
+      "p011": { "model": "netherendingenergy:block/firstblock" },
+      "p100": { "model": "netherendingenergy:block/firstblock" },
+      "p101": { "model": "netherendingenergy:block/firstblock" },
+      "p110": { "model": "netherendingenergy:block/firstblock" },
+      "p111": { "model": "netherendingenergy:block/firstblock" }
     }
   }
 }

@@ -73,7 +73,7 @@ public class TerraReactorCoreTile  extends TileEntity implements ITickableTileEn
     @Override
     public void tick() {
         //System.out.println("CORE");
-        if (world.isRemote) {
+        /*if (world.isRemote) {
             return;
         }
 
@@ -104,7 +104,7 @@ public class TerraReactorCoreTile  extends TileEntity implements ITickableTileEn
             world.setBlockState(pos, blockState.with(BlockStateProperties.POWERED, counter > 0), 3);
         }
 
-        sendOutPower();
+        sendOutPower();*/
     }
 
     private void sendOutPower() {
@@ -179,6 +179,12 @@ public class TerraReactorCoreTile  extends TileEntity implements ITickableTileEn
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+
+        BlockState state = world.getBlockState(pos);
+        // Not formed
+        if (state.getBlock() != ModBlocks.TERRA_REACTOR_CORE_BLOCK || state.get(TerraReactorCoreBlock.FORMED) == TerraReactorPartIndex.UNFORMED) {
+            return null;
+        }
 
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return handler.cast();
