@@ -1,6 +1,491 @@
 {
-  "parent": "block/cube_all",
+  "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
   "textures": {
-    "all": "netherendingenergy:block/terra_vapor_collector"
-  }
+    "terra_heat_sink_2": "netherendingenergy:block/terra_heat_sink_2",
+    "terra_vapor_collector_2": "netherendingenergy:block/terra_vapor_collector_2",
+    "collector_intake_fluid": "netherendingenergy:block/collector_intake_fluid",
+    "terra_vapor_collector_tank_glass": "netherendingenergy:block/terra_vapor_collector_tank_glass",
+    "terra_vapor_collector": "netherendingenergy:block/terra_vapor_collector",
+    "collector_output_fluid": "netherendingenergy:block/collector_output_fluid"
+  },
+  "display": {
+    "gui": {
+      "rotation": [ 30, 45, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.625, 0.625, 0.625 ]
+    },
+    "ground": {
+      "rotation": [ 0, 0, 0 ],
+      "translation": [ 0, 3, 0 ],
+      "scale": [ 0.25, 0.25, 0.25 ]
+    },
+    "fixed": {
+      "rotation": [ 0, 180, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 1, 1, 1 ]
+    },
+    "head": {
+      "rotation": [ 0, 180, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 1, 1, 1 ]
+    },
+    "firstperson_righthand": {
+      "rotation": [ 0, 315, 0 ],
+      "translation": [ 0, 2.5, 0 ],
+      "scale": [ 0.4, 0.4, 0.4 ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [ 75, 315, 0 ],
+      "translation": [ 0, 2.5, 0 ],
+      "scale": [ 0.375, 0.375, 0.375 ]
+    }
+  },
+  "elements": [
+    {
+      "name": "1NWpillar",
+      "from": [ 0, 1, 0 ],
+      "to": [ 1, 15, 1 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector_2", "uv": [ 4, 0, 5, 14 ] },
+        "east": { "texture": "#terra_vapor_collector_2", "uv": [ 2, 0, 3, 14 ] },
+        "south": { "texture": "#terra_vapor_collector_2", "uv": [ 15, 0, 16, 14 ] },
+        "west": { "texture": "#terra_vapor_collector_2", "uv": [ 7, 0, 8, 14 ] }
+      }
+    },
+    {
+      "name": "2NEpillar",
+      "from": [ 15, 1, 0 ],
+      "to": [ 16, 15, 1 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector_2", "uv": [ 2, 0, 3, 14 ] },
+        "east": { "texture": "#terra_vapor_collector_2", "uv": [ 4, 0, 5, 14 ] },
+        "south": { "texture": "#terra_vapor_collector_2", "uv": [ 15, 0, 16, 14 ] },
+        "west": { "texture": "#terra_vapor_collector_2", "uv": [ 6, 0, 7, 14 ] }
+      }
+    },
+    {
+      "name": "3SWpillar",
+      "from": [ 0, 1, 15 ],
+      "to": [ 1, 15, 16 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector_2", "uv": [ 4, 0, 5, 14 ] },
+        "east": { "texture": "#terra_vapor_collector_2", "uv": [ 2, 0, 3, 14 ] },
+        "south": { "texture": "#terra_vapor_collector_2", "uv": [ 6, 0, 7, 14 ] },
+        "west": { "texture": "#terra_vapor_collector_2", "uv": [ 15, 0, 16, 14 ] }
+      }
+    },
+    {
+      "name": "4SEpillar",
+      "from": [ 15, 1, 15 ],
+      "to": [ 16, 15, 16 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 0, 1, 14 ] },
+        "east": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 0, 1, 14 ] },
+        "south": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 0, 1, 14 ] },
+        "west": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 0, 1, 14 ] }
+      }
+    },
+    {
+      "name": "Base",
+      "from": [ 0, 0, 0 ],
+      "to": [ 16, 1, 16 ],
+      "faces": {
+        "north": { "texture": "#terra_heat_sink_2", "uv": [ 0, 13, 16, 14 ] },
+        "east": { "texture": "#terra_heat_sink_2", "uv": [ 0, 4, 16, 5 ] },
+        "south": { "texture": "#terra_heat_sink_2", "uv": [ 0, 11, 16, 12 ] },
+        "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 2, 16, 3 ] },
+        "up": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 16, 16 ] },
+        "down": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 16, 16 ] }
+      }
+    },
+    {
+      "name": "IntakeTop",
+      "from": [ 6, 11, 6 ],
+      "to": [ 10, 16, 10 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector", "uv": [ 7, 4, 11, 9 ] },
+        "east": { "texture": "#terra_vapor_collector", "uv": [ 7, 4, 11, 9 ] },
+        "south": { "texture": "#terra_vapor_collector", "uv": [ 7, 4, 11, 9 ] },
+        "west": { "texture": "#terra_vapor_collector", "uv": [ 7, 4, 11, 9 ] },
+        "up": { "texture": "#terra_vapor_collector", "uv": [ 1, 5, 5, 9 ] },
+        "down": { "texture": "#terra_vapor_collector", "uv": [ 1, 5, 5, 9 ] }
+      }
+    },
+    {
+      "name": "IntakeN",
+      "from": [ 6, 12, 5 ],
+      "to": [ 10, 16, 6 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector", "uv": [ 7, 4, 11, 8 ] },
+        "east": { "texture": "#terra_vapor_collector", "uv": [ 6, 4, 7, 8 ] },
+        "west": { "texture": "#terra_vapor_collector", "uv": [ 11, 4, 12, 8 ] },
+        "up": { "texture": "#terra_vapor_collector", "uv": [ 1, 4, 5, 5 ] },
+        "down": { "texture": "#terra_vapor_collector", "uv": [ 1, 6, 5, 7 ] }
+      }
+    },
+    {
+      "name": "IntakeS",
+      "from": [ 6, 12, 10 ],
+      "to": [ 10, 16, 11 ],
+      "faces": {
+        "east": { "texture": "#terra_vapor_collector", "uv": [ 11, 4, 12, 8 ] },
+        "south": { "texture": "#terra_vapor_collector", "uv": [ 7, 4, 11, 8 ] },
+        "west": { "texture": "#terra_vapor_collector", "uv": [ 6, 4, 7, 8 ] },
+        "up": { "texture": "#terra_vapor_collector", "uv": [ 1, 9, 5, 10 ] },
+        "down": { "texture": "#terra_vapor_collector", "uv": [ 1, 7, 5, 8 ] }
+      }
+    },
+    {
+      "name": "IntakeW",
+      "from": [ 5, 12, 6 ],
+      "to": [ 6, 16, 10 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector", "uv": [ 6, 4, 7, 8 ] },
+        "south": { "texture": "#terra_vapor_collector", "uv": [ 11, 4, 12, 8 ] },
+        "west": { "texture": "#terra_vapor_collector", "uv": [ 7, 4, 11, 8 ] },
+        "up": { "texture": "#terra_vapor_collector", "uv": [ 0, 5, 1, 9 ] },
+        "down": { "texture": "#terra_vapor_collector", "uv": [ 2, 5, 3, 9 ] }
+      }
+    },
+    {
+      "name": "IntakeE",
+      "from": [ 10, 12, 6 ],
+      "to": [ 11, 16, 10 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector", "uv": [ 11, 4, 12, 8 ] },
+        "east": { "texture": "#terra_vapor_collector", "uv": [ 7, 4, 11, 8 ] },
+        "south": { "texture": "#terra_vapor_collector", "uv": [ 6, 4, 7, 8 ] },
+        "up": { "texture": "#terra_vapor_collector", "uv": [ 5, 5, 6, 9 ] },
+        "down": { "texture": "#terra_vapor_collector", "uv": [ 3, 5, 4, 9 ] }
+      }
+    },
+    {
+      "name": "PipeSegment",
+      "from": [ 7, 9, 7 ],
+      "to": [ 9, 11, 9 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector", "uv": [ 14, 4, 16, 6 ] },
+        "east": { "texture": "#terra_vapor_collector", "uv": [ 14, 10, 16, 12 ] },
+        "south": { "texture": "#terra_vapor_collector", "uv": [ 14, 4, 16, 6 ] },
+        "west": { "texture": "#terra_vapor_collector", "uv": [ 12, 10, 14, 12 ] },
+        "down": { "texture": "#terra_vapor_collector", "uv": [ 13, 12, 15, 14 ] }
+      }
+    },
+    {
+      "name": "PipeSegment",
+      "from": [ 7, 8, 8 ],
+      "to": [ 9, 10, 13 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector", "uv": [ 14, 4, 16, 6 ] },
+        "east": { "texture": "#terra_vapor_collector", "uv": [ 4, 0, 9, 2 ] },
+        "south": { "texture": "#terra_vapor_collector", "uv": [ 12, 11, 14, 13 ] },
+        "west": { "texture": "#terra_vapor_collector", "uv": [ 6, 2, 11, 4 ] },
+        "up": { "texture": "#terra_vapor_collector", "uv": [ 12, 5, 14, 10 ] },
+        "down": { "texture": "#terra_vapor_collector", "uv": [ 14, 11, 16, 16 ] }
+      }
+    },
+    {
+      "name": "PipeSegment",
+      "from": [ 8, 7, 12 ],
+      "to": [ 13, 9, 14 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector", "uv": [ 0, 0, 5, 2 ] },
+        "east": { "texture": "#terra_vapor_collector", "uv": [ 14, 2, 16, 4 ] },
+        "south": { "texture": "#terra_vapor_collector", "uv": [ 6, 2, 11, 4 ] },
+        "west": { "texture": "#terra_vapor_collector", "uv": [ 12, 4, 14, 6 ] },
+        "up": { "texture": "#terra_vapor_collector", "uv": [ 2, 1, 7, 3 ] },
+        "down": { "texture": "#terra_vapor_collector", "uv": [ 8, 2, 13, 4 ] }
+      }
+    },
+    {
+      "name": "PipeSegment",
+      "from": [ 12, 6, 8 ],
+      "to": [ 14, 8, 13 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector", "uv": [ 12, 2, 14, 4 ] },
+        "east": { "texture": "#terra_vapor_collector", "uv": [ 4, 1, 9, 3 ] },
+        "south": { "texture": "#terra_vapor_collector", "uv": [ 13, 1, 15, 3 ] },
+        "west": { "texture": "#terra_vapor_collector", "uv": [ 6, 1, 11, 3 ] },
+        "up": { "texture": "#terra_vapor_collector", "uv": [ 13, 9, 15, 14 ] },
+        "down": { "texture": "#terra_vapor_collector", "uv": [ 13, 4, 15, 9 ] }
+      }
+    },
+    {
+      "name": "Refiner",
+      "from": [ 1, 1, 1 ],
+      "to": [ 7, 5, 7 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 1, 6, 5 ] },
+        "east": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 2, 6, 6 ] },
+        "south": { "texture": "#terra_vapor_collector_2", "uv": [ 1, 11, 7, 15 ] },
+        "west": { "texture": "#terra_vapor_collector_2", "uv": [ 9, 8, 15, 12 ] },
+        "up": { "texture": "#terra_vapor_collector", "uv": [ 0, 10, 6, 16 ] }
+      }
+    },
+    {
+      "name": "Condenser",
+      "from": [ 1, 7, 1 ],
+      "to": [ 5, 15, 5 ],
+      "faces": {
+        "north": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 4, 8 ] },
+        "east": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 4, 8 ] },
+        "south": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 4, 8 ] },
+        "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 4, 8 ] },
+        "up": { "texture": "#terra_vapor_collector", "uv": [ 8, 10, 12, 14 ] },
+        "down": { "texture": "#terra_vapor_collector", "uv": [ 0, 10, 4, 14 ] }
+      }
+    },
+    {
+      "name": "PipeSegment",
+      "from": [ 7, 2, 2 ],
+      "to": [ 10, 4, 4 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector", "uv": [ 4, 1, 7, 3 ] },
+        "south": { "texture": "#terra_vapor_collector", "uv": [ 0, 0, 3, 2 ] },
+        "up": { "texture": "#terra_vapor_collector", "uv": [ 8, 2, 11, 4 ] },
+        "down": { "texture": "#terra_vapor_collector", "uv": [ 6, 1, 9, 3 ] }
+      }
+    },
+    {
+      "name": "PipeSegment",
+      "from": [ 2, 5, 2 ],
+      "to": [ 4, 7, 4 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector", "uv": [ 13, 11, 15, 13 ] },
+        "east": { "texture": "#terra_vapor_collector", "uv": [ 13, 7, 15, 9 ] },
+        "south": { "texture": "#terra_vapor_collector", "uv": [ 12, 13, 14, 15 ] },
+        "west": { "texture": "#terra_vapor_collector", "uv": [ 13, 9, 15, 11 ] }
+      }
+    },
+    {
+      "name": "Pipe Segment",
+      "from": [ 2, 11, 5 ],
+      "to": [ 4, 13, 10 ],
+      "faces": {
+        "east": { "texture": "#terra_vapor_collector", "uv": [ 6, 1, 11, 3 ] },
+        "south": { "texture": "#terra_vapor_collector", "uv": [ 12, 5, 14, 7 ] },
+        "west": { "texture": "#terra_vapor_collector", "uv": [ 4, 1, 9, 3 ] },
+        "up": { "texture": "#terra_vapor_collector", "uv": [ 12, 9, 14, 14 ] },
+        "down": { "texture": "#terra_vapor_collector", "uv": [ 12, 5, 14, 10 ] }
+      }
+    },
+    {
+      "name": "PipeSegment",
+      "from": [ 2, 8, 9 ],
+      "to": [ 4, 12, 11 ],
+      "faces": {
+        "north": { "texture": "#terra_vapor_collector", "uv": [ 13, 7, 15, 11 ] },
+        "east": { "texture": "#terra_vapor_collector", "uv": [ 14, 0, 16, 4 ] },
+        "south": { "texture": "#terra_vapor_collector", "uv": [ 12, 6, 14, 10 ] },
+        "west": { "texture": "#terra_vapor_collector", "uv": [ 14, 1, 16, 5 ] },
+        "up": { "texture": "#terra_vapor_collector", "uv": [ 12, 3, 14, 5 ] },
+        "down": { "texture": "#terra_vapor_collector", "uv": [ 0, 0, 2, 2 ] }
+      }
+    },
+    {
+      "name": "WTopBrace",
+      "from": [ 0, 15, 1 ],
+      "to": [ 1, 16, 16 ],
+      "faces": {
+        "east": { "texture": "#terra_heat_sink_2", "uv": [ 0, 11, 15, 12 ] },
+        "south": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 1 ] },
+        "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 2, 15, 3 ] },
+        "up": { "texture": "#terra_vapor_collector_2", "uv": [ 2, 0, 3, 15 ] },
+        "down": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 0, 1, 15 ] }
+      }
+    },
+    {
+      "name": "NTopBrace",
+      "from": [ 0, 15, 0 ],
+      "to": [ 15, 16, 1 ],
+      "faces": {
+        "north": { "texture": "#terra_heat_sink_2", "uv": [ 0, 2, 15, 3 ] },
+        "south": { "texture": "#terra_heat_sink_2", "uv": [ 0, 7, 15, 8 ] },
+        "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 1 ] },
+        "up": { "texture": "#terra_heat_sink_2", "uv": [ 0, 13, 15, 14 ] },
+        "down": { "texture": "#terra_heat_sink_2", "uv": [ 0, 15, 15, 16 ] }
+      }
+    },
+    {
+      "name": "ETopBrace",
+      "from": [ 15, 15, 0 ],
+      "to": [ 16, 16, 15 ],
+      "faces": {
+        "north": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 1 ] },
+        "east": { "texture": "#terra_heat_sink_2", "uv": [ 0, 2, 15, 3 ] },
+        "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 4, 15, 5 ] },
+        "up": { "texture": "#terra_vapor_collector_2", "uv": [ 2, 0, 3, 15 ] },
+        "down": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 1, 1, 16 ] }
+      }
+    },
+    {
+      "name": "STopBrace",
+      "from": [ 1, 15, 15 ],
+      "to": [ 16, 16, 16 ],
+      "faces": {
+        "north": { "texture": "#terra_heat_sink_2", "uv": [ 0, 7, 15, 8 ] },
+        "east": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 1 ] },
+        "south": { "texture": "#terra_heat_sink_2", "uv": [ 0, 2, 15, 3 ] },
+        "up": { "texture": "#terra_heat_sink_2", "uv": [ 0, 4, 15, 5 ] },
+        "down": { "texture": "#terra_heat_sink_2", "uv": [ 0, 13, 15, 14 ] }
+      }
+    },
+    {
+      "name": "Mount",
+      "from": [ 5, 10, 8 ],
+      "to": [ 5, 12, 9 ],
+      "faces": {
+        "east": { "texture": "#terra_vapor_collector", "uv": [ 3, 4, 4, 6 ] },
+        "west": { "texture": "#terra_vapor_collector", "uv": [ 2, 5, 3, 7 ] }
+      }
+    },
+    {
+      "name": "Mount",
+      "from": [ 11, 10, 7 ],
+      "to": [ 11, 12, 8 ],
+      "faces": {
+        "east": { "texture": "#terra_vapor_collector", "uv": [ 4, 6, 5, 8 ] },
+        "west": { "texture": "#terra_vapor_collector", "uv": [ 10, 7, 11, 9 ] }
+      }
+    },
+    {
+      "name": "IntakeTankS",
+      "from": [ 10, 1, 9 ],
+      "to": [ 16, 10, 10 ],
+      "faces": {
+        "north": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 6, 9 ] },
+        "east": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 9 ] },
+        "south": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 6, 9 ] },
+        "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 9 ] },
+        "up": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 6, 1 ] }
+      }
+    },
+    {
+      "name": "IntakeTankT",
+      "from": [ 10, 9, 1 ],
+      "to": [ 16, 10, 9 ],
+      "faces": {
+        "north": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 6, 1 ] },
+        "east": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 8, 1 ] },
+        "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 8, 1 ] },
+        "up": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 6, 8 ] },
+        "down": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 6, 8 ] }
+      }
+    },
+    {
+      "name": "IntakeTankN",
+      "from": [ 10, 1, 0 ],
+      "to": [ 15, 10, 1 ],
+      "faces": {
+        "north": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 5, 9 ] },
+        "south": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 5, 9 ] },
+        "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 9 ] },
+        "up": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 5, 1 ] }
+      }
+    },
+    {
+      "name": "IntakeTankW",
+      "from": [ 10, 1, 1 ],
+      "to": [ 11, 9, 9 ],
+      "faces": {
+        "east": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 8, 8 ] },
+        "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 8, 8 ] }
+      }
+    },
+    {
+      "name": "IntakeSpout",
+      "from": [ 13, 1, 7 ],
+      "to": [ 13, 7, 8 ],
+      "faces": {
+        "east": { "texture": "#collector_intake_fluid", "uv": [ 0, 0, 1, 6 ] },
+        "west": { "texture": "#collector_intake_fluid", "uv": [ 0, 0, 1, 6 ] }
+      }
+    },
+    {
+      "name": "IntakeLiquidWindow",
+      "from": [ 15, 1, 1 ],
+      "to": [ 16, 9, 9 ],
+      "faces": {
+        "east": { "texture": "#terra_vapor_collector_tank_glass", "uv": [ 0, 0, 8, 8 ] },
+        "west": { "texture": "#terra_vapor_collector_tank_glass", "uv": [ 0, 0, 8, 8 ] }
+      }
+    },
+    {
+      "name": "IntakeLiquidLevel",
+      "from": [ 11, 1, 1 ],
+      "to": [ 15, 2, 9 ],
+      "faces": {
+        "up": { "texture": "#collector_intake_fluid", "uv": [ 0, 0, 4, 8 ] }
+      }
+    },
+    {
+      "name": "OutputTankS",
+      "from": [ 1, 1, 15 ],
+      "to": [ 5, 10, 16 ],
+      "faces": {
+        "north": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 4, 9 ] },
+        "south": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 4, 9 ] },
+        "up": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 4, 1 ] }
+      }
+    },
+    {
+      "name": "OutputTankN",
+      "from": [ 0, 1, 8 ],
+      "to": [ 5, 10, 9 ],
+      "faces": {
+        "north": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 5, 9 ] },
+        "south": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 5, 9 ] },
+        "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 9 ] },
+        "up": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 5, 1 ] }
+      }
+    },
+    {
+      "name": "OutputTankE",
+      "from": [ 5, 1, 8 ],
+      "to": [ 6, 10, 16 ],
+      "faces": {
+        "north": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 9 ] },
+        "east": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 8, 9 ] },
+        "south": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 9 ] },
+        "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 8, 9 ] },
+        "up": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 8 ] }
+      }
+    },
+    {
+      "name": "OutputTankT",
+      "from": [ 0, 9, 9 ],
+      "to": [ 5, 10, 15 ],
+      "faces": {
+        "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 6, 1 ] },
+        "up": { "texture": "#terra_heat_sink_2", "uv": [ 1, 0, 6, 6 ] },
+        "down": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 5, 6 ] }
+      }
+    },
+    {
+      "name": "OutputTankWindow",
+      "from": [ 0, 1, 9 ],
+      "to": [ 1, 9, 15 ],
+      "faces": {
+        "east": { "texture": "#terra_vapor_collector_tank_glass", "uv": [ 0, 0, 6, 8 ] },
+        "west": { "texture": "#terra_vapor_collector_tank_glass", "uv": [ 0, 0, 6, 8 ] }
+      }
+    },
+    {
+      "name": "OutputLiquidLevel",
+      "from": [ 1, 1, 9 ],
+      "to": [ 5, 2, 15 ],
+      "faces": {
+        "up": { "texture": "#collector_output_fluid", "uv": [ 0, 0, 4, 6 ] }
+      }
+    },
+    {
+      "name": "OutputSpout",
+      "from": [ 3, 1, 9 ],
+      "to": [ 3, 8, 10 ],
+      "faces": {
+        "east": { "texture": "#collector_output_fluid", "uv": [ 0, 0, 1, 7 ] },
+        "west": { "texture": "#collector_output_fluid", "uv": [ 0, 0, 1, 7 ] }
+      }
+    }
+  ]
 }
