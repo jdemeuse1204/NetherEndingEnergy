@@ -11,8 +11,14 @@ public class RegistryNames {
     public static final String TERRA_VAPOR_COLLECTOR = "terra_vapor_collector";
     public static final String TERRA_MIXER = "terra_mixer";
 
-    /* Abyss */
-    public static final String ABYSS_HEAT_SINK = "abyss_heat_sink";
+    /* Abyssal */
+    public static final String ABYSS_HEAT_SINK = "abyssal_heat_sink";
+
+    /* Chaotic */
+    public static final String CHAOTIC_HEAT_SINK = "chaotic_heat_sink";
+
+    /* General */
+    public static final String REACTOR_REDSTONE_PORT = "reactor_redstone_port";
 
     public static String CreateModRegistryName(String registryName) {
         return String.format("{0}:{1}", NetherEndingEnergy.MODID, registryName);

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iii",
+    "isi",
+    "ihi"
+  ],
+  "key": {
+    "s": {
+      "item": "minecraft:sand"
+    },
+    "h": {
+      "item": "minecraft:hopper"
+    },
+    "d": {
+      "item": "minecraft:diamond"
+    },
+    "": {
+      "tag": "forge:ingots/copper"
+    }
+  },
+  "result": {
+    "item": "netherendingenergy:reactor_redstone_port"
+  }
+}

@@ -1,4 +1,4 @@
-package com.agrejus.netherendingenergy.blocks.abyss.heatsink;
+package com.agrejus.netherendingenergy.blocks.abyssal.heatsink;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import net.minecraft.block.Block;

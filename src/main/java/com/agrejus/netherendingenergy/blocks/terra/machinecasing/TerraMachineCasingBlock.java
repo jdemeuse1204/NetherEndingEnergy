@@ -39,7 +39,7 @@ public class TerraMachineCasingBlock extends Block {
             return true;
         }
         // Only work if the block is formed
-        if (state.getBlock() == ModBlocks.TERRA_MACHINE_CASING && state.get(FORMED) != TerraReactorPartIndex.UNFORMED) {
+        if (state.getBlock() == ModBlocks.TERRA_MACHINE_CASING_BLOCK && state.get(FORMED) != TerraReactorPartIndex.UNFORMED) {
             // Find the controller
             BlockPos controllerPos = TerraReactorCoreBlock.getControllerPos(world, pos);
             if (controllerPos != null) {

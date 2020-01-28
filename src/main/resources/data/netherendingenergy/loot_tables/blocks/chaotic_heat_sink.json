@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "netherendingenergy:abyss_heat_sink"
+          "name": "netherendingenergy:chaotic_heat_sink"
         }
       ],
       "conditions": [

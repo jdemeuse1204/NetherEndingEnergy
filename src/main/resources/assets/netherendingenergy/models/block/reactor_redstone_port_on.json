@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "netherendingenergy:block/reactor_redstone_port",
+    "north": "netherendingenergy:block/reactor_redstone_port_on",
+    "south": "netherendingenergy:block/reactor_redstone_port",
+    "east": "netherendingenergy:block/reactor_redstone_port",
+    "west": "netherendingenergy:block/reactor_redstone_port",
+    "up": "netherendingenergy:block/reactor_redstone_port",
+    "down": "netherendingenergy:block/reactor_redstone_port"
+  }
+}

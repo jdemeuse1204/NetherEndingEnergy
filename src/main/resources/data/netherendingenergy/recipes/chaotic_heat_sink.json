@@ -7,10 +7,10 @@
   ],
   "key": {
     "x": {
-      "tag": "forge:ingots/copper"
+      "tag": "forge:ingots/tin"
     }
   },
   "result": {
-    "item": "netherendingenergy:abyss_heat_sink"
+    "item": "netherendingenergy:chaotic_heat_sink"
   }
 }

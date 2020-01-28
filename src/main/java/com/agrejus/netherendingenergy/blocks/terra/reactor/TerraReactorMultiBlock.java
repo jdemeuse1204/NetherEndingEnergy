@@ -14,7 +14,7 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
 
     private boolean isBlockPart(World world, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
-        return state.getBlock() == ModBlocks.TERRA_REACTOR_CORE_BLOCK || state.getBlock() == ModBlocks.TERRA_MACHINE_CASING;
+        return state.getBlock() == ModBlocks.TERRA_REACTOR_CORE_BLOCK || state.getBlock() == ModBlocks.TERRA_MACHINE_CASING_BLOCK;
     }
 
     private boolean isValidFormedBlockPart(World world, BlockPos pos, int dx, int dy, int dz) {
@@ -130,11 +130,11 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
 
     private static boolean isUnformedSuperchestPart(World world, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
-        return state.getBlock() == ModBlocks.TERRA_MACHINE_CASING && state.get(TerraReactorCoreBlock.FORMED) == TerraReactorPartIndex.UNFORMED;
+        return state.getBlock() == ModBlocks.TERRA_MACHINE_CASING_BLOCK && state.get(TerraReactorCoreBlock.FORMED) == TerraReactorPartIndex.UNFORMED;
     }
 
     private static boolean isFormedSuperchestPart(World world, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
-        return state.getBlock() == ModBlocks.TERRA_MACHINE_CASING && state.get(TerraReactorCoreBlock.FORMED) != TerraReactorPartIndex.UNFORMED;
+        return state.getBlock() == ModBlocks.TERRA_MACHINE_CASING_BLOCK && state.get(TerraReactorCoreBlock.FORMED) != TerraReactorPartIndex.UNFORMED;
     }
 }

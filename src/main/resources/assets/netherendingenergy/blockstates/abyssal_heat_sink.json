@@ -1,0 +1,5 @@
+{
+  "variants" : {
+    "": { "model": "netherendingenergy:block/abyssal_heat_sink" }
+  }
+}

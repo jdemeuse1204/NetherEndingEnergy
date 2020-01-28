@@ -14,6 +14,8 @@
   "block.netherendingenergy.terra_vapor_collector": "Terra Vapor Collector",
   "block.netherendingenergy.terra_mixer": "Terra Mixer",
 
+  "block.netherendingenergy.reactor_redstone_port": "Reactor Redstone Port",
+
   "_comment": "Creative Tabs",
   "itemGroup.netherendingenergy": "Nether Ending Energy"
 }

@@ -1,7 +1,10 @@
 package com.agrejus.netherendingenergy.blocks;
 
 import com.agrejus.netherendingenergy.RegistryNames;
-import com.agrejus.netherendingenergy.blocks.abyss.heatsink.AbyssHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.base.reactor.redstoneport.ReactorRedstonePortBlock;
+import com.agrejus.netherendingenergy.blocks.base.reactor.redstoneport.ReactorRedstonePortTile;
+import com.agrejus.netherendingenergy.blocks.chaotic.heatsink.ChaoticHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorBlock;
@@ -45,13 +48,15 @@ public class ModBlocks {
 
     /* General */
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_MACHINE_CASING)
-    public static TerraMachineCasingBlock TERRA_MACHINE_CASING;
+    public static TerraMachineCasingBlock TERRA_MACHINE_CASING_BLOCK;
 
     /* Heat Sink */
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_HEAT_SINK)
-    public static TerraHeatSinkBlock TERRA_HEAT_SINK;
+    public static TerraHeatSinkBlock TERRA_HEAT_SINK_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.CHAOTIC_HEAT_SINK)
+    public static ChaoticHeatSinkBlock CHAOTIC_HEAT_SINK_BLOCK;
     @ObjectHolder("netherendingenergy:" + RegistryNames.ABYSS_HEAT_SINK)
-    public static AbyssHeatSinkBlock ABYSS_HEAT_SINK;
+    public static AbyssHeatSinkBlock ABYSS_HEAT_SINK_BLOCK;
 
     /* Reactor */
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_CORE)
@@ -84,4 +89,10 @@ public class ModBlocks {
     public static TileEntityType<TerraMixerTile> TERRA_MIXER_TILE;
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_MIXER)
     public static ContainerType<TerraMixerContainer> TERRA_MIXER_CONTAINER;
+
+    /* General Reactor */
+    @ObjectHolder("netherendingenergy:" + RegistryNames.REACTOR_REDSTONE_PORT)
+    public static ReactorRedstonePortBlock REACTOR_REDSTONE_PORT_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.REACTOR_REDSTONE_PORT)
+    public static TileEntityType<ReactorRedstonePortTile> REACTOR_REDSTONE_PORT_TILE;
 }

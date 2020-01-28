@@ -1,7 +1,10 @@
 package com.agrejus.netherendingenergy;
 
 import com.agrejus.netherendingenergy.blocks.*;
-import com.agrejus.netherendingenergy.blocks.abyss.heatsink.AbyssHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.base.reactor.redstoneport.ReactorRedstonePortBlock;
+import com.agrejus.netherendingenergy.blocks.base.reactor.redstoneport.ReactorRedstonePortTile;
+import com.agrejus.netherendingenergy.blocks.chaotic.heatsink.ChaoticHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorBlock;
@@ -127,9 +130,13 @@ public class NetherEndingEnergy {
 
 
             // Chaotic
+            event.getRegistry().register(new ChaoticHeatSinkBlock());
 
             // Abyssal
             event.getRegistry().register(new AbyssHeatSinkBlock());
+
+            /* Reactor General */
+            event.getRegistry().register(new ReactorRedstonePortBlock());
         }
 
         @SubscribeEvent
@@ -144,15 +151,21 @@ public class NetherEndingEnergy {
 
             // New Stuff
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_BELL_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_BELL));
-            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_MACHINE_CASING, properties).setRegistryName(RegistryNames.TERRA_MACHINE_CASING));
-            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_HEAT_SINK, properties).setRegistryName(RegistryNames.TERRA_HEAT_SINK));
+            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_MACHINE_CASING_BLOCK, properties).setRegistryName(RegistryNames.TERRA_MACHINE_CASING));
+            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_HEAT_SINK_BLOCK, properties).setRegistryName(RegistryNames.TERRA_HEAT_SINK));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_CORE_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_FURNACE_GENERATOR_BLOCK, properties).setRegistryName(RegistryNames.TERRA_FURNACE_GENERATOR));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_VAPOR_COLLECTOR_BLOCK, properties).setRegistryName(RegistryNames.TERRA_VAPOR_COLLECTOR));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_MIXER_BLOCK, properties).setRegistryName(RegistryNames.TERRA_MIXER));
 
             /* Abyss */
-            event.getRegistry().register(new BlockItem(ModBlocks.ABYSS_HEAT_SINK, properties).setRegistryName(RegistryNames.ABYSS_HEAT_SINK));
+            event.getRegistry().register(new BlockItem(ModBlocks.ABYSS_HEAT_SINK_BLOCK, properties).setRegistryName(RegistryNames.ABYSS_HEAT_SINK));
+
+            /* Chaotic */
+            event.getRegistry().register(new BlockItem(ModBlocks.CHAOTIC_HEAT_SINK_BLOCK, properties).setRegistryName(RegistryNames.CHAOTIC_HEAT_SINK));
+
+            /* Reactor General */
+            event.getRegistry().register(new BlockItem(ModBlocks.REACTOR_REDSTONE_PORT_BLOCK, properties).setRegistryName(RegistryNames.REACTOR_REDSTONE_PORT));
 
             // Items
 
@@ -168,6 +181,8 @@ public class NetherEndingEnergy {
             event.getRegistry().register(TileEntityType.Builder.create(TerraFurnaceGeneratorTile::new, ModBlocks.TERRA_FURNACE_GENERATOR_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_FURNACE_GENERATOR));
             event.getRegistry().register(TileEntityType.Builder.create(TerraVaporCollectorTile::new, ModBlocks.TERRA_VAPOR_COLLECTOR_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_VAPOR_COLLECTOR));
             event.getRegistry().register(TileEntityType.Builder.create(TerraMixerTile::new, ModBlocks.TERRA_MIXER_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_MIXER));
+
+            event.getRegistry().register(TileEntityType.Builder.create(ReactorRedstonePortTile::new, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK).build(null).setRegistryName(RegistryNames.REACTOR_REDSTONE_PORT));
 
         }
 
