@@ -10,6 +10,7 @@ import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorBlock;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorContainer;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorTile;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorTileEntityRenderer;
 import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorBlock;
 import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorContainer;
 import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorTile;
@@ -21,6 +22,8 @@ import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreContainer;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreTile;
+import com.agrejus.netherendingenergy.blocks.test.BlockTank;
+import com.agrejus.netherendingenergy.blocks.test.TileTank;
 import com.agrejus.netherendingenergy.items.FirstItem;
 import com.agrejus.netherendingenergy.setup.ClientProxy;
 import com.agrejus.netherendingenergy.setup.IProxy;
@@ -118,6 +121,12 @@ public class NetherEndingEnergy {
             // register a new block here
             event.getRegistry().register(new FirstBlock());
             event.getRegistry().register(new FirstTile());
+            event.getRegistry().register(new BlockTank());
+
+
+
+
+            /* General */
             event.getRegistry().register(new CausticBellBlock());
 
             // Terra
@@ -145,8 +154,9 @@ public class NetherEndingEnergy {
             Item.Properties properties = new Item.Properties().group(setup.itemGroup);
 
             // Tutorial
-            event.getRegistry().register(new BlockItem(ModBlocks.FIRSTBLOCK, properties).setRegistryName("firstblock"));
-            event.getRegistry().register(new BlockItem(ModBlocks.FIRSTTILE, properties).setRegistryName("firsttile"));
+            event.getRegistry().register(new BlockItem(ModBlocks.Test.FIRSTBLOCK, properties).setRegistryName("firstblock"));
+            event.getRegistry().register(new BlockItem(ModBlocks.Test.FIRSTTILE, properties).setRegistryName("firsttile"));
+            event.getRegistry().register(new BlockItem(ModBlocks.Test.TANK_BLOCK, properties).setRegistryName("tank"));
             event.getRegistry().register(new FirstItem());
 
             // New Stuff
@@ -173,7 +183,8 @@ public class NetherEndingEnergy {
 
         @SubscribeEvent
         public static void onTileEntityRegistry(final RegistryEvent.Register<TileEntityType<?>> event) {
-            event.getRegistry().register(TileEntityType.Builder.create(FirstBlockTile::new, ModBlocks.FIRSTTILE).build(null).setRegistryName("firsttile"));
+            event.getRegistry().register(TileEntityType.Builder.create(FirstBlockTile::new, ModBlocks.Test.FIRSTTILE).build(null).setRegistryName("firsttile"));
+            event.getRegistry().register(TileEntityType.Builder.create(TileTank::new, ModBlocks.Test.TANK_BLOCK).build(null).setRegistryName("tank"));
 
             // New Stuff
             event.getRegistry().register(TileEntityType.Builder.create(CausticBellTile::new, ModBlocks.CAUSTIC_BELL_BLOCK).build(null).setRegistryName(RegistryNames.CAUSTIC_BELL));
@@ -183,7 +194,6 @@ public class NetherEndingEnergy {
             event.getRegistry().register(TileEntityType.Builder.create(TerraMixerTile::new, ModBlocks.TERRA_MIXER_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_MIXER));
 
             event.getRegistry().register(TileEntityType.Builder.create(ReactorRedstonePortTile::new, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK).build(null).setRegistryName(RegistryNames.REACTOR_REDSTONE_PORT));
-
         }
 
         @SubscribeEvent

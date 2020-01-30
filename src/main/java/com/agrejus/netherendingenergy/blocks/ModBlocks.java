@@ -21,24 +21,13 @@ import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreContainer;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreTile;
+import com.agrejus.netherendingenergy.blocks.test.BlockTank;
+import com.agrejus.netherendingenergy.blocks.test.TileTank;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
 public class ModBlocks {
-
-    /* Tutorial */
-    @ObjectHolder("netherendingenergy:firstblock")
-    public static FirstBlock FIRSTBLOCK;
-
-    @ObjectHolder("netherendingenergy:firsttile")
-    public static FirstTile FIRSTTILE;
-
-    @ObjectHolder("netherendingenergy:firsttile")
-    public static TileEntityType<FirstBlockTile> FIRSTBLOCK_TILE;
-
-    @ObjectHolder("netherendingenergy:firsttile")
-    public static ContainerType<FirstTileContainer> FIRSTTILE_CONTAINER;
 
     /* Flowers */
     @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_BELL)
@@ -95,4 +84,25 @@ public class ModBlocks {
     public static ReactorRedstonePortBlock REACTOR_REDSTONE_PORT_BLOCK;
     @ObjectHolder("netherendingenergy:" + RegistryNames.REACTOR_REDSTONE_PORT)
     public static TileEntityType<ReactorRedstonePortTile> REACTOR_REDSTONE_PORT_TILE;
+
+    public static class Test {
+        /* Tutorial */
+        @ObjectHolder("netherendingenergy:firstblock")
+        public static FirstBlock FIRSTBLOCK;
+
+        @ObjectHolder("netherendingenergy:firsttile")
+        public static FirstTile FIRSTTILE;
+
+        @ObjectHolder("netherendingenergy:firsttile")
+        public static TileEntityType<FirstBlockTile> FIRSTBLOCK_TILE;
+
+        @ObjectHolder("netherendingenergy:firsttile")
+        public static ContainerType<FirstTileContainer> FIRSTTILE_CONTAINER;
+
+
+        @ObjectHolder("netherendingenergy:tank")
+        public static BlockTank TANK_BLOCK;
+        @ObjectHolder("netherendingenergy:tank")
+        public static TileEntityType<TileTank> TANK_TILE;
+    }
 }

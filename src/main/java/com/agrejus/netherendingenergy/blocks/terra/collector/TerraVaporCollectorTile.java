@@ -6,20 +6,32 @@ import com.agrejus.netherendingenergy.common.interfaces.FunctionBlockPosition;
 import com.agrejus.netherendingenergy.common.interfaces.IVaporStorage;
 import com.agrejus.netherendingenergy.tools.CapabilityVapor;
 import com.agrejus.netherendingenergy.tools.CustomVaporStorage;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,6 +41,7 @@ import java.util.List;
 public class TerraVaporCollectorTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
 
     private LazyOptional<IVaporStorage> vaporStorage = LazyOptional.of(this::createVapor);
+    private LazyOptional<IFluidHandler> fluid = LazyOptional.of(this::createFluid);
     private List<CausticBellTile> surroundingCausticBells;
     private int counter;
     private final TerraVaporCollectorBlock block;
@@ -36,14 +49,37 @@ public class TerraVaporCollectorTile extends TileEntity implements ITickableTile
     private final int maxVaporCapacity = 400000;
     private final int maxVaporTransfer = 10000;
     private final int efficency = 65;
+    private FluidTank tank = new FluidTank(10000) {
+        @Override
+        protected void onContentsChanged() {
+            BlockState state = world.getBlockState(pos);
+            world.notifyBlockUpdate(pos, state, state, 3);
+            markDirty();
+        }
+    };
 
     public TerraVaporCollectorTile() {
         super(ModBlocks.TERRA_VAPOR_COLLECTOR_TILE);
         this.block = null;
     }
 
+    public FluidTank getTank() {
+        return tank;
+    }
+
     private IVaporStorage createVapor() {
         return new CustomVaporStorage(maxVaporCapacity, maxVaporTransfer);
+    }
+
+    private IFluidHandler createFluid() {
+            return new FluidTank(10000) {
+            @Override
+            protected void onContentsChanged() {
+                BlockState state = world.getBlockState(pos);
+                world.notifyBlockUpdate(pos, state, state, 3);
+                markDirty();
+            }
+        };
     }
 
     @Override
@@ -57,7 +93,10 @@ public class TerraVaporCollectorTile extends TileEntity implements ITickableTile
             //System.out.println(surroundingCausticBells.size());
             counter--;
             if (counter <= 0) {
-                // going from 1 to 0, will reset next, do operation here
+                //val lazyCapa = heldItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+                //tank.fill(new FluidStack(Fluids.LAVA.getStillFluid(), 50), IFluidHandler.FluidAction.EXECUTE);
+                markDirty();
+/*                // going from 1 to 0, will reset next, do operation here
 
                 // Collect Gas here
                 // get block positions.  Only check every 20 ticks for performance reasons
@@ -71,15 +110,15 @@ public class TerraVaporCollectorTile extends TileEntity implements ITickableTile
                     int toAdd = (strength * yield) * purity;
 
                     vaporStorage.ifPresent(w -> ((CustomVaporStorage) w).addVapor(toAdd));
-                }
+                }*/
             }
-            markDirty();
+
         }
 
         if (counter <= 0) {
             // Start of the operation
 
-            counter = 20;
+            counter = 100;
         }
     }
 
@@ -160,6 +199,8 @@ public class TerraVaporCollectorTile extends TileEntity implements ITickableTile
         // Save energy when block is broken
         vaporStorage.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(energyTag));
         super.read(tag);
+
+        tank.readFromNBT(tag.getCompound("tank"));
     }
 
     @Override
@@ -170,7 +211,32 @@ public class TerraVaporCollectorTile extends TileEntity implements ITickableTile
             CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
             tag.put("vapor", compound);
         });
+
+        CompoundNBT tankNBT = new CompoundNBT();
+        tank.writeToNBT(tankNBT);
+        tag.put("tank", tankNBT);
+
         return super.write(tag);
+    }
+
+    @Override
+    public CompoundNBT getUpdateTag() {
+        CompoundNBT nbtTag = super.getUpdateTag();
+        CompoundNBT tankNBT = new CompoundNBT();
+        tank.writeToNBT(tankNBT);
+        nbtTag.put("tank", tankNBT);
+        return nbtTag;
+    }
+
+    @Nullable
+    @Override
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
+        tank.readFromNBT(packet.getNbtCompound().getCompound("tank"));
     }
 
     @Nonnull
@@ -179,6 +245,10 @@ public class TerraVaporCollectorTile extends TileEntity implements ITickableTile
 
         if (cap == CapabilityVapor.VAPOR) {
             return vaporStorage.cast();
+        }
+
+        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+            return LazyOptional.of(() -> (T) tank);
         }
 
         return super.getCapability(cap, side);

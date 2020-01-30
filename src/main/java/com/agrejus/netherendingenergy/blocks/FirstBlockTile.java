@@ -37,7 +37,7 @@ public class FirstBlockTile extends TileEntity implements ITickableTileEntity, I
     private int counter;
 
     public FirstBlockTile() {
-        super(ModBlocks.FIRSTBLOCK_TILE);
+        super(ModBlocks.Test.FIRSTBLOCK_TILE);
     }
 
     private IEnergyStorage createEnergy() {

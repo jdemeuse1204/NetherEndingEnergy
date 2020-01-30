@@ -72,4 +72,9 @@ public class ReactorRedstonePortBlock extends RedstoneDetectorBlock {
     public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side) {
         return true;
     }
+
+    @Override
+    public boolean canProvidePower(BlockState state) {
+        return false;
+    }
 }

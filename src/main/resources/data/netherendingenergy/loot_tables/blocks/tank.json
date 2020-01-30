@@ -17,17 +17,6 @@
               "source": "block_entity",
               "ops": [
                 {
-                  "source": "vapor",
-                  "target": "BlockEntityTag.vapor",
-                  "op": "replace"
-                }
-              ]
-            },
-            {
-              "function": "minecraft:copy_nbt",
-              "source": "block_entity",
-              "ops": [
-                {
                   "source": "tank",
                   "target": "BlockEntityTag.tank",
                   "op": "replace"
@@ -44,7 +33,7 @@
               ]
             }
           ],
-          "name": "netherendingenergy:terra_vapor_collector"
+          "name": "netherendingenergy:tank"
         }
       ]
     }

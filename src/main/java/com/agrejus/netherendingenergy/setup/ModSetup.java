@@ -10,7 +10,7 @@ public class ModSetup {
     public ItemGroup itemGroup = new ItemGroup(NetherEndingEnergy.MODID) {
         @Override
         public ItemStack createIcon() {
-            return new ItemStack(ModBlocks.FIRSTBLOCK);
+            return new ItemStack(ModBlocks.Test.FIRSTBLOCK);
         }
     };
 

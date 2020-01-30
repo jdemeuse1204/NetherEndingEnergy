@@ -1,15 +1,19 @@
 package com.agrejus.netherendingenergy.blocks.terra.collector;
 
 import com.agrejus.netherendingenergy.RegistryNames;
+import javafx.geometry.Side;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
@@ -18,11 +22,20 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.network.NetworkHooks;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class TerraVaporCollectorBlock extends Block {
 
@@ -33,6 +46,8 @@ public class TerraVaporCollectorBlock extends Block {
                 .lightValue(0));
         setRegistryName(RegistryNames.TERRA_VAPOR_COLLECTOR);
     }
+
+    private static final Pattern COMPILE = Pattern.compile("@", Pattern.LITERAL);
 
     // So the tank glass is translucent
     public BlockRenderLayer getRenderLayer() {
@@ -66,8 +81,17 @@ public class TerraVaporCollectorBlock extends Block {
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
 
         if (!worldIn.isRemote) {
+            Direction side = hit.getFace();
+            FluidUtil.interactWithFluidHandler(player, handIn, worldIn, pos, side);
+        }
+        return true;
+
+/*        if (!worldIn.isRemote) {
             TileEntity tileEntity = worldIn.getTileEntity(pos);
 
+            Direction side = hit.getFace();
+            FluidUtil.interactWithFluidHandler(player, handIn, worldIn, pos, side);
+            super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
             if (tileEntity instanceof INamedContainerProvider) {
                 NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tileEntity, tileEntity.getPos());
             } else {
@@ -76,7 +100,7 @@ public class TerraVaporCollectorBlock extends Block {
             return true;
         }
 
-        return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+        return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);*/
     }
 
     public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity placer) {
@@ -87,4 +111,50 @@ public class TerraVaporCollectorBlock extends Block {
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(BlockStateProperties.FACING, BlockStateProperties.POWERED);
     }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        CompoundNBT tagCompound = stack.getTag();
+        if (tagCompound != null) {
+            CompoundNBT nbt = tagCompound.getCompound("tank");
+            FluidStack fluidStack = null;
+            if (!nbt.contains("Empty")) {
+                fluidStack = FluidStack.loadFluidStackFromNBT(nbt);
+            }
+            if (fluidStack == null) {
+                addInformationLocalized(tooltip, "message.netherendingenergy.tank", "empty");
+            } else {
+                String name = fluidStack.getTranslationKey();
+                addInformationLocalized(tooltip, "message.netherendingenergy.tank", name + " (" + fluidStack.getAmount() + ")");
+            }
+        }
+    }
+
+    protected void addInformationLocalized(List<ITextComponent> tooltip, String key, Object... parameters) {
+        String translated = I18n.format(key, parameters);
+        translated = COMPILE.matcher(translated).replaceAll("\u00a7");
+
+        Collections.addAll(tooltip.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList()), StringUtils.split(translated, "\n"));
+    }
+
+    @Override
+    public boolean isNormalCube(BlockState state, IBlockReader worldIn, BlockPos pos) {
+        return false;
+    }
+
+    public boolean isFullCube(BlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isSolid(BlockState state) {
+        return false;
+    }
+
+    /*    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void initModel() {
+        super.initModel();
+        ClientRegistry.bindTileEntitySpecialRenderer(TileTank.class, new TankTESR());
+    }*/
 }

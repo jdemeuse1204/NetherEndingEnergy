@@ -20,7 +20,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nullable;
 
-import static com.agrejus.netherendingenergy.blocks.ModBlocks.FIRSTTILE_CONTAINER;
+import static com.agrejus.netherendingenergy.blocks.ModBlocks.Test.FIRSTTILE_CONTAINER;
 
 public class FirstTileContainer extends Container {
 
@@ -94,7 +94,7 @@ public class FirstTileContainer extends Container {
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
-        return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerEntity, ModBlocks.FIRSTTILE);
+        return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerEntity, ModBlocks.Test.FIRSTTILE);
     }
 
     @Override
