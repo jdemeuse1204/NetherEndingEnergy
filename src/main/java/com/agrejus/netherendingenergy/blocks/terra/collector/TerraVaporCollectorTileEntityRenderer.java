@@ -47,7 +47,7 @@ public class TerraVaporCollectorTileEntityRenderer extends TileEntityRenderer<Te
             return;
         }
 
-        FluidStack fluid = new FluidStack(Fluids.LAVA.getStillFluid(), tank.getTank().getFluidAmount());
+        FluidStack fluid = new FluidStack(Fluids.LAVA.getStillFluid(), 3000);
         if (fluid == null) {
             return;
         }

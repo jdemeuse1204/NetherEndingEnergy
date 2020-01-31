@@ -40,7 +40,6 @@ import java.util.List;
 
 public class TerraVaporCollectorTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
 
-    private LazyOptional<IVaporStorage> vaporStorage = LazyOptional.of(this::createVapor);
     private LazyOptional<IFluidHandler> fluid = LazyOptional.of(this::createFluid);
     private List<CausticBellTile> surroundingCausticBells;
     private int counter;
@@ -195,9 +194,9 @@ public class TerraVaporCollectorTile extends TileEntity implements ITickableTile
         // When block is broken?
 
 
-        CompoundNBT energyTag = tag.getCompound("vapor");
+    /*    CompoundNBT energyTag = tag.getCompound("vapor");
         // Save energy when block is broken
-        vaporStorage.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(energyTag));
+        vaporStorage.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(energyTag));*/
         super.read(tag);
 
         tank.readFromNBT(tag.getCompound("tank"));
@@ -207,10 +206,10 @@ public class TerraVaporCollectorTile extends TileEntity implements ITickableTile
     public CompoundNBT write(CompoundNBT tag) {
 
         // Write energy when block is placed
-        vaporStorage.ifPresent(w -> {
+/*        vaporStorage.ifPresent(w -> {
             CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
             tag.put("vapor", compound);
-        });
+        });*/
 
         CompoundNBT tankNBT = new CompoundNBT();
         tank.writeToNBT(tankNBT);
@@ -243,9 +242,9 @@ public class TerraVaporCollectorTile extends TileEntity implements ITickableTile
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 
-        if (cap == CapabilityVapor.VAPOR) {
+/*        if (cap == CapabilityVapor.VAPOR) {
             return vaporStorage.cast();
-        }
+        }*/
 
         if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return LazyOptional.of(() -> (T) tank);

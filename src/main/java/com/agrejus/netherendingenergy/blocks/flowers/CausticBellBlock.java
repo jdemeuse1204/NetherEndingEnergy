@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.flowers;
 
 import com.agrejus.netherendingenergy.RegistryNames;
+import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -46,24 +47,7 @@ public class CausticBellBlock extends FlowerBlock {
 
     protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
         Block block = state.getBlock();
-        Material material = block.getMaterial(state);
-
-        // Overworld
-        if (block == Blocks.DIRT || material == Material.SAND || block == Blocks.GRAVEL || material == Material.WOOD || block == Blocks.COBBLESTONE) {
-            return true;
-        }
-
-        // Nether
-        if (block == Blocks.NETHERRACK || block == Blocks.SOUL_SAND || block == Blocks.NETHER_BRICKS || block == Blocks.GLOWSTONE) {
-            return true;
-        }
-
-        // End
-        if (block == Blocks.END_STONE || block == Blocks.PURPUR_BLOCK) {
-            return true;
-        }
-
-        return false;
+        return block == ModBlocks.TERRA_VAPOR_COLLECTOR_BLOCK;
     }
 
     @OnlyIn(Dist.CLIENT)
