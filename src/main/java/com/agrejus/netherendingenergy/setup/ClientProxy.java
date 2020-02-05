@@ -1,9 +1,10 @@
 package com.agrejus.netherendingenergy.setup;
 
 import com.agrejus.netherendingenergy.blocks.*;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorScreen;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorTile;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorTileEntityRenderer;
+import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineScreen;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorScreen;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorTile;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorTileEntityRenderer;
 import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorScreen;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerScreen;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreScreen;
@@ -21,14 +22,15 @@ public class ClientProxy implements IProxy {
     public void init() {
         ScreenManager.registerFactory(ModBlocks.TERRA_REACTOR_CORE_CONTAINER, TerraReactorCoreScreen::new);
         ScreenManager.registerFactory(ModBlocks.TERRA_FURNACE_GENERATOR_CONTAINER, TerraFurnaceGeneratorScreen::new);
-        ScreenManager.registerFactory(ModBlocks.TERRA_VAPOR_COLLECTOR_CONTAINER, TerraVaporCollectorScreen::new);
+        ScreenManager.registerFactory(ModBlocks.TERRA_ACID_COLLECTOR_CONTAINER, TerraAcidCollectorScreen::new);
         ScreenManager.registerFactory(ModBlocks.TERRA_MIXER_CONTAINER, TerraMixerScreen::new);
 
         ScreenManager.registerFactory(ModBlocks.Test.FIRSTTILE_CONTAINER, FirstTileScreen::new);
+        ScreenManager.registerFactory(ModBlocks.IMBUING_MACHINE_CONTAINER, ImbuingMachineScreen::new);
 
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileTank.class, new TankTESR());
-        ClientRegistry.bindTileEntitySpecialRenderer(TerraVaporCollectorTile.class, new TerraVaporCollectorTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TerraAcidCollectorTile.class, new TerraAcidCollectorTileEntityRenderer());
     }
 
     @Override

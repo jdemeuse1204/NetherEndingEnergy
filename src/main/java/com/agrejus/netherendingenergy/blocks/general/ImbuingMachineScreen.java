@@ -1,6 +1,8 @@
-package com.agrejus.netherendingenergy.blocks.terra.collector;
+package com.agrejus.netherendingenergy.blocks.general;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorContainer;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorTile;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -8,15 +10,13 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-public class TerraVaporCollectorScreen extends ContainerScreen<TerraVaporCollectorContainer> {
+public class ImbuingMachineScreen extends ContainerScreen<ImbuingMachineContainer>  {
 
-    private ResourceLocation GUI = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/terra_vapor_collector_gui.png");
+    private ResourceLocation GUI = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/imbuing_machine_gui.png");
 
-    public TerraVaporCollectorScreen(TerraVaporCollectorContainer container, PlayerInventory inv, ITextComponent name) {
+    public ImbuingMachineScreen(ImbuingMachineContainer container, PlayerInventory inv, ITextComponent name) {
         super(container, inv, name);
     }
-
-    // render, drawGuiContainerForegroundLayer, drawGuiContainerBackgroundLayer is standard code
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
@@ -25,16 +25,14 @@ public class TerraVaporCollectorScreen extends ContainerScreen<TerraVaporCollect
 
         // Tool Tip - Here would be the place for a custom tool tip
         this.renderHoveredToolTip(mouseX, mouseY);
+
+        this.drawEnergyBar(1000);
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-/*        this.font.drawString(this.title.getFormattedText(), 8.0F, 6.0F, 4210752);
-        this.font.drawString(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.ySize - 96 + 2), 4210752);
-        container.getVapor()*/
-        int vaporAmount = container.getVapor();
-        String text = String.format("Vapor of the Ordinary: %s mB", vaporAmount);
-        drawString(Minecraft.getInstance().fontRenderer, text, 10, 10, 0xffffff);
+
+        drawString(Minecraft.getInstance().fontRenderer, "Test", 6, 15, 0xffffff);
     }
 
     @Override
@@ -44,5 +42,15 @@ public class TerraVaporCollectorScreen extends ContainerScreen<TerraVaporCollect
         int relativeX = (this.width - this.xSize) / 2;
         int relativeY = (this.height - this.ySize) / 2;
         this.blit(relativeX, relativeY, 0, 0, this.xSize, this.ySize);
+    }
+
+    private void drawEnergyBar(int energy) {
+
+        //drawRect(guiLeft + 10, guiTop + 5, guiLeft + 112, guiTop + 15, 0xff555555);
+        int percentage = energy * 100 / 10000;
+        for (int i = 0 ; i < percentage ; i++) {
+
+            vLine(guiLeft + 10 + 1 + i, guiTop + 5, guiTop + 14, i % 2 == 0 ? 0xffff0000 : 0xff000000);
+        }
     }
 }

@@ -1,0 +1,18 @@
+{
+  "variants" : {
+    "imbued_material=diamond": { "model": "netherendingenergy:block/caustic_imbued_soil" },
+    "imbued_material=emerald": { "model": "netherendingenergy:block/caustic_imbued_soil" },
+    "imbued_material=lapis": { "model": "netherendingenergy:block/caustic_imbued_soil" },
+    "imbued_material=crystalized_vitrol": { "model": "netherendingenergy:block/caustic_imbued_soil" },
+
+    "imbued_material=nether_quartz": { "model": "netherendingenergy:block/caustic_imbued_soil" },
+    "imbued_material=glowstone": { "model": "netherendingenergy:block/caustic_imbued_soil" },
+    "imbued_material=nether_brick": { "model": "netherendingenergy:block/caustic_imbued_soil" },
+    "imbued_material=oily_heart": { "model": "netherendingenergy:block/caustic_imbued_soil" },
+
+    "imbued_material=purpur": { "model": "netherendingenergy:block/caustic_imbued_soil" },
+    "imbued_material=chorous_flower": { "model": "netherendingenergy:block/caustic_imbued_soil" },
+    "imbued_material=shulker_block": { "model": "netherendingenergy:block/caustic_imbued_soil" },
+    "imbued_material=enigmatic_growth": { "model": "netherendingenergy:block/caustic_imbued_soil" }
+  }
+}

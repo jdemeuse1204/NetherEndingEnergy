@@ -1,7 +1,6 @@
 package com.agrejus.netherendingenergy.blocks.terra.collector;
 
 import com.agrejus.netherendingenergy.RegistryNames;
-import javafx.geometry.Side;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -26,8 +25,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,14 +34,14 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class TerraVaporCollectorBlock extends Block {
+public class TerraAcidCollectorBlock extends Block {
 
-    public TerraVaporCollectorBlock() {
+    public TerraAcidCollectorBlock() {
         super(Properties.create(Material.IRON)
                 .sound(SoundType.WOOD)
-                .hardnessAndResistance(.01f)
+                .hardnessAndResistance(2.0f)
                 .lightValue(0));
-        setRegistryName(RegistryNames.TERRA_VAPOR_COLLECTOR);
+        setRegistryName(RegistryNames.TERRA_ACID_COLLECTOR);
     }
 
     private static final Pattern COMPILE = Pattern.compile("@", Pattern.LITERAL);
@@ -62,7 +59,7 @@ public class TerraVaporCollectorBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new TerraVaporCollectorTile();
+        return new TerraAcidCollectorTile();
     }
 
     @Override
@@ -81,17 +78,8 @@ public class TerraVaporCollectorBlock extends Block {
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
 
         if (!worldIn.isRemote) {
-            Direction side = hit.getFace();
-            FluidUtil.interactWithFluidHandler(player, handIn, worldIn, pos, side);
-        }
-        return true;
-
-/*        if (!worldIn.isRemote) {
             TileEntity tileEntity = worldIn.getTileEntity(pos);
 
-            Direction side = hit.getFace();
-            FluidUtil.interactWithFluidHandler(player, handIn, worldIn, pos, side);
-            super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
             if (tileEntity instanceof INamedContainerProvider) {
                 NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tileEntity, tileEntity.getPos());
             } else {
@@ -100,7 +88,7 @@ public class TerraVaporCollectorBlock extends Block {
             return true;
         }
 
-        return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);*/
+        return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
     }
 
     public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity placer) {
@@ -116,7 +104,7 @@ public class TerraVaporCollectorBlock extends Block {
     public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         CompoundNBT tagCompound = stack.getTag();
         if (tagCompound != null) {
-            CompoundNBT nbt = tagCompound.getCompound("tank");
+            CompoundNBT nbt = tagCompound.getCompound("output_tank");
             FluidStack fluidStack = null;
             if (!nbt.contains("Empty")) {
                 fluidStack = FluidStack.loadFluidStackFromNBT(nbt);
@@ -150,11 +138,4 @@ public class TerraVaporCollectorBlock extends Block {
     public boolean isSolid(BlockState state) {
         return false;
     }
-
-    /*    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void initModel() {
-        super.initModel();
-        ClientRegistry.bindTileEntitySpecialRenderer(TileTank.class, new TankTESR());
-    }*/
 }

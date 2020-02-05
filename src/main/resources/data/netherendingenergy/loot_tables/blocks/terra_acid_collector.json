@@ -17,8 +17,8 @@
               "source": "block_entity",
               "ops": [
                 {
-                  "source": "vapor",
-                  "target": "BlockEntityTag.vapor",
+                  "source": "input_tank",
+                  "target": "BlockEntityTag.input_tank",
                   "op": "replace"
                 }
               ]
@@ -28,8 +28,19 @@
               "source": "block_entity",
               "ops": [
                 {
-                  "source": "tank",
-                  "target": "BlockEntityTag.tank",
+                  "source": "output_tank",
+                  "target": "BlockEntityTag.output_tank",
+                  "op": "replace"
+                }
+              ]
+            },
+            {
+              "function": "minecraft:copy_nbt",
+              "source": "block_entity",
+              "ops": [
+                {
+                  "source": "inv",
+                  "target": "BlockEntityTag.inv",
                   "op": "replace"
                 }
               ]
@@ -44,7 +55,7 @@
               ]
             }
           ],
-          "name": "netherendingenergy:terra_vapor_collector"
+          "name": "netherendingenergy:terra_acid_collector"
         }
       ]
     }

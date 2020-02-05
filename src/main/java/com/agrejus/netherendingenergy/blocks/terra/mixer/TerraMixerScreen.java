@@ -1,7 +1,6 @@
 package com.agrejus.netherendingenergy.blocks.terra.mixer;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorContainer;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;

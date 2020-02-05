@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xxx",
+    " # ",
+    "xxx"
+  ],
+  "key": {
+    "x": {
+      "item": "netherendingenergy:firstblock"
+    },
+    "#": {
+      "tag": "forge:dyes/red"
+    }
+  },
+  "result": {
+    "item": "netherendingenergy:imbuing_machine"
+  }
+}

@@ -1,10 +1,10 @@
 {
   "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
   "textures": {
-    "terra_vapor_collector_2": "netherendingenergy:block/terra_vapor_collector_2",
-    "terra_vapor_collector_tank_glass": "netherendingenergy:block/terra_vapor_collector_tank_glass",
+    "terra_acid_collector_2": "netherendingenergy:block/terra_acid_collector_2",
+    "terra_acid_collector_tank_glass": "netherendingenergy:block/terra_acid_collector_tank_glass",
     "terra_heat_sink_2": "netherendingenergy:block/terra_heat_sink_2",
-    "terra_vapor_collector": "netherendingenergy:block/terra_vapor_collector"
+    "terra_acid_collector": "netherendingenergy:block/terra_acid_collector"
   },
   "display": {
     "gui": {
@@ -44,10 +44,10 @@
       "from": [ 0, 1, 0 ],
       "to": [ 1, 16, 1 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector_2", "uv": [ 4, 0, 5, 15 ] },
-        "east": { "texture": "#terra_vapor_collector_2", "uv": [ 2, 0, 3, 15 ] },
-        "south": { "texture": "#terra_vapor_collector_2", "uv": [ 15, 0, 16, 15 ] },
-        "west": { "texture": "#terra_vapor_collector_2", "uv": [ 7, 0, 8, 15 ] },
+        "north": { "texture": "#terra_acid_collector_2", "uv": [ 4, 0, 5, 15 ] },
+        "east": { "texture": "#terra_acid_collector_2", "uv": [ 2, 0, 3, 15 ] },
+        "south": { "texture": "#terra_acid_collector_2", "uv": [ 15, 0, 16, 15 ] },
+        "west": { "texture": "#terra_acid_collector_2", "uv": [ 7, 0, 8, 15 ] },
         "up": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 1 ] }
       }
     },
@@ -56,10 +56,10 @@
       "from": [ 15, 1, 0 ],
       "to": [ 16, 16, 1 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector_2", "uv": [ 2, 0, 3, 15 ] },
-        "east": { "texture": "#terra_vapor_collector_2", "uv": [ 4, 0, 5, 15 ] },
-        "south": { "texture": "#terra_vapor_collector_2", "uv": [ 15, 0, 16, 15 ] },
-        "west": { "texture": "#terra_vapor_collector_2", "uv": [ 6, 0, 7, 15 ] },
+        "north": { "texture": "#terra_acid_collector_2", "uv": [ 2, 0, 3, 15 ] },
+        "east": { "texture": "#terra_acid_collector_2", "uv": [ 4, 0, 5, 15 ] },
+        "south": { "texture": "#terra_acid_collector_2", "uv": [ 15, 0, 16, 15 ] },
+        "west": { "texture": "#terra_acid_collector_2", "uv": [ 6, 0, 7, 15 ] },
         "up": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 1 ] }
       }
     },
@@ -68,10 +68,10 @@
       "from": [ 0, 1, 15 ],
       "to": [ 1, 16, 16 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector_2", "uv": [ 4, 0, 5, 15 ] },
-        "east": { "texture": "#terra_vapor_collector_2", "uv": [ 2, 0, 3, 15 ] },
-        "south": { "texture": "#terra_vapor_collector_2", "uv": [ 6, 0, 7, 15 ] },
-        "west": { "texture": "#terra_vapor_collector_2", "uv": [ 15, 0, 16, 15 ] },
+        "north": { "texture": "#terra_acid_collector_2", "uv": [ 4, 0, 5, 15 ] },
+        "east": { "texture": "#terra_acid_collector_2", "uv": [ 2, 0, 3, 15 ] },
+        "south": { "texture": "#terra_acid_collector_2", "uv": [ 6, 0, 7, 15 ] },
+        "west": { "texture": "#terra_acid_collector_2", "uv": [ 15, 0, 16, 15 ] },
         "up": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 1 ] }
       }
     },
@@ -80,10 +80,10 @@
       "from": [ 15, 1, 15 ],
       "to": [ 16, 16, 16 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 0, 1, 15 ] },
-        "east": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 0, 1, 15 ] },
-        "south": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 0, 1, 15 ] },
-        "west": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 0, 1, 15 ] },
+        "north": { "texture": "#terra_acid_collector_2", "uv": [ 0, 0, 1, 15 ] },
+        "east": { "texture": "#terra_acid_collector_2", "uv": [ 0, 0, 1, 15 ] },
+        "south": { "texture": "#terra_acid_collector_2", "uv": [ 0, 0, 1, 15 ] },
+        "west": { "texture": "#terra_acid_collector_2", "uv": [ 0, 0, 1, 15 ] },
         "up": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 1, 1 ] }
       }
     },
@@ -105,12 +105,12 @@
       "from": [ 6, 11, 6 ],
       "to": [ 10, 12, 10 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector", "uv": [ 7, 8, 11, 9 ] },
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 7, 8, 11, 9 ] },
-        "south": { "texture": "#terra_vapor_collector", "uv": [ 7, 8, 11, 9 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 7, 8, 11, 9 ] },
-        "up": { "texture": "#terra_vapor_collector", "uv": [ 1, 5, 5, 9 ] },
-        "down": { "texture": "#terra_vapor_collector", "uv": [ 1, 5, 5, 9 ] }
+        "north": { "texture": "#terra_acid_collector", "uv": [ 7, 8, 11, 9 ] },
+        "east": { "texture": "#terra_acid_collector", "uv": [ 7, 8, 11, 9 ] },
+        "south": { "texture": "#terra_acid_collector", "uv": [ 7, 8, 11, 9 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 7, 8, 11, 9 ] },
+        "up": { "texture": "#terra_acid_collector", "uv": [ 1, 5, 5, 9 ] },
+        "down": { "texture": "#terra_acid_collector", "uv": [ 1, 5, 5, 9 ] }
       }
     },
     {
@@ -118,12 +118,12 @@
       "from": [ 6, 12, 5 ],
       "to": [ 10, 16, 6 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector", "uv": [ 1, 4, 5, 8 ] },
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 4, 4, 5, 8 ] },
-        "south": { "texture": "#terra_vapor_collector", "uv": [ 1, 5, 5, 9 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 4, 4, 5, 8 ] },
-        "up": { "texture": "#terra_vapor_collector", "uv": [ 6, 5, 10, 6 ] },
-        "down": { "texture": "#terra_vapor_collector", "uv": [ 1, 6, 5, 7 ] }
+        "north": { "texture": "#terra_acid_collector", "uv": [ 1, 4, 5, 8 ] },
+        "east": { "texture": "#terra_acid_collector", "uv": [ 4, 4, 5, 8 ] },
+        "south": { "texture": "#terra_acid_collector", "uv": [ 1, 5, 5, 9 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 4, 4, 5, 8 ] },
+        "up": { "texture": "#terra_acid_collector", "uv": [ 6, 5, 10, 6 ] },
+        "down": { "texture": "#terra_acid_collector", "uv": [ 1, 6, 5, 7 ] }
       }
     },
     {
@@ -131,12 +131,12 @@
       "from": [ 6, 12, 10 ],
       "to": [ 10, 16, 11 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector", "uv": [ 1, 5, 5, 9 ] },
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 4, 4, 5, 8 ] },
-        "south": { "texture": "#terra_vapor_collector", "uv": [ 1, 4, 5, 8 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 1, 4, 2, 8 ] },
-        "up": { "texture": "#terra_vapor_collector", "uv": [ 7, 5, 11, 6 ] },
-        "down": { "texture": "#terra_vapor_collector", "uv": [ 7, 8, 11, 9 ] }
+        "north": { "texture": "#terra_acid_collector", "uv": [ 1, 5, 5, 9 ] },
+        "east": { "texture": "#terra_acid_collector", "uv": [ 4, 4, 5, 8 ] },
+        "south": { "texture": "#terra_acid_collector", "uv": [ 1, 4, 5, 8 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 1, 4, 2, 8 ] },
+        "up": { "texture": "#terra_acid_collector", "uv": [ 7, 5, 11, 6 ] },
+        "down": { "texture": "#terra_acid_collector", "uv": [ 7, 8, 11, 9 ] }
       }
     },
     {
@@ -144,12 +144,12 @@
       "from": [ 5, 12, 6 ],
       "to": [ 6, 16, 10 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector", "uv": [ 4, 4, 5, 8 ] },
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 1, 5, 5, 9 ] },
-        "south": { "texture": "#terra_vapor_collector", "uv": [ 1, 4, 2, 8 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 1, 4, 5, 8 ] },
-        "up": { "texture": "#terra_vapor_collector", "uv": [ 13, 9, 14, 13 ] },
-        "down": { "texture": "#terra_vapor_collector", "uv": [ 2, 5, 3, 9 ] }
+        "north": { "texture": "#terra_acid_collector", "uv": [ 4, 4, 5, 8 ] },
+        "east": { "texture": "#terra_acid_collector", "uv": [ 1, 5, 5, 9 ] },
+        "south": { "texture": "#terra_acid_collector", "uv": [ 1, 4, 2, 8 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 1, 4, 5, 8 ] },
+        "up": { "texture": "#terra_acid_collector", "uv": [ 13, 9, 14, 13 ] },
+        "down": { "texture": "#terra_acid_collector", "uv": [ 2, 5, 3, 9 ] }
       }
     },
     {
@@ -157,12 +157,12 @@
       "from": [ 10, 12, 6 ],
       "to": [ 11, 16, 10 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector", "uv": [ 4, 4, 5, 8 ] },
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 1, 4, 5, 8 ] },
-        "south": { "texture": "#terra_vapor_collector", "uv": [ 1, 4, 2, 8 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 1, 5, 5, 9 ] },
-        "up": { "texture": "#terra_vapor_collector", "uv": [ 13, 10, 14, 14 ] },
-        "down": { "texture": "#terra_vapor_collector", "uv": [ 3, 5, 4, 9 ] }
+        "north": { "texture": "#terra_acid_collector", "uv": [ 4, 4, 5, 8 ] },
+        "east": { "texture": "#terra_acid_collector", "uv": [ 1, 4, 5, 8 ] },
+        "south": { "texture": "#terra_acid_collector", "uv": [ 1, 4, 2, 8 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 1, 5, 5, 9 ] },
+        "up": { "texture": "#terra_acid_collector", "uv": [ 13, 10, 14, 14 ] },
+        "down": { "texture": "#terra_acid_collector", "uv": [ 3, 5, 4, 9 ] }
       }
     },
     {
@@ -170,11 +170,11 @@
       "from": [ 7, 9, 7 ],
       "to": [ 9, 11, 9 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector", "uv": [ 14, 4, 16, 6 ] },
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 14, 10, 16, 12 ] },
-        "south": { "texture": "#terra_vapor_collector", "uv": [ 14, 4, 16, 6 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 12, 10, 14, 12 ] },
-        "down": { "texture": "#terra_vapor_collector", "uv": [ 13, 12, 15, 14 ] }
+        "north": { "texture": "#terra_acid_collector", "uv": [ 14, 4, 16, 6 ] },
+        "east": { "texture": "#terra_acid_collector", "uv": [ 14, 10, 16, 12 ] },
+        "south": { "texture": "#terra_acid_collector", "uv": [ 14, 4, 16, 6 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 12, 10, 14, 12 ] },
+        "down": { "texture": "#terra_acid_collector", "uv": [ 13, 12, 15, 14 ] }
       }
     },
     {
@@ -182,12 +182,12 @@
       "from": [ 7, 8, 8 ],
       "to": [ 9, 10, 13 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector", "uv": [ 14, 4, 16, 6 ] },
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 4, 0, 9, 2 ] },
-        "south": { "texture": "#terra_vapor_collector", "uv": [ 12, 11, 14, 13 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 6, 2, 11, 4 ] },
-        "up": { "texture": "#terra_vapor_collector", "uv": [ 12, 5, 14, 10 ] },
-        "down": { "texture": "#terra_vapor_collector", "uv": [ 14, 11, 16, 16 ] }
+        "north": { "texture": "#terra_acid_collector", "uv": [ 14, 4, 16, 6 ] },
+        "east": { "texture": "#terra_acid_collector", "uv": [ 4, 0, 9, 2 ] },
+        "south": { "texture": "#terra_acid_collector", "uv": [ 12, 11, 14, 13 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 6, 2, 11, 4 ] },
+        "up": { "texture": "#terra_acid_collector", "uv": [ 12, 5, 14, 10 ] },
+        "down": { "texture": "#terra_acid_collector", "uv": [ 14, 11, 16, 16 ] }
       }
     },
     {
@@ -195,12 +195,12 @@
       "from": [ 8, 7, 12 ],
       "to": [ 13, 9, 14 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector", "uv": [ 0, 0, 5, 2 ] },
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 14, 2, 16, 4 ] },
-        "south": { "texture": "#terra_vapor_collector", "uv": [ 6, 2, 11, 4 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 12, 4, 14, 6 ] },
-        "up": { "texture": "#terra_vapor_collector", "uv": [ 2, 1, 7, 3 ] },
-        "down": { "texture": "#terra_vapor_collector", "uv": [ 8, 2, 13, 4 ] }
+        "north": { "texture": "#terra_acid_collector", "uv": [ 0, 0, 5, 2 ] },
+        "east": { "texture": "#terra_acid_collector", "uv": [ 14, 2, 16, 4 ] },
+        "south": { "texture": "#terra_acid_collector", "uv": [ 6, 2, 11, 4 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 12, 4, 14, 6 ] },
+        "up": { "texture": "#terra_acid_collector", "uv": [ 2, 1, 7, 3 ] },
+        "down": { "texture": "#terra_acid_collector", "uv": [ 8, 2, 13, 4 ] }
       }
     },
     {
@@ -208,11 +208,11 @@
       "from": [ 12, 6, 10 ],
       "to": [ 14, 8, 13 ],
       "faces": {
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 4, 1, 7, 3 ] },
-        "south": { "texture": "#terra_vapor_collector", "uv": [ 13, 1, 15, 3 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 6, 1, 9, 3 ] },
-        "up": { "texture": "#terra_vapor_collector", "uv": [ 13, 9, 15, 12 ] },
-        "down": { "texture": "#terra_vapor_collector", "uv": [ 13, 4, 15, 7 ] }
+        "east": { "texture": "#terra_acid_collector", "uv": [ 4, 1, 7, 3 ] },
+        "south": { "texture": "#terra_acid_collector", "uv": [ 13, 1, 15, 3 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 6, 1, 9, 3 ] },
+        "up": { "texture": "#terra_acid_collector", "uv": [ 13, 9, 15, 12 ] },
+        "down": { "texture": "#terra_acid_collector", "uv": [ 13, 4, 15, 7 ] }
       }
     },
     {
@@ -220,11 +220,11 @@
       "from": [ 1, 1, 1 ],
       "to": [ 7, 5, 7 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 1, 6, 5 ] },
-        "east": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 2, 6, 6 ] },
-        "south": { "texture": "#terra_vapor_collector_2", "uv": [ 1, 11, 7, 15 ] },
-        "west": { "texture": "#terra_vapor_collector_2", "uv": [ 9, 8, 15, 12 ] },
-        "up": { "texture": "#terra_vapor_collector", "uv": [ 0, 10, 6, 16 ] }
+        "north": { "texture": "#terra_acid_collector_2", "uv": [ 0, 1, 6, 5 ] },
+        "east": { "texture": "#terra_acid_collector_2", "uv": [ 0, 2, 6, 6 ] },
+        "south": { "texture": "#terra_acid_collector_2", "uv": [ 1, 11, 7, 15 ] },
+        "west": { "texture": "#terra_acid_collector_2", "uv": [ 9, 8, 15, 12 ] },
+        "up": { "texture": "#terra_acid_collector", "uv": [ 0, 10, 6, 16 ] }
       }
     },
     {
@@ -236,8 +236,8 @@
         "east": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 4, 8 ] },
         "south": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 4, 8 ] },
         "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 0, 4, 8 ] },
-        "up": { "texture": "#terra_vapor_collector", "uv": [ 8, 10, 12, 14 ] },
-        "down": { "texture": "#terra_vapor_collector", "uv": [ 0, 10, 4, 14 ] }
+        "up": { "texture": "#terra_acid_collector", "uv": [ 8, 10, 12, 14 ] },
+        "down": { "texture": "#terra_acid_collector", "uv": [ 0, 10, 4, 14 ] }
       }
     },
     {
@@ -245,10 +245,10 @@
       "from": [ 7, 2, 2 ],
       "to": [ 10, 4, 4 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector", "uv": [ 4, 1, 7, 3 ] },
-        "south": { "texture": "#terra_vapor_collector", "uv": [ 0, 0, 3, 2 ] },
-        "up": { "texture": "#terra_vapor_collector", "uv": [ 8, 2, 11, 4 ] },
-        "down": { "texture": "#terra_vapor_collector", "uv": [ 6, 1, 9, 3 ] }
+        "north": { "texture": "#terra_acid_collector", "uv": [ 4, 1, 7, 3 ] },
+        "south": { "texture": "#terra_acid_collector", "uv": [ 0, 0, 3, 2 ] },
+        "up": { "texture": "#terra_acid_collector", "uv": [ 8, 2, 11, 4 ] },
+        "down": { "texture": "#terra_acid_collector", "uv": [ 6, 1, 9, 3 ] }
       }
     },
     {
@@ -256,10 +256,10 @@
       "from": [ 2, 5, 2 ],
       "to": [ 4, 7, 4 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector", "uv": [ 13, 11, 15, 13 ] },
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 13, 7, 15, 9 ] },
-        "south": { "texture": "#terra_vapor_collector", "uv": [ 12, 13, 14, 15 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 13, 9, 15, 11 ] }
+        "north": { "texture": "#terra_acid_collector", "uv": [ 13, 11, 15, 13 ] },
+        "east": { "texture": "#terra_acid_collector", "uv": [ 13, 7, 15, 9 ] },
+        "south": { "texture": "#terra_acid_collector", "uv": [ 12, 13, 14, 15 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 13, 9, 15, 11 ] }
       }
     },
     {
@@ -267,11 +267,11 @@
       "from": [ 2, 11, 5 ],
       "to": [ 4, 13, 10 ],
       "faces": {
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 6, 1, 11, 3 ] },
-        "south": { "texture": "#terra_vapor_collector", "uv": [ 12, 5, 14, 7 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 4, 1, 9, 3 ] },
-        "up": { "texture": "#terra_vapor_collector", "uv": [ 12, 9, 14, 14 ] },
-        "down": { "texture": "#terra_vapor_collector", "uv": [ 12, 5, 14, 10 ] }
+        "east": { "texture": "#terra_acid_collector", "uv": [ 6, 1, 11, 3 ] },
+        "south": { "texture": "#terra_acid_collector", "uv": [ 12, 5, 14, 7 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 4, 1, 9, 3 ] },
+        "up": { "texture": "#terra_acid_collector", "uv": [ 12, 9, 14, 14 ] },
+        "down": { "texture": "#terra_acid_collector", "uv": [ 12, 5, 14, 10 ] }
       }
     },
     {
@@ -279,11 +279,11 @@
       "from": [ 2, 10, 9 ],
       "to": [ 4, 12, 11 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector", "uv": [ 13, 7, 15, 9 ] },
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 14, 0, 16, 2 ] },
-        "south": { "texture": "#terra_vapor_collector", "uv": [ 12, 6, 14, 8 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 14, 1, 16, 3 ] },
-        "up": { "texture": "#terra_vapor_collector", "uv": [ 12, 3, 14, 5 ] }
+        "north": { "texture": "#terra_acid_collector", "uv": [ 13, 7, 15, 9 ] },
+        "east": { "texture": "#terra_acid_collector", "uv": [ 14, 0, 16, 2 ] },
+        "south": { "texture": "#terra_acid_collector", "uv": [ 12, 6, 14, 8 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 14, 1, 16, 3 ] },
+        "up": { "texture": "#terra_acid_collector", "uv": [ 12, 3, 14, 5 ] }
       }
     },
     {
@@ -293,8 +293,8 @@
       "faces": {
         "east": { "texture": "#terra_heat_sink_2", "uv": [ 0, 11, 14, 12 ] },
         "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 2, 14, 3 ] },
-        "up": { "texture": "#terra_vapor_collector_2", "uv": [ 2, 0, 3, 14 ] },
-        "down": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 0, 1, 14 ] }
+        "up": { "texture": "#terra_acid_collector_2", "uv": [ 2, 0, 3, 14 ] },
+        "down": { "texture": "#terra_acid_collector_2", "uv": [ 0, 0, 1, 14 ] }
       }
     },
     {
@@ -315,8 +315,8 @@
       "faces": {
         "east": { "texture": "#terra_heat_sink_2", "uv": [ 0, 2, 14, 3 ] },
         "west": { "texture": "#terra_heat_sink_2", "uv": [ 0, 4, 14, 5 ] },
-        "up": { "texture": "#terra_vapor_collector_2", "uv": [ 2, 0, 3, 14 ] },
-        "down": { "texture": "#terra_vapor_collector_2", "uv": [ 0, 1, 1, 15 ] }
+        "up": { "texture": "#terra_acid_collector_2", "uv": [ 2, 0, 3, 14 ] },
+        "down": { "texture": "#terra_acid_collector_2", "uv": [ 0, 1, 1, 15 ] }
       }
     },
     {
@@ -335,8 +335,8 @@
       "from": [ 5, 10, 8 ],
       "to": [ 5, 12, 9 ],
       "faces": {
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 3, 4, 4, 6 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 2, 5, 3, 7 ] }
+        "east": { "texture": "#terra_acid_collector", "uv": [ 3, 4, 4, 6 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 2, 5, 3, 7 ] }
       }
     },
     {
@@ -344,8 +344,8 @@
       "from": [ 11, 10, 7 ],
       "to": [ 11, 12, 8 ],
       "faces": {
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 4, 6, 5, 8 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 10, 7, 11, 9 ] }
+        "east": { "texture": "#terra_acid_collector", "uv": [ 4, 6, 5, 8 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 10, 7, 11, 9 ] }
       }
     },
     {
@@ -397,8 +397,8 @@
       "from": [ 15, 1, 1 ],
       "to": [ 16, 9, 9 ],
       "faces": {
-        "east": { "texture": "#terra_vapor_collector_tank_glass", "uv": [ 0, 0, 8, 8 ] },
-        "west": { "texture": "#terra_vapor_collector_tank_glass", "uv": [ 0, 0, 8, 8 ] }
+        "east": { "texture": "#terra_acid_collector_tank_glass", "uv": [ 0, 0, 8, 8 ] },
+        "west": { "texture": "#terra_acid_collector_tank_glass", "uv": [ 0, 0, 8, 8 ] }
       }
     },
     {
@@ -449,8 +449,8 @@
       "from": [ 0, 1, 9 ],
       "to": [ 1, 9, 15 ],
       "faces": {
-        "east": { "texture": "#terra_vapor_collector_tank_glass", "uv": [ 0, 0, 6, 8 ] },
-        "west": { "texture": "#terra_vapor_collector_tank_glass", "uv": [ 0, 0, 6, 8 ] }
+        "east": { "texture": "#terra_acid_collector_tank_glass", "uv": [ 0, 0, 6, 8 ] },
+        "west": { "texture": "#terra_acid_collector_tank_glass", "uv": [ 0, 0, 6, 8 ] }
       }
     },
     {
@@ -458,10 +458,10 @@
       "from": [ 2, 8, 9 ],
       "to": [ 4, 9, 11 ],
       "faces": {
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 14, 0, 16, 1 ] },
-        "south": { "texture": "#terra_vapor_collector", "uv": [ 12, 6, 14, 7 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 14, 1, 16, 2 ] },
-        "down": { "texture": "#terra_vapor_collector", "uv": [ 0, 0, 2, 2 ] }
+        "east": { "texture": "#terra_acid_collector", "uv": [ 14, 0, 16, 1 ] },
+        "south": { "texture": "#terra_acid_collector", "uv": [ 12, 6, 14, 7 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 14, 1, 16, 2 ] },
+        "down": { "texture": "#terra_acid_collector", "uv": [ 0, 0, 2, 2 ] }
       }
     },
     {
@@ -469,11 +469,11 @@
       "from": [ 12, 6, 8 ],
       "to": [ 14, 8, 9 ],
       "faces": {
-        "north": { "texture": "#terra_vapor_collector", "uv": [ 12, 2, 14, 4 ] },
-        "east": { "texture": "#terra_vapor_collector", "uv": [ 4, 1, 5, 3 ] },
-        "west": { "texture": "#terra_vapor_collector", "uv": [ 6, 1, 7, 3 ] },
-        "up": { "texture": "#terra_vapor_collector", "uv": [ 13, 9, 15, 10 ] },
-        "down": { "texture": "#terra_vapor_collector", "uv": [ 13, 4, 15, 5 ] }
+        "north": { "texture": "#terra_acid_collector", "uv": [ 12, 2, 14, 4 ] },
+        "east": { "texture": "#terra_acid_collector", "uv": [ 4, 1, 5, 3 ] },
+        "west": { "texture": "#terra_acid_collector", "uv": [ 6, 1, 7, 3 ] },
+        "up": { "texture": "#terra_acid_collector", "uv": [ 13, 9, 15, 10 ] },
+        "down": { "texture": "#terra_acid_collector", "uv": [ 13, 4, 15, 5 ] }
       }
     }
   ]

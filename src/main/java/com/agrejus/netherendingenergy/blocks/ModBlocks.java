@@ -7,9 +7,13 @@ import com.agrejus.netherendingenergy.blocks.base.reactor.redstoneport.ReactorRe
 import com.agrejus.netherendingenergy.blocks.chaotic.heatsink.ChaoticHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorBlock;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorContainer;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraVaporCollectorTile;
+import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineBlock;
+import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineContainer;
+import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineTile;
+import com.agrejus.netherendingenergy.blocks.soil.CausticImbuedSoil;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorBlock;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorContainer;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorTile;
 import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorBlock;
 import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorContainer;
 import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorTile;
@@ -39,6 +43,9 @@ public class ModBlocks {
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_MACHINE_CASING)
     public static TerraMachineCasingBlock TERRA_MACHINE_CASING_BLOCK;
 
+    @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_IMBUED_SOIL)
+    public static CausticImbuedSoil CAUSTIC_IMBUED_SOIL_BLOCK;
+
     /* Heat Sink */
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_HEAT_SINK)
     public static TerraHeatSinkBlock TERRA_HEAT_SINK_BLOCK;
@@ -63,13 +70,21 @@ public class ModBlocks {
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_FURNACE_GENERATOR)
     public static ContainerType<TerraFurnaceGeneratorContainer> TERRA_FURNACE_GENERATOR_CONTAINER;
 
+    /* Imbuing Machine */
+    @ObjectHolder("netherendingenergy:" + RegistryNames.IMBUING_MACHINE)
+    public static ImbuingMachineBlock IMBUING_MACHINE_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.IMBUING_MACHINE)
+    public static TileEntityType<ImbuingMachineTile> IMBUING_MACHINE_TILE;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.IMBUING_MACHINE)
+    public static ContainerType<ImbuingMachineContainer> IMBUING_MACHINE_CONTAINER;
+
     /* Vapor Collector */
-    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_VAPOR_COLLECTOR)
-    public static TerraVaporCollectorBlock TERRA_VAPOR_COLLECTOR_BLOCK;
-    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_VAPOR_COLLECTOR)
-    public static TileEntityType<TerraVaporCollectorTile> TERRA_VAPOR_COLLECTOR_TILE;
-    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_VAPOR_COLLECTOR)
-    public static ContainerType<TerraVaporCollectorContainer> TERRA_VAPOR_COLLECTOR_CONTAINER;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_ACID_COLLECTOR)
+    public static TerraAcidCollectorBlock TERRA_ACID_COLLECTOR_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_ACID_COLLECTOR)
+    public static TileEntityType<TerraAcidCollectorTile> TERRA_ACID_COLLECTOR_TILE;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_ACID_COLLECTOR)
+    public static ContainerType<TerraAcidCollectorContainer> TERRA_ACID_COLLECTOR_CONTAINER;
 
     /* Mixer */
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_MIXER)
