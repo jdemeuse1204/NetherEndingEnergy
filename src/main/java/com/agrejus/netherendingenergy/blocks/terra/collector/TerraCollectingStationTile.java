@@ -3,10 +3,10 @@ package com.agrejus.netherendingenergy.blocks.terra.collector;
 import com.agrejus.netherendingenergy.Capabilities;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
+import com.agrejus.netherendingenergy.common.Ratio;
 import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluids;
@@ -37,7 +37,13 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TerraAcidCollectorTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public class TerraCollectingStationTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+
+    public TerraCollectingStationTile() {
+
+        super(ModBlocks.TERRA_COLLECTING_STATION_TILE);
+        bufferSize = 0;
+    }
 
     private int tickCounter;
     private int tickProcessCounter;
@@ -46,8 +52,8 @@ public class TerraAcidCollectorTile extends TileEntity implements ITickableTileE
     public static final String INPUT_TANK_NAME = "INPUT";
     public static final String OUTPUT_TANK_NAME = "OUTPUT";
 
-    // how much input produces 1 output?  Ratio = 5:1
-    private final int[] processRatio = new int[]{6, 1};
+    // how much input produces 1 output?  Ratio = 6:1
+    private int bufferSize;
 
     private LazyOptional<IItemHandler> itemHandler = LazyOptional.of(() -> this.createHandler(this));
     private NEEFluidTank inputTank = new NEEFluidTank(INPUT_TANK_NAME, 1000) {
@@ -67,12 +73,17 @@ public class TerraAcidCollectorTile extends TileEntity implements ITickableTileE
         }
     };
 
-    private IItemHandler createHandler(TerraAcidCollectorTile tile) {
+    private IItemHandler createHandler(TerraCollectingStationTile tile) {
         return new ItemStackHandler(1) {
 
             @Override
             public int getSlotLimit(int slot) {
                 return 1;
+            }
+
+            @Override
+            public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
+                super.setStackInSlot(slot, stack);
             }
 
             @Override
@@ -118,20 +129,12 @@ public class TerraAcidCollectorTile extends TileEntity implements ITickableTileE
         };
     }
 
-    public TerraAcidCollectorTile() {
-        super(ModBlocks.TERRA_ACID_COLLECTOR_TILE);
-    }
-
     public NEEFluidTank getInputTank() {
         return inputTank;
     }
 
     public NEEFluidTank getOutputTank() {
         return outputTank;
-    }
-
-    public Item getGrowthMedium() {
-        return this.growthMedium;
     }
 
     public boolean hasGrowthMedium() {
@@ -161,8 +164,6 @@ public class TerraAcidCollectorTile extends TileEntity implements ITickableTileE
         boolean shouldMarkDirtyAndUpdateBlock = false;
         boolean canProcessInputTankFill = false;
         boolean canProcessOutputTankFill = false;
-        int amountNeededToProcess = processRatio[0];
-        int resultingProcessAmount = processRatio[1];
 
         // check to see if we can process input tank filling
         if (tickCounter > 0) {
@@ -188,21 +189,26 @@ public class TerraAcidCollectorTile extends TileEntity implements ITickableTileE
             if (aboveTileEntity instanceof CausticBellTile) {
                 CausticBellTile bell = (CausticBellTile) aboveTileEntity;
 
-                int strength = bell.getStrength();
-                int yield = bell.getYield(); // mB
-                int purity = bell.getPurity();
-                int toAdd = (strength * yield) * purity;
-                int resolvedAmount = inputTank.resolveFillAmount(toAdd);
+                // This is a problem if the flower ever changes, introduce mixing?
+                this.bufferSize = bell.getYield(); // mB
+                Ratio strength = bell.getStrengthRatio();
+                Ratio purity = bell.getPurityRatio();
+                Ratio burnTimeAugment = bell.getBurnTimeAugmentRatio();
+
+                Ratio amount = Ratio.addMany(strength, purity, burnTimeAugment);
+
+                int resolvedAmount = inputTank.resolveFillAmount(1);
 
                 inputTank.fill(new FluidStack(Fluids.LAVA.getStillFluid(), resolvedAmount), IFluidHandler.FluidAction.EXECUTE);
                 shouldMarkDirtyAndUpdateBlock = true;
             }
         }
 
-        if (canProcessOutputTankFill && this.canProcessInputFluid(amountNeededToProcess) && outputTank.canFill() == true) {
+        if (canProcessOutputTankFill && bufferSize > 0 && this.canProcessInputFluid(bufferSize) && outputTank.canFill() == true) {
 
             // Make sure we have enough to drain
-            int resolvedInputDrainAmount = inputTank.resolveDrainAmount(amountNeededToProcess);
+            int resultingProcessAmount = 1;
+            int resolvedInputDrainAmount = inputTank.resolveDrainAmount(bufferSize);
 
             if (resolvedInputDrainAmount > 0) {
                 inputTank.drain(resolvedInputDrainAmount, IFluidHandler.FluidAction.EXECUTE);
@@ -328,6 +334,6 @@ public class TerraAcidCollectorTile extends TileEntity implements ITickableTileE
     @Nullable
     @Override
     public Container createMenu(int worldId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new TerraAcidCollectorContainer(worldId, world, pos, playerInventory, playerEntity);
+        return new TerraCollectingStationContainer(worldId, world, pos, playerInventory, playerEntity);
     }
 }

@@ -2,7 +2,7 @@ package com.agrejus.netherendingenergy.blocks.flowers;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorTile;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -17,7 +17,6 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -56,13 +55,13 @@ public class CausticBellBlock extends FlowerBlock {
         Block block = state.getBlock();
         TileEntity tileEntity = worldIn.getTileEntity(pos);
 
-        if (!(tileEntity instanceof TerraAcidCollectorTile)) {
+        if (!(tileEntity instanceof TerraCollectingStationTile)) {
             return false;
         }
 
-        TerraAcidCollectorTile collector = (TerraAcidCollectorTile)tileEntity;
+        TerraCollectingStationTile collector = (TerraCollectingStationTile)tileEntity;
 
-        return block == ModBlocks.TERRA_ACID_COLLECTOR_BLOCK && collector.hasGrowthMedium();
+        return block == ModBlocks.TERRA_COLLECTING_STATION_BLOCK && collector.hasGrowthMedium();
     }
 
     @OnlyIn(Dist.CLIENT)

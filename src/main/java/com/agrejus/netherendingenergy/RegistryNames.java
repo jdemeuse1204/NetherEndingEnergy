@@ -9,7 +9,7 @@ public class RegistryNames {
     public static final String TERRA_HEAT_SINK = "terra_heat_sink";
     public static final String TERRA_REACTOR_CORE = "terra_reactor_core";
     public static final String TERRA_FURNACE_GENERATOR = "terra_furnace_generator";
-    public static final String TERRA_ACID_COLLECTOR = "terra_acid_collector";
+    public static final String TERRA_COLLECTING_STATION = "terra_collecting_station";
     public static final String TERRA_MIXER = "terra_mixer";
 
     /* Abyssal */

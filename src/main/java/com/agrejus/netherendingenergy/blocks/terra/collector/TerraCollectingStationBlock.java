@@ -34,14 +34,14 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class TerraAcidCollectorBlock extends Block {
+public class TerraCollectingStationBlock extends Block {
 
-    public TerraAcidCollectorBlock() {
+    public TerraCollectingStationBlock() {
         super(Properties.create(Material.IRON)
                 .sound(SoundType.WOOD)
                 .hardnessAndResistance(2.0f)
                 .lightValue(0));
-        setRegistryName(RegistryNames.TERRA_ACID_COLLECTOR);
+        setRegistryName(RegistryNames.TERRA_COLLECTING_STATION);
     }
 
     private static final Pattern COMPILE = Pattern.compile("@", Pattern.LITERAL);
@@ -59,7 +59,7 @@ public class TerraAcidCollectorBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new TerraAcidCollectorTile();
+        return new TerraCollectingStationTile();
     }
 
     @Override

@@ -1,118 +1,53 @@
 package com.agrejus.netherendingenergy.blocks.flowers;
 
-import com.agrejus.netherendingenergy.Capabilities;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
-import com.agrejus.netherendingenergy.blocks.soil.CausticImbuedSoil;
-import com.agrejus.netherendingenergy.blocks.soil.ImbueMaterial;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorTile;
-import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
-import com.agrejus.netherendingenergy.tools.GrowthMediumValues;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.material.Material;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
+import com.agrejus.netherendingenergy.common.Ratio;
+import com.agrejus.netherendingenergy.common.helpers.NBTHelpers;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.EnumProperty;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashMap;
 
 public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
-    private int strength;
-    private int yield;
-    private int purity;
-
     private int counter;
 
-    // MOVE THESE INTO COLLECTOR?
-    // WHY IS COLLECTOR TE NULL?
-    private HashMap<ImbueMaterial, Integer> yieldBlockValues = new HashMap<ImbueMaterial, Integer>() {{
-        // Overworld = 30
-        put(ImbueMaterial.DIAMOND, 1);
-        put(ImbueMaterial.LAPIS, 4);
-        put(ImbueMaterial.EMERALD, 1);
-        put(ImbueMaterial.CRYSTALIZED_VITROL, 1);
+    private int yield; // mB
+    private Ratio strength;
+    private Ratio purity;
+    private Ratio burnTimeAugmentRatio;
 
-        // Nether = 45
-        put(ImbueMaterial.NETHER_BRICK, 4);
-        put(ImbueMaterial.NETHER_QUARTZ, 3);
-        put(ImbueMaterial.GLOWSTONE, 8);
-        put(ImbueMaterial.OILY_HEART, 7);
-
-        // End = 70
-        put(ImbueMaterial.PURPUR, 13);
-        put(ImbueMaterial.SHULKER_BLOCK, 16);
-        put(ImbueMaterial.CHOROUS_FLOWER, 13);
-        put(ImbueMaterial.ENIGMATIC_GROWTH, 16);
-    }};
-
-    private HashMap<ImbueMaterial, Integer> strengthBlockValues = new HashMap<ImbueMaterial, Integer>() {{
-        // Overworld = 30
-        put(ImbueMaterial.DIAMOND, 1);
-        put(ImbueMaterial.LAPIS, 2);
-        put(ImbueMaterial.EMERALD, 1);
-        put(ImbueMaterial.CRYSTALIZED_VITROL, 1);
-
-        // Nether = 45
-        put(ImbueMaterial.NETHER_BRICK, 4);
-        put(ImbueMaterial.NETHER_QUARTZ, 3);
-        put(ImbueMaterial.GLOWSTONE, 8);
-        put(ImbueMaterial.OILY_HEART, 7);
-
-        // End = 70
-        put(ImbueMaterial.PURPUR, 13);
-        put(ImbueMaterial.SHULKER_BLOCK, 16);
-        put(ImbueMaterial.CHOROUS_FLOWER, 13);
-        put(ImbueMaterial.ENIGMATIC_GROWTH, 16);
-    }};
-
-    private HashMap<ImbueMaterial, Integer> purityBlockValues = new HashMap<ImbueMaterial, Integer>() {{
-        // Overworld = 30
-        put(ImbueMaterial.DIAMOND, 1);
-        put(ImbueMaterial.LAPIS, 2);
-        put(ImbueMaterial.EMERALD, 1);
-        put(ImbueMaterial.CRYSTALIZED_VITROL, 1);
-
-        // Nether = 45
-        put(ImbueMaterial.NETHER_BRICK, 4);
-        put(ImbueMaterial.NETHER_QUARTZ, 3);
-        put(ImbueMaterial.GLOWSTONE, 8);
-        put(ImbueMaterial.OILY_HEART, 7);
-
-        // End = 70
-        put(ImbueMaterial.PURPUR, 13);
-        put(ImbueMaterial.SHULKER_BLOCK, 16);
-        put(ImbueMaterial.CHOROUS_FLOWER, 13);
-        put(ImbueMaterial.ENIGMATIC_GROWTH, 16);
-    }};
+    private int operationalSpeedTicks = 200; // 5 seconds
 
     public CausticBellTile() {
         super(ModBlocks.CAUSTIC_BELL_TILE);
-    }
 
-    public int getStrength() {
-        return strength;
+        // Default
+        yield = 0;
+        strength =  new Ratio(1, 1);
+        purity =  new Ratio(6, 5);
+        burnTimeAugmentRatio = new Ratio(1,1);
     }
 
     public int getYield() {
         return yield;
     }
 
-    public int getPurity() {
+    public Ratio getStrengthRatio() {
+        return strength;
+    }
+
+    public Ratio getPurityRatio() {
         return purity;
+    }
+
+    public Ratio getBurnTimeAugmentRatio() {
+        return burnTimeAugmentRatio;
     }
 
     @Override
@@ -132,8 +67,8 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
             BlockPos position = getPos().down();
             TileEntity tileBelow = world.getTileEntity(position);
 
-            if (tileBelow instanceof TerraAcidCollectorTile) {
-                TerraAcidCollectorTile collector = (TerraAcidCollectorTile) tileBelow;
+            if (tileBelow instanceof TerraCollectingStationTile) {
+/*                TerraAcidCollectorTile collector = (TerraAcidCollectorTile) tileBelow;
 
                 boolean hasGrowthMediumChanged = this.hasGrowthMediumChanged(collector);
 
@@ -163,13 +98,14 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
                     BlockState state = world.getBlockState(pos);
                     world.notifyBlockUpdate(pos, state, state, 3);
                     markDirty();
-                }
+                }*/
 
                 counter = 20;
             }
         }
     }
 
+/*
     private boolean hasGrowthMediumChanged(TerraAcidCollectorTile collector) {
         Item growthMediumItem = collector.getGrowthMedium();
         Block growthMedium = Block.getBlockFromItem(growthMediumItem);
@@ -220,13 +156,14 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
         return 0;
     }
+*/
 
     @Override
     public void read(CompoundNBT tag) {
 
-        this.strength = tag.getInt("strength");
-        this.yield = tag.getInt("yield");
-        this.purity = tag.getInt("purity");
+        NBTHelpers.deserializeNBT(this.strength, tag, "strength");
+        NBTHelpers.deserializeNBT(this.yield , tag, "yield");
+        NBTHelpers.deserializeNBT(this.purity, tag, "purity");
 
         super.read(tag);
     }
@@ -234,11 +171,9 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     @Override
     public CompoundNBT write(CompoundNBT tag) {
 
-        tag.putInt("strength", this.strength);
-
-        tag.putInt("yield", this.yield);
-
-        tag.putInt("purity", this.purity);
+        NBTHelpers.serializeNBTAndPut(this.strength, tag, "strength");
+        NBTHelpers.serializeNBTAndPut(this.yield, tag, "yield");
+        NBTHelpers.serializeNBTAndPut(this.purity, tag, "purity");
 
         return super.write(tag);
     }
@@ -247,11 +182,9 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     public CompoundNBT getUpdateTag() {
         CompoundNBT tag = super.getUpdateTag();
 
-        tag.putInt("strength", this.strength);
-
-        tag.putInt("yield", this.yield);
-
-        tag.putInt("purity", this.purity);
+        NBTHelpers.serializeNBTAndPut(this.strength, tag, "strength");
+        NBTHelpers.serializeNBTAndPut(this.yield, tag, "yield");
+        NBTHelpers.serializeNBTAndPut(this.purity, tag, "purity");
 
         return tag;
     }
@@ -265,21 +198,10 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
 
-        CompoundNBT nbt = packet.getNbtCompound();
+        CompoundNBT tag = packet.getNbtCompound();
 
-        this.strength = nbt.getInt("strength");
-        this.yield = nbt.getInt("yield");
-        this.purity = nbt.getInt("purity");
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-
-        if (cap == Capabilities.GROWTH_MEDIUM_CAPABILITY) {
-            return LazyOptional.of(() -> (T) new GrowthMediumValues(this.strength, this.yield, this.purity));
-        }
-
-        return super.getCapability(cap, side);
+        NBTHelpers.deserializeNBT(this.strength, tag, "strength");
+        NBTHelpers.deserializeNBT(this.yield , tag, "yield");
+        NBTHelpers.deserializeNBT(this.purity, tag, "purity");
     }
 }

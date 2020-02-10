@@ -11,7 +11,7 @@
   "block.netherendingenergy.terra_furnace_generator": "Terra Furnace Generator",
   "block.netherendingenergy.terra_heat_sink": "Terra Heat Sink",
   "block.netherendingenergy.terra_machine_casing": "Terra Machine Casing",
-  "block.netherendingenergy.terra_acid_collector": "Terra Acid Collecting Station",
+  "block.netherendingenergy.terra_collecting_station": "Terra Collecting Station",
   "block.netherendingenergy.terra_mixer": "Terra Mixer",
 
   "block.netherendingenergy.chaotic_heat_sink": "Chaotic Heat Sink",

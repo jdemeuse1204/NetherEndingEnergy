@@ -2,9 +2,9 @@ package com.agrejus.netherendingenergy.setup;
 
 import com.agrejus.netherendingenergy.blocks.*;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineScreen;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorScreen;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorTile;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorTileEntityRenderer;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationScreen;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTileEntityRenderer;
 import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorScreen;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerScreen;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreScreen;
@@ -22,7 +22,7 @@ public class ClientProxy implements IProxy {
     public void init() {
         ScreenManager.registerFactory(ModBlocks.TERRA_REACTOR_CORE_CONTAINER, TerraReactorCoreScreen::new);
         ScreenManager.registerFactory(ModBlocks.TERRA_FURNACE_GENERATOR_CONTAINER, TerraFurnaceGeneratorScreen::new);
-        ScreenManager.registerFactory(ModBlocks.TERRA_ACID_COLLECTOR_CONTAINER, TerraAcidCollectorScreen::new);
+        ScreenManager.registerFactory(ModBlocks.TERRA_COLLECTING_STATION_CONTAINER, TerraCollectingStationScreen::new);
         ScreenManager.registerFactory(ModBlocks.TERRA_MIXER_CONTAINER, TerraMixerScreen::new);
 
         ScreenManager.registerFactory(ModBlocks.Test.FIRSTTILE_CONTAINER, FirstTileScreen::new);
@@ -30,7 +30,7 @@ public class ClientProxy implements IProxy {
 
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileTank.class, new TankTESR());
-        ClientRegistry.bindTileEntitySpecialRenderer(TerraAcidCollectorTile.class, new TerraAcidCollectorTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TerraCollectingStationTile.class, new TerraCollectingStationTileEntityRenderer());
     }
 
     @Override

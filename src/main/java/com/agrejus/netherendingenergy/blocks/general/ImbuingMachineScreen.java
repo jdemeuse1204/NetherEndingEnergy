@@ -1,8 +1,6 @@
 package com.agrejus.netherendingenergy.blocks.general;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorContainer;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorTile;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;

@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
+// RENAME TO INPUT PORT, WE ARE HAVING AN OUTPUT PORT AS WELL
 public class ReactorRedstonePortBlock extends RedstoneDetectorBlock {
 
     public static final BooleanProperty ON = BooleanProperty.create("on");

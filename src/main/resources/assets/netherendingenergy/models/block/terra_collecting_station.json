@@ -1,10 +1,10 @@
 {
   "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
   "textures": {
-    "terra_acid_collector_2": "netherendingenergy:block/terra_acid_collector_2",
-    "terra_acid_collector_tank_glass": "netherendingenergy:block/terra_acid_collector_tank_glass",
+    "terra_acid_collector_2": "netherendingenergy:block/terra_collecting_station_2",
+    "terra_acid_collector_tank_glass": "netherendingenergy:block/terra_collecting_station_tank_glass",
     "terra_heat_sink_2": "netherendingenergy:block/terra_heat_sink_2",
-    "terra_acid_collector": "netherendingenergy:block/terra_acid_collector"
+    "terra_acid_collector": "netherendingenergy:block/terra_collecting_station"
   },
   "display": {
     "gui": {

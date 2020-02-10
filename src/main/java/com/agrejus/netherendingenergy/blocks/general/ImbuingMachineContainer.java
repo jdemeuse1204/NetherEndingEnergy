@@ -1,10 +1,6 @@
 package com.agrejus.netherendingenergy.blocks.general;
 
-import com.agrejus.netherendingenergy.Capabilities;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorTile;
-import com.agrejus.netherendingenergy.common.IntArrayReferenceHolder;
-import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -12,8 +8,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 
 public class ImbuingMachineContainer extends Container {

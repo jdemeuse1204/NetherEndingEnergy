@@ -9,25 +9,19 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIntArray;
 import net.minecraft.util.IWorldPosCallable;
-import net.minecraft.util.IntReferenceHolder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-import java.util.ArrayList;
-
-public class TerraAcidCollectorContainer extends Container {
+public class TerraCollectingStationContainer extends Container {
 
     private TileEntity tileEntity;
     private PlayerEntity playerEntity;
@@ -35,8 +29,8 @@ public class TerraAcidCollectorContainer extends Container {
 
     // Exists on both server and client
     // Has slots of inventory and their links
-    public TerraAcidCollectorContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        super(ModBlocks.TERRA_ACID_COLLECTOR_CONTAINER, id);
+    public TerraCollectingStationContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        super(ModBlocks.TERRA_COLLECTING_STATION_CONTAINER, id);
 
         this.tileEntity = world.getTileEntity(pos);
         this.playerEntity = playerEntity;
@@ -49,7 +43,7 @@ public class TerraAcidCollectorContainer extends Container {
         // where is the top left slot? This is the player inventory
         layoutPlayerInventorySlots(7, 84);
 
-        trackIntArray(new IntArrayReferenceHolder(getTankAmount(TerraAcidCollectorTile.OUTPUT_TANK_NAME), getTankAmount(TerraAcidCollectorTile.INPUT_TANK_NAME)));
+        trackIntArray(new IntArrayReferenceHolder(getTankAmount(TerraCollectingStationTile.OUTPUT_TANK_NAME), getTankAmount(TerraCollectingStationTile.INPUT_TANK_NAME)));
     }
 
     public TileEntity getTileEntity() {
@@ -73,7 +67,7 @@ public class TerraAcidCollectorContainer extends Container {
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
-        return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerEntity, ModBlocks.TERRA_ACID_COLLECTOR_BLOCK);
+        return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerEntity, ModBlocks.TERRA_COLLECTING_STATION_BLOCK);
     }
 
     private void addSlot(IItemHandler hander, int index, int x, int y) {
@@ -147,6 +141,7 @@ public class TerraAcidCollectorContainer extends Container {
                 slot.putStack(ItemStack.EMPTY);
             } else {
                 slot.onSlotChanged();
+                slot.inventory.markDirty();
             }
 
             if (stack.getCount() == itemStack.getCount()) {

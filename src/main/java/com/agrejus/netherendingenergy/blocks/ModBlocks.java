@@ -11,9 +11,9 @@ import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineBlock;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineContainer;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineTile;
 import com.agrejus.netherendingenergy.blocks.soil.CausticImbuedSoil;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorBlock;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorContainer;
-import com.agrejus.netherendingenergy.blocks.terra.collector.TerraAcidCollectorTile;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationBlock;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationContainer;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
 import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorBlock;
 import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorContainer;
 import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorTile;
@@ -79,12 +79,12 @@ public class ModBlocks {
     public static ContainerType<ImbuingMachineContainer> IMBUING_MACHINE_CONTAINER;
 
     /* Vapor Collector */
-    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_ACID_COLLECTOR)
-    public static TerraAcidCollectorBlock TERRA_ACID_COLLECTOR_BLOCK;
-    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_ACID_COLLECTOR)
-    public static TileEntityType<TerraAcidCollectorTile> TERRA_ACID_COLLECTOR_TILE;
-    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_ACID_COLLECTOR)
-    public static ContainerType<TerraAcidCollectorContainer> TERRA_ACID_COLLECTOR_CONTAINER;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_COLLECTING_STATION)
+    public static TerraCollectingStationBlock TERRA_COLLECTING_STATION_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_COLLECTING_STATION)
+    public static TileEntityType<TerraCollectingStationTile> TERRA_COLLECTING_STATION_TILE;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_COLLECTING_STATION)
+    public static ContainerType<TerraCollectingStationContainer> TERRA_COLLECTING_STATION_CONTAINER;
 
     /* Mixer */
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_MIXER)

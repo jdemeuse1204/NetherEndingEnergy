@@ -41,7 +41,7 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
     }
 
     public TerraMixerTile(TerraMixerBlock block) {
-        super(ModBlocks.TERRA_ACID_COLLECTOR_TILE);
+        super(ModBlocks.TERRA_COLLECTING_STATION_TILE);
         this.block = block;
     }
 

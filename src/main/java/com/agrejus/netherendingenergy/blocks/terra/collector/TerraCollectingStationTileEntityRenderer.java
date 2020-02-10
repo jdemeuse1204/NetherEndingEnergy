@@ -16,15 +16,15 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 
-public class TerraAcidCollectorTileEntityRenderer extends TileEntityRenderer<TerraAcidCollectorTile> {
+public class TerraCollectingStationTileEntityRenderer extends TileEntityRenderer<TerraCollectingStationTile> {
     public static final float TANK_THICKNESS = 0.06f;
     private static final float TANK_MAX_HEIGHT = .58f;
 
-    public TerraAcidCollectorTileEntityRenderer() {
+    public TerraCollectingStationTileEntityRenderer() {
     }
 
     @Override
-    public void render(TerraAcidCollectorTile tileEntity, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void render(TerraCollectingStationTile tileEntity, double x, double y, double z, float partialTicks, int destroyStage) {
         GlStateManager.pushMatrix();
         GlStateManager.disableRescaleNormal();
         GlStateManager.color4f(1, 1, 1, 1);
@@ -37,13 +37,13 @@ public class TerraAcidCollectorTileEntityRenderer extends TileEntityRenderer<Ter
         GlStateManager.popMatrix();
     }
 
-    private void render(TerraAcidCollectorTile collector) {
+    private void render(TerraCollectingStationTile collector) {
         renderGrowthMedium(collector);
         renderIntakeFluid(collector);
         renderOutputFluid(collector);
     }
 
-    private void renderGrowthMedium(TerraAcidCollectorTile collector) {
+    private void renderGrowthMedium(TerraCollectingStationTile collector) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder renderer = tessellator.getBuffer();
 
@@ -79,7 +79,7 @@ public class TerraAcidCollectorTileEntityRenderer extends TileEntityRenderer<Ter
         net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
     }
 
-    private void renderOutputFluid(TerraAcidCollectorTile collector) {
+    private void renderOutputFluid(TerraCollectingStationTile collector) {
         if (collector == null) {
             return;
         }
@@ -198,7 +198,7 @@ public class TerraAcidCollectorTileEntityRenderer extends TileEntityRenderer<Ter
         }
     }
 
-    private void renderIntakeFluid(TerraAcidCollectorTile collector) {
+    private void renderIntakeFluid(TerraCollectingStationTile collector) {
         if (collector == null) {
             return;
         }
