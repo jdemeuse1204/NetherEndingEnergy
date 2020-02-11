@@ -2,8 +2,10 @@ package com.agrejus.netherendingenergy.common.helpers;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -16,6 +18,7 @@ import net.minecraftforge.fluids.IFluidTank;
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public class ClientUtils {
@@ -94,6 +97,104 @@ public class ClientUtils {
 
     public static void bindTexture(String path) {
         mc().getTextureManager().bindTexture(getResource(path));
+    }
+
+    public static void drawHoveringText(List<ITextComponent> list, int x, int y, FontRenderer font, int xSize, int ySize) {
+        if (!list.isEmpty()) {
+            GlStateManager.disableRescaleNormal();
+            RenderHelper.disableStandardItemLighting();
+            GlStateManager.disableLighting();
+            GlStateManager.disableDepthTest();
+            int k = 0;
+            Iterator<ITextComponent> iterator = list.iterator();
+            while (iterator.hasNext()) {
+                ITextComponent s = iterator.next();
+                int l = font.getStringWidth(s.getFormattedText());
+                if (l > k)
+                    k = l;
+            }
+
+            int j2 = x + 12;
+            int k2 = y - 12;
+            int i1 = 8;
+
+            boolean shift = false;
+            if (xSize > 0 && j2 + k > xSize) {
+                j2 -= 28 + k;
+                shift = true;
+            }
+            if (ySize > 0 && k2 + i1 + 6 > ySize) {
+                k2 = ySize - i1 - 6;
+                shift = true;
+            }
+            if (!shift && mc().currentScreen != null) {
+                if (j2 + k > mc().currentScreen.width)
+                    j2 -= 28 + k;
+                if (k2 + i1 + 6 > mc().currentScreen.height)
+                    k2 = mc().currentScreen.height - i1 - 6;
+            }
+
+            if (list.size() > 1)
+                i1 += 2 + (list.size() - 1) * 10;
+            GlStateManager.translatef(0, 0, 300);
+            int j1 = -267386864;
+            drawGradientRect(j2 - 3, k2 - 4, j2 + k + 3, k2 - 3, j1, j1);
+            drawGradientRect(j2 - 3, k2 + i1 + 3, j2 + k + 3, k2 + i1 + 4, j1, j1);
+            drawGradientRect(j2 - 3, k2 - 3, j2 + k + 3, k2 + i1 + 3, j1, j1);
+            drawGradientRect(j2 - 4, k2 - 3, j2 - 3, k2 + i1 + 3, j1, j1);
+            drawGradientRect(j2 + k + 3, k2 - 3, j2 + k + 4, k2 + i1 + 3, j1, j1);
+            int k1 = 1347420415;
+            int l1 = ((k1 & 16711422) >> 1 | k1 & -16777216);
+            drawGradientRect(j2 - 3, k2 - 3 + 1, j2 - 3 + 1, k2 + i1 + 3 - 1, k1, l1);
+            drawGradientRect(j2 + k + 2, k2 - 3 + 1, j2 + k + 3, k2 + i1 + 3 - 1, k1, l1);
+            drawGradientRect(j2 - 3, k2 - 3, j2 + k + 3, k2 - 3 + 1, k1, k1);
+            drawGradientRect(j2 - 3, k2 + i1 + 2, j2 + k + 3, k2 + i1 + 3, l1, l1);
+            GlStateManager.translatef(0, 0, -300);
+
+            for (int i2 = 0; i2 < list.size(); ++i2) {
+                String s1 = list.get(i2).getFormattedText();
+                font.drawStringWithShadow(s1, j2, k2, -1);
+
+                if (i2 == 0)
+                    k2 += 2;
+
+                k2 += 10;
+            }
+
+            GlStateManager.enableLighting();
+            GlStateManager.enableDepthTest();
+            RenderHelper.enableStandardItemLighting();
+            GlStateManager.enableRescaleNormal();
+        }
+    }
+
+    public static void drawGradientRect(int x0, int y0, int x1, int y1, int colour0, int colour1)
+    {
+        float alpha0 = (colour0 >> 24&255)/255.0F;
+        float blue0 = (colour0 >> 16&255)/255.0F;
+        float green0 = (colour0 >> 8&255)/255.0F;
+        float red0 = (colour0&255)/255.0F;
+        float alpha1 = (colour1 >> 24&255)/255.0F;
+        float blue1 = (colour1 >> 16&255)/255.0F;
+        float green1 = (colour1 >> 8&255)/255.0F;
+        float red1 = (colour1&255)/255.0F;
+        GlStateManager.disableTexture();
+        GlStateManager.enableBlend();
+        GlStateManager.disableAlphaTest();
+        GlStateManager.blendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.shadeModel(GL11.GL_SMOOTH);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder worldrenderer = tessellator.getBuffer();
+        worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        worldrenderer.pos(x1, y0, 0).color(blue0, green0, red0, alpha0).endVertex();
+        worldrenderer.pos(x0, y0, 0).color(blue0, green0, red0, alpha0).endVertex();
+        worldrenderer.pos(x0, y1, 0).color(blue1, green1, red1, alpha1).endVertex();
+        worldrenderer.pos(x1, y1, 0).color(blue1, green1, red1, alpha1).endVertex();
+        tessellator.draw();
+        GlStateManager.shadeModel(GL11.GL_FLAT);
+        GlStateManager.disableBlend();
+        GlStateManager.enableAlphaTest();
+        GlStateManager.enableTexture();
     }
 
     public static ResourceLocation getResource(String path) {

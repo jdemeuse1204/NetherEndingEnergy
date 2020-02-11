@@ -3,6 +3,7 @@ package com.agrejus.netherendingenergy.blocks.terra.collector;
 import com.agrejus.netherendingenergy.Capabilities;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
+import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
 import com.agrejus.netherendingenergy.common.Ratio;
 import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
 import net.minecraft.block.Block;
@@ -10,6 +11,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
@@ -40,14 +43,15 @@ import javax.annotation.Nullable;
 public class TerraCollectingStationTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
 
     public TerraCollectingStationTile() {
-
         super(ModBlocks.TERRA_COLLECTING_STATION_TILE);
-        bufferSize = 0;
     }
 
+    private int progression;
     private int tickCounter;
     private int tickProcessCounter;
     private Item growthMedium;
+
+    private IntArraySupplierReferenceHolder referenceHolder;
 
     public static final String INPUT_TANK_NAME = "INPUT";
     public static final String OUTPUT_TANK_NAME = "OUTPUT";
@@ -195,7 +199,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                 Ratio purity = bell.getPurityRatio();
                 Ratio burnTimeAugment = bell.getBurnTimeAugmentRatio();
 
-                Ratio amount = Ratio.addMany(strength, purity, burnTimeAugment);
+                //Ratio amount = Ratio.addMany(strength, purity, burnTimeAugment);
 
                 int resolvedAmount = inputTank.resolveFillAmount(1);
 
@@ -334,6 +338,62 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
     @Nullable
     @Override
     public Container createMenu(int worldId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new TerraCollectingStationContainer(worldId, world, pos, playerInventory, playerEntity);
+
+        // This is all of the data we want to pass to the container which the screen will use!
+        this.referenceHolder = new IntArraySupplierReferenceHolder(
+                () -> this.outputTank.getCapacity(),
+                () -> this.outputTank.getFluidAmount(),
+                () -> this.inputTank.getCapacity(),
+                () -> this.inputTank.getFluidAmount(),
+                () -> this.progression);
+
+        return new TerraCollectingStationContainer(worldId, world, pos, playerInventory, playerEntity, referenceHolder);
     }
+
+    /**
+     * Don't rename this method to canInteractWith due to conflicts with Container
+     * FROM FURNACE
+     */
+    public boolean isUsableByPlayer(PlayerEntity player) {
+        if (this.world.getTileEntity(this.pos) != this) {
+            return false;
+        } else {
+            return player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
+        }
+    }
+
+    /*@Override
+    public void clear() {
+
+    }
+
+    @Override
+    public int getSizeInventory() {
+        return 0;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public ItemStack getStackInSlot(int index) {
+        return null;
+    }
+
+    @Override
+    public ItemStack decrStackSize(int index, int count) {
+        return null;
+    }
+
+    @Override
+    public ItemStack removeStackFromSlot(int index) {
+        return null;
+    }
+
+    @Override
+    public void setInventorySlotContents(int index, ItemStack stack) {
+
+    }*/
 }

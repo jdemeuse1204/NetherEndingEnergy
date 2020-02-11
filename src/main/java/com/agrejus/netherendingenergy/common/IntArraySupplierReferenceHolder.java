@@ -3,22 +3,24 @@ package com.agrejus.netherendingenergy.common;
 import net.minecraft.util.IIntArray;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
-public class IntArrayReferenceHolder implements IIntArray {
+public class IntArraySupplierReferenceHolder implements IIntArray {
 
-    public IntArrayReferenceHolder(Integer... values) {
-        array = new ArrayList<Integer>();
+    public IntArraySupplierReferenceHolder(Supplier<Integer>... values) {
+        array = new ArrayList<Supplier<Integer>>();
 
         for (int i = 0; i < values.length; i++) {
             array.add(values[i]);
         }
     }
 
-    private ArrayList<Integer> array;
+    private ArrayList<Supplier<Integer>> array;
 
     @Override
     public int get(int index) {
-        return array.get(index);
+        Supplier supplier = array.get(index);
+        return (int)supplier.get();
     }
 
     @Override

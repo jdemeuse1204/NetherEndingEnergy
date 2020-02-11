@@ -5,11 +5,13 @@ import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStat
 import com.agrejus.netherendingenergy.common.Ratio;
 import com.agrejus.netherendingenergy.common.helpers.NBTHelpers;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 
@@ -29,9 +31,9 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
         // Default
         yield = 0;
-        strength =  new Ratio(1, 1);
-        purity =  new Ratio(6, 5);
-        burnTimeAugmentRatio = new Ratio(1,1);
+        strength = new Ratio(1, 1);
+        purity = new Ratio(6, 5);
+        burnTimeAugmentRatio = new Ratio(1, 1);
     }
 
     public int getYield() {
@@ -160,33 +162,37 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
     @Override
     public void read(CompoundNBT tag) {
-
-        NBTHelpers.deserializeNBT(this.strength, tag, "strength");
-        NBTHelpers.deserializeNBT(this.yield , tag, "yield");
-        NBTHelpers.deserializeNBT(this.purity, tag, "purity");
-
         super.read(tag);
+
+        CompoundNBT strengthNBT = tag.getCompound("strength");
+        this.strength.deserializeNBT(strengthNBT);
+
+        CompoundNBT purityNBT = tag.getCompound("purity");
+        this.purity.deserializeNBT(purityNBT);
+
+        this.yield = tag.getInt("yield");
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
 
-        NBTHelpers.serializeNBTAndPut(this.strength, tag, "strength");
-        NBTHelpers.serializeNBTAndPut(this.yield, tag, "yield");
-        NBTHelpers.serializeNBTAndPut(this.purity, tag, "purity");
+        CompoundNBT strengthNBT = this.strength.serializeNBT();
+        tag.put("strength", strengthNBT);
 
-        return super.write(tag);
+        CompoundNBT purityNBT = this.purity.serializeNBT();
+        tag.put("purity", purityNBT);
+
+        tag.putInt("yield", this.yield);
+
+        return tag;
     }
 
     @Override
     public CompoundNBT getUpdateTag() {
         CompoundNBT tag = super.getUpdateTag();
 
-        NBTHelpers.serializeNBTAndPut(this.strength, tag, "strength");
-        NBTHelpers.serializeNBTAndPut(this.yield, tag, "yield");
-        NBTHelpers.serializeNBTAndPut(this.purity, tag, "purity");
-
-        return tag;
+        return write(tag);
     }
 
     @Nullable
@@ -200,8 +206,6 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
         CompoundNBT tag = packet.getNbtCompound();
 
-        NBTHelpers.deserializeNBT(this.strength, tag, "strength");
-        NBTHelpers.deserializeNBT(this.yield , tag, "yield");
-        NBTHelpers.deserializeNBT(this.purity, tag, "purity");
+        read(tag);
     }
 }

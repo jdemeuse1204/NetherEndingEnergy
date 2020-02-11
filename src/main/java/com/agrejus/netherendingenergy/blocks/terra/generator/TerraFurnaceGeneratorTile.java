@@ -34,7 +34,7 @@ public class TerraFurnaceGeneratorTile extends TileEntity implements ITickableTi
     private LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
     private int counter;
-// Follow AbstractFurnaceTileEntity
+
     public TerraFurnaceGeneratorTile() {
         super(ModBlocks.TERRA_FURNACE_GENERATOR_TILE);
     }

@@ -1,17 +1,29 @@
 package com.agrejus.netherendingenergy.common;
 
-public class Ratio {
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.common.util.INBTSerializable;
 
-    public final int Antecedent;
-    public final int Consequent;
+public class Ratio implements INBTSerializable<CompoundNBT> {
+
+    private int antecedent;
+    private int consequent;
 
     public Ratio(int antecedent, int consequent) {
-        this.Antecedent = antecedent;
-        this.Consequent = consequent;
+        this.antecedent = antecedent;
+        this.consequent = consequent;
+    }
+
+    public int getAntecedent() {
+        return antecedent;
+    }
+
+
+    public int getConsequent() {
+        return consequent;
     }
 
     public int get(int index) {
-        int[] array = new int[]{this.Antecedent, this.Consequent};
+        int[] array = new int[]{this.antecedent, this.consequent};
         return array[index];
     }
 
@@ -19,9 +31,9 @@ public class Ratio {
         /*
          * a/b + c/d = ad + bc / bd
          * */
-        int ad = valueOne.Antecedent * valueTwo.Consequent;
-        int bc = valueOne.Consequent * valueTwo.Antecedent;
-        int bd = valueOne.Consequent * valueTwo.Consequent;
+        int ad = valueOne.antecedent * valueTwo.consequent;
+        int bc = valueOne.consequent * valueTwo.antecedent;
+        int bd = valueOne.consequent * valueTwo.consequent;
         return new Ratio(ad + bc, bd);
     }
 
@@ -43,5 +55,19 @@ public class Ratio {
         }
 
         return result;
+    }
+
+    @Override
+    public CompoundNBT serializeNBT() {
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.putInt("Antecedent", this.antecedent);
+        nbt.putInt("Consequent", this.consequent);
+        return nbt;
+    }
+
+    @Override
+    public void deserializeNBT(CompoundNBT nbt) {
+        this.antecedent = nbt.getInt("Antecedent");
+        this.antecedent = nbt.getInt("Consequent");
     }
 }

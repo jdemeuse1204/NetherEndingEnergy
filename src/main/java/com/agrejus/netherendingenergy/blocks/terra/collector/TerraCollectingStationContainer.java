@@ -1,21 +1,19 @@
 package com.agrejus.netherendingenergy.blocks.terra.collector;
 
-import com.agrejus.netherendingenergy.Capabilities;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
-import com.agrejus.netherendingenergy.common.IntArrayReferenceHolder;
-import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIntArray;
 import net.minecraft.util.IWorldPosCallable;
+import net.minecraft.util.IntArray;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -26,15 +24,24 @@ public class TerraCollectingStationContainer extends Container {
     private TileEntity tileEntity;
     private PlayerEntity playerEntity;
     private IItemHandler playerInventory;
+    private IIntArray tracking;
 
     // Exists on both server and client
     // Has slots of inventory and their links
     public TerraCollectingStationContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        this(id, world, pos, playerInventory, playerEntity, new IntArray(5));
+    }
+
+    public TerraCollectingStationContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity, IIntArray intArray) {
         super(ModBlocks.TERRA_COLLECTING_STATION_CONTAINER, id);
 
+        // can we get around this call?
+        // abstract furnace passes inventory in
         this.tileEntity = world.getTileEntity(pos);
         this.playerEntity = playerEntity;
         this.playerInventory = new InvWrapper(playerInventory);
+
+        //addSlot(new SlotItemHandler(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, 0, 44, 39));
 
         tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(w -> {
             addSlot(new SlotItemHandler(w, 0, 44, 39));
@@ -43,28 +50,15 @@ public class TerraCollectingStationContainer extends Container {
         // where is the top left slot? This is the player inventory
         layoutPlayerInventorySlots(7, 84);
 
-        trackIntArray(new IntArrayReferenceHolder(getTankAmount(TerraCollectingStationTile.OUTPUT_TANK_NAME), getTankAmount(TerraCollectingStationTile.INPUT_TANK_NAME)));
+        tracking = intArray;
+
+        trackIntArray(intArray);
     }
 
-    public TileEntity getTileEntity() {
-        return this.tileEntity;
-    }
 
-    public int getTankAmount(String name) {
-        LazyOptional<IFluidHandler[]> capability = tileEntity.getCapability(Capabilities.MULTI_FLUID_HANDLER_CAPABILITY);
-
-        return capability.map(w -> {
-
-            for (IFluidHandler tank : w) {
-                if (((NEEFluidTank) tank).getName() == name) {
-                    return tank.getFluidInTank(0).getAmount();
-                }
-            }
-
-            return -1;
-        }).orElse(0);
-    }
-
+    //public boolean canInteractWith(PlayerEntity playerIn) {
+    //      return this.furnaceInventory.isUsableByPlayer(playerIn);
+    //   }
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
         return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerEntity, ModBlocks.TERRA_COLLECTING_STATION_BLOCK);
@@ -100,8 +94,24 @@ public class TerraCollectingStationContainer extends Container {
         addSlotRange(this.playerInventory, 0, leftCol, topRow, 9, 18);
     }
 
-    public int getEnergy() {
-        return tileEntity.getCapability(CapabilityEnergy.ENERGY).map(w -> w.getEnergyStored()).orElse(0);
+    public int getOutputTankCapacity() {
+        return this.tracking.get(0);
+    }
+
+    public int getOutputFluidAmount() {
+        return this.tracking.get(1);
+    }
+
+    public int getInputTankCapacity() {
+        return this.tracking.get(2);
+    }
+
+    public int getInputFluidAmount() {
+        return this.tracking.get(3);
+    }
+
+    public int getProgression() {
+        return this.tracking.get(4);
     }
 
     @Override
@@ -151,5 +161,15 @@ public class TerraCollectingStationContainer extends Container {
             slot.onTake(playerIn, stack);
         }
         return itemStack;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public int getProcessProgressionScaled() {
+
+        int i = 400;//this.field_217064_e.get(2); // cook Time
+        int j = 1600;//this.field_217064_e.get(3); // cook Time Total
+
+        // 24 is the width of the progression arrow for the GUI
+        return j != 0 && i != 0 ? i * 24 / j : 0;
     }
 }
