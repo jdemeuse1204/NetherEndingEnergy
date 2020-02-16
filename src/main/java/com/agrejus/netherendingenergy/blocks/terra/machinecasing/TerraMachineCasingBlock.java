@@ -5,6 +5,7 @@ import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
+import com.agrejus.netherendingenergy.common.blocks.PartialModelFillBlock;
 import com.agrejus.netherendingenergy.common.multiblock.MultiBlockTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

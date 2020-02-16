@@ -1,4 +1,4 @@
-package com.agrejus.netherendingenergy.blocks.terra.generator;
+package com.agrejus.netherendingenergy.blocks.general.generator;
 
 import com.agrejus.netherendingenergy.Config;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
@@ -30,13 +30,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TerraFurnaceGeneratorTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public class FurnaceGeneratorTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
     private LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
     private int counter;
 
-    public TerraFurnaceGeneratorTile() {
-        super(ModBlocks.TERRA_FURNACE_GENERATOR_TILE);
+    public FurnaceGeneratorTile() {
+        super(ModBlocks.FURNACE_GENERATOR_TILE);
     }
 
     private IEnergyStorage createEnergy() {
@@ -199,6 +199,6 @@ public class TerraFurnaceGeneratorTile extends TileEntity implements ITickableTi
     @Nullable
     @Override
     public Container createMenu(int worldId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new TerraFurnaceGeneratorContainer(worldId, world, pos, playerInventory, playerEntity);
+        return new FurnaceGeneratorContainer(worldId, world, pos, playerInventory, playerEntity);
     }
 }

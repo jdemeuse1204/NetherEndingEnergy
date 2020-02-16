@@ -14,9 +14,9 @@ import com.agrejus.netherendingenergy.blocks.soil.CausticImbuedSoil;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationBlock;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationContainer;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
-import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorBlock;
-import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorContainer;
-import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorTile;
+import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorBlock;
+import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorContainer;
+import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorTile;
 import com.agrejus.netherendingenergy.blocks.terra.heatsink.TerraHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.terra.machinecasing.TerraMachineCasingBlock;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerBlock;
@@ -63,12 +63,12 @@ public class ModBlocks {
     public static ContainerType<TerraReactorCoreContainer> TERRA_REACTOR_CORE_CONTAINER;
 
     /* Generator */
-    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_FURNACE_GENERATOR)
-    public static TerraFurnaceGeneratorBlock TERRA_FURNACE_GENERATOR_BLOCK;
-    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_FURNACE_GENERATOR)
-    public static TileEntityType<TerraFurnaceGeneratorTile> TERRA_FURNACE_GENERATOR_TILE;
-    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_FURNACE_GENERATOR)
-    public static ContainerType<TerraFurnaceGeneratorContainer> TERRA_FURNACE_GENERATOR_CONTAINER;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.FURNACE_GENERATOR)
+    public static FurnaceGeneratorBlock FURNACE_GENERATOR_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.FURNACE_GENERATOR)
+    public static TileEntityType<FurnaceGeneratorTile> FURNACE_GENERATOR_TILE;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.FURNACE_GENERATOR)
+    public static ContainerType<FurnaceGeneratorContainer> FURNACE_GENERATOR_CONTAINER;
 
     /* Imbuing Machine */
     @ObjectHolder("netherendingenergy:" + RegistryNames.IMBUING_MACHINE)

@@ -1,4 +1,4 @@
-package com.agrejus.netherendingenergy.blocks.terra.generator;
+package com.agrejus.netherendingenergy.blocks.general.generator;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -11,11 +11,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class TerraFurnaceGeneratorScreen extends ContainerScreen<TerraFurnaceGeneratorContainer> {
+public class FurnaceGeneratorScreen extends ContainerScreen<FurnaceGeneratorContainer> {
 
-    private ResourceLocation GUI = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/terra_furnace_generator_gui.png");
+    private ResourceLocation GUI = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/furnace_generator_gui.png");
 
-    public TerraFurnaceGeneratorScreen(TerraFurnaceGeneratorContainer container, PlayerInventory inv, ITextComponent name) {
+    public FurnaceGeneratorScreen(FurnaceGeneratorContainer container, PlayerInventory inv, ITextComponent name) {
         super(container, inv, name);
     }
 

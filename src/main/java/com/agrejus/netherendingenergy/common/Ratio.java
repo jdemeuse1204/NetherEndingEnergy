@@ -17,6 +17,9 @@ public class Ratio implements INBTSerializable<CompoundNBT> {
         return antecedent;
     }
 
+    public float asPercent() {
+        return (float)antecedent / (float)consequent;
+    }
 
     public int getConsequent() {
         return consequent;
@@ -50,7 +53,7 @@ public class Ratio implements INBTSerializable<CompoundNBT> {
                 continue;
             }
 
-            result = Ratio.addMany(result, values[i]);
+            result = Ratio.add(result, values[i]);
             i++;
         }
 

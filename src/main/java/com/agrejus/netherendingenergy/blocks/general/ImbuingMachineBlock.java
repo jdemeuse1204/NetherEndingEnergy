@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.general;
 
 import com.agrejus.netherendingenergy.RegistryNames;
+import com.agrejus.netherendingenergy.common.blocks.PartialModelFillBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -21,7 +22,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-public class ImbuingMachineBlock extends Block {
+public class ImbuingMachineBlock extends PartialModelFillBlock {
 
     public ImbuingMachineBlock() {
         super(Properties.create(Material.IRON)

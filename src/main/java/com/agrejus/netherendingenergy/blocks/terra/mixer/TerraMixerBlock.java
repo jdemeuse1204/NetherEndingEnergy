@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.terra.mixer;
 
 import com.agrejus.netherendingenergy.RegistryNames;
+import com.agrejus.netherendingenergy.common.blocks.PartialModelFillBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;

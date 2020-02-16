@@ -14,9 +14,9 @@ import com.agrejus.netherendingenergy.blocks.soil.CausticImbuedSoil;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationBlock;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationContainer;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
-import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorBlock;
-import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorContainer;
-import com.agrejus.netherendingenergy.blocks.terra.generator.TerraFurnaceGeneratorTile;
+import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorBlock;
+import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorContainer;
+import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorTile;
 import com.agrejus.netherendingenergy.blocks.terra.heatsink.TerraHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.terra.machinecasing.TerraMachineCasingBlock;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerBlock;
@@ -27,6 +27,7 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreConta
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreTile;
 import com.agrejus.netherendingenergy.blocks.test.BlockTank;
 import com.agrejus.netherendingenergy.blocks.test.TileTank;
+import com.agrejus.netherendingenergy.fluids.RawAcidFluid;
 import com.agrejus.netherendingenergy.items.FirstItem;
 import com.agrejus.netherendingenergy.setup.ClientProxy;
 import com.agrejus.netherendingenergy.setup.IProxy;
@@ -42,6 +43,7 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -50,6 +52,8 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -65,13 +69,27 @@ public class NetherEndingEnergy {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    public static final DeferredRegister<Block> BLOCKS = new DeferredRegister<>(ForgeRegistries.BLOCKS, MODID);
+    public static final DeferredRegister<Fluid> FLUIDS = new DeferredRegister<>(ForgeRegistries.FLUIDS, MODID);
+    public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, MODID);
+
+    static {
+        RawAcidFluid.create("raw_acid_fluid");
+    }
+
     public NetherEndingEnergy() {
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG);
 
         // Register the setup method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        modEventBus.addListener(this::setup);
+
+        FLUIDS.register(modEventBus);
+        BLOCKS.register(modEventBus);
+        ITEMS.register(modEventBus);
 
         Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve("netherendingenergy-client.toml"));
         Config.loadConfig(Config.COMMON_CONFIG, FMLPaths.CONFIGDIR.get().resolve("netherendingenergy-common.toml"));
@@ -139,7 +157,6 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new TerraMachineCasingBlock());
             event.getRegistry().register(new TerraReactorCoreBlock());
             event.getRegistry().register(new TerraHeatSinkBlock());
-            event.getRegistry().register(new TerraFurnaceGeneratorBlock());
             event.getRegistry().register(new TerraCollectingStationBlock());
             event.getRegistry().register(new TerraMixerBlock());
 
@@ -152,42 +169,8 @@ public class NetherEndingEnergy {
 
             /* Reactor General */
             event.getRegistry().register(new ReactorRedstonePortBlock());
-        }
 
-        @SubscribeEvent
-        public static void onFluidsRegistry(final RegistryEvent.Register<Fluid> event) {
-            //event.getRegistry().register(new BlockItem(ModBlocks.Test.FIRSTBLOCK, properties).setRegistryName("firstblock"));
-
-/*            ForgeFlowingFluid.Properties prop = new ForgeFlowingFluid.Properties(() -> ModFluids.MOLTEN_COPPER, () -> ModFluids.FLOWING_MOLTEN_COPPER,
-                    FluidAttributes.builder(ModFluids.FLUID_MOLTEN_COPPER_STILL, ModFluids.FLUID_MOLTEN_COPPER_FLOWING))
-                    .bucket(() -> ModFluids.MOLTEN_COPPER_BUCKET).block(() -> ModFluids.MOLTEN_COPPER_BLOCK);
-            ForgeFlowingFluid fluid = new ForgeFlowingFluid.Source(prop).setRegistryName("raw_acid");
-            */
-/*            event.getRegistry().register(new FluidItem).content(Fluid.class, flowingFluid);
-            event.content(Fluid.class, sourceFluid);
-            event.content(Block.class, blockFluid);
-            if (bucketFluid != null) registry.content(Item.class, bucketFluid);*/
-
-
-/*            public static final List<Fluid> FLUIDS = new ArrayList<>();
-
-            public static final ResourceLocation FLUID_MOLTEN_COPPER_STILL = new ResourceLocation(TutorialMod.MODID, "block/molten_copper_still");
-            public static final ResourceLocation FLUID_MOLTEN_COPPER_FLOWING = new ResourceLocation(TutorialMod.MODID, "block/molten_copper_flow");
-
-
-
-            public static final FlowingFluid MOLTEN_COPPER = (FlowingFluid) addAndGet(new ForgeFlowingFluid.Source(prop).setRegistryName("molten_copper"), FLUIDS);
-            public static final FlowingFluid FLOWING_MOLTEN_COPPER = (FlowingFluid) addAndGet(new ForgeFlowingFluid.Flowing(prop).setRegistryName("molten_copper_flowing"), FLUIDS);
-
-            public static final FlowingFluidBlock MOLTEN_COPPER_BLOCK = (FlowingFluidBlock) addAndGet(new FlowingFluidBlock(() -> MOLTEN_COPPER, Block.Properties.create(Material.WATER).doesNotBlockMovement().hardnessAndResistance(100.0F).noDrops()).setRegistryName("molten_copper_block"), ModBlocks.BLOCKS);
-            public static final Item MOLTEN_COPPER_BUCKET = addAndGet(new BucketItem(() -> MOLTEN_COPPER, new Item.Properties().containerItem(Items.BUCKET).maxStackSize(1).group(TutorialMod.groups.itemGroup)).setRegistryName("molten_copper_bucket"), ModItems.ITEMS);
-
-            private static <T> T addAndGet(T obj, List<T> list) {
-                list.add(obj);
-                return obj;
-            }
-
-            public static void init() {}*/
+            event.getRegistry().register(new FurnaceGeneratorBlock());
         }
 
         @SubscribeEvent
@@ -209,7 +192,6 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_MACHINE_CASING_BLOCK, properties).setRegistryName(RegistryNames.TERRA_MACHINE_CASING));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_HEAT_SINK_BLOCK, properties).setRegistryName(RegistryNames.TERRA_HEAT_SINK));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_CORE_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));
-            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_FURNACE_GENERATOR_BLOCK, properties).setRegistryName(RegistryNames.TERRA_FURNACE_GENERATOR));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_COLLECTING_STATION_BLOCK, properties).setRegistryName(RegistryNames.TERRA_COLLECTING_STATION));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_MIXER_BLOCK, properties).setRegistryName(RegistryNames.TERRA_MIXER));
 
@@ -223,7 +205,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new BlockItem(ModBlocks.REACTOR_REDSTONE_PORT_BLOCK, properties).setRegistryName(RegistryNames.REACTOR_REDSTONE_PORT));
 
             // Items
-
+            event.getRegistry().register(new BlockItem(ModBlocks.FURNACE_GENERATOR_BLOCK, properties).setRegistryName(RegistryNames.FURNACE_GENERATOR));
         }
 
         @SubscribeEvent
@@ -236,11 +218,13 @@ public class NetherEndingEnergy {
 
             event.getRegistry().register(TileEntityType.Builder.create(CausticBellTile::new, ModBlocks.CAUSTIC_BELL_BLOCK).build(null).setRegistryName(RegistryNames.CAUSTIC_BELL));
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorCoreTile::new, ModBlocks.TERRA_REACTOR_CORE_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));
-            event.getRegistry().register(TileEntityType.Builder.create(TerraFurnaceGeneratorTile::new, ModBlocks.TERRA_FURNACE_GENERATOR_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_FURNACE_GENERATOR));
             event.getRegistry().register(TileEntityType.Builder.create(TerraCollectingStationTile::new, ModBlocks.TERRA_COLLECTING_STATION_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_COLLECTING_STATION));
             event.getRegistry().register(TileEntityType.Builder.create(TerraMixerTile::new, ModBlocks.TERRA_MIXER_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_MIXER));
 
             event.getRegistry().register(TileEntityType.Builder.create(ReactorRedstonePortTile::new, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK).build(null).setRegistryName(RegistryNames.REACTOR_REDSTONE_PORT));
+
+
+            event.getRegistry().register(TileEntityType.Builder.create(FurnaceGeneratorTile::new, ModBlocks.FURNACE_GENERATOR_BLOCK).build(null).setRegistryName(RegistryNames.FURNACE_GENERATOR));
         }
 
         @SubscribeEvent
@@ -258,8 +242,8 @@ public class NetherEndingEnergy {
 
             event.getRegistry().register(IForgeContainerType.create((windowId, playerInventory, data) -> {
                 BlockPos pos = data.readBlockPos();
-                return new TerraFurnaceGeneratorContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
-            }).setRegistryName(RegistryNames.TERRA_FURNACE_GENERATOR));
+                return new FurnaceGeneratorContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
+            }).setRegistryName(RegistryNames.FURNACE_GENERATOR));
 
             event.getRegistry().register(IForgeContainerType.create((windowId, playerInventory, data) -> {
                 BlockPos pos = data.readBlockPos();

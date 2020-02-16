@@ -1,6 +1,7 @@
-package com.agrejus.netherendingenergy.blocks.terra.generator;
+package com.agrejus.netherendingenergy.blocks.general.generator;
 
 import com.agrejus.netherendingenergy.RegistryNames;
+import com.agrejus.netherendingenergy.common.blocks.PartialModelFillBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -13,23 +14,26 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-public class TerraFurnaceGeneratorBlock extends Block {
-    public TerraFurnaceGeneratorBlock() {
+public class FurnaceGeneratorBlock extends Block {
+    public FurnaceGeneratorBlock() {
         super(Properties.create(Material.IRON)
                 .sound(SoundType.WOOD)
                 .hardnessAndResistance(.01f)
                 .lightValue(0));
-        setRegistryName(RegistryNames.TERRA_FURNACE_GENERATOR);
+        setRegistryName(RegistryNames.FURNACE_GENERATOR);
     }
 
     @Override
@@ -37,14 +41,19 @@ public class TerraFurnaceGeneratorBlock extends Block {
         return true;
     }
 
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.TRANSLUCENT;
+    }
+
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new TerraFurnaceGeneratorTile();
+        return new FurnaceGeneratorTile();
     }
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+
         if (placer != null) {
             worldIn.setBlockState(pos, state.with(BlockStateProperties.FACING, getFacingFromEntity(pos, placer)), 2);
         }

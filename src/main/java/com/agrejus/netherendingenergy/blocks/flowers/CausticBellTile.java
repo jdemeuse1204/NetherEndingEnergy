@@ -30,9 +30,9 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         super(ModBlocks.CAUSTIC_BELL_TILE);
 
         // Default
-        yield = 0;
+        yield = 5;
         strength = new Ratio(1, 1);
-        purity = new Ratio(6, 5);
+        purity = new Ratio(5, 6); // for every 6 you get 5
         burnTimeAugmentRatio = new Ratio(1, 1);
     }
 

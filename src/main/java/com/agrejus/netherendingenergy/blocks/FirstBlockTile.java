@@ -41,7 +41,7 @@ public class FirstBlockTile extends TileEntity implements ITickableTileEntity, I
     }
 
     private IEnergyStorage createEnergy() {
-        return new CustomEnergyStorage(Config.FIRSTBLOCK_MAXPOWER.get(), 0);
+        return new CustomEnergyStorage(Config.FIRSTBLOCK_MAXPOWER.get(), 0,0);
     }
 
     private IItemHandler createHandler() {

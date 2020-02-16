@@ -1,24 +1,14 @@
 package com.agrejus.netherendingenergy.blocks.terra.collector;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
-import com.agrejus.netherendingenergy.common.helpers.ClientUtils;
+import com.agrejus.netherendingenergy.common.rendering.Rect;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.IIntArray;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -30,8 +20,49 @@ public class TerraCollectingStationScreen extends ContainerScreen<TerraCollectin
 
     private ResourceLocation GUI = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/terra_collecting_station_gui.png");
 
+    private Rect inputFluidLocation;
+    private Rect outputFluidLocation;
+    private Rect progressSliceLocation;
+    private Rect progressDrawLocation;
+
+    private int defaultGuiScreenWidth = 176;
+
     public TerraCollectingStationScreen(TerraCollectingStationContainer container, PlayerInventory inv, ITextComponent name) {
         super(container, inv, name);
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+/*        energyDestinationLocation = new GuiLocation(9, 17, 42, 10);
+        energyImageSliceLocation = new GuiLocation(this.defaultGuiScreenWidth, 17, 62, 11);
+
+        inputFluidOverlayLocation = new GuiLocation(guiLeft + 119, guiTop + 11, 60, 17);*/
+        inputFluidLocation = createRectBasedOnGui(11, 119, 136, 71);
+        outputFluidLocation = createRectBasedOnGui(11, 151, 168, 71);
+
+        progressSliceLocation = createSliceRect(0, this.defaultGuiScreenWidth, 0, 16);
+        progressDrawLocation = createSliceDrawDestination(39, 78);
+    }
+
+    protected Rect createSliceRect(int top, int left, int right, int bottom) {
+        return new Rect(top, left, right, bottom);
+    }
+
+    protected Rect createRectBasedOnGui(int top, int left, int right, int bottom) {
+        return new Rect(guiTop + top, guiLeft + left, guiLeft + right, guiTop + bottom);
+    }
+
+    protected Rect createSliceDrawDestination(int top, int left) {
+        return new Rect(guiTop + top, guiLeft + left, 0, 0);
+    }
+
+    protected boolean isMouseOver(Rect rect, int mouseX, int mouseY) {
+        return mouseX >= (rect.getLeft()) &&
+                mouseX <= (rect.getRight()) &&
+                mouseY >= (rect.getTop()) &&
+                mouseY <= (rect.getBottom());
     }
 
     @Override
@@ -43,13 +74,13 @@ public class TerraCollectingStationScreen extends ContainerScreen<TerraCollectin
         this.renderHoveredToolTip(mouseX, mouseY);
 
         List<String> tooltip = new ArrayList<>();
-        if (mouseX > guiLeft + 151 && mouseX < guiLeft + 165 && mouseY > guiTop + 12 && mouseY < guiTop + 71){
+        if (this.isMouseOver(this.outputFluidLocation, mouseX, mouseY)) {
             int amount = container.getOutputFluidAmount();
             tooltip.add("Output:");
             tooltip.add(String.format("%s mB", amount));
         }
 
-        if (mouseX > guiLeft + 119 && mouseX < guiLeft + 136 && mouseY > guiTop + 12 && mouseY < guiTop + 71){
+        if (this.isMouseOver(this.inputFluidLocation, mouseX, mouseY)) {
             int amount = container.getInputFluidAmount();
             tooltip.add("Input:");
             tooltip.add(String.format("%s mB", amount));
@@ -76,30 +107,34 @@ public class TerraCollectingStationScreen extends ContainerScreen<TerraCollectin
         // set the size of the GUI to slice off the right hand images
         this.blit(i, j, 0, 0, this.xSize, this.ySize);
 
-        int l = this.container.getProcessProgressionScaled();
+
+
         // 176,14 is where the image is from
         // 16 is the height of the image
         // 24 is the width, comes from getCookProgressionScaled
         // 79 is the left location where the image should be
         // 34 is the top location where the image should be
-        this.blit(i + 78, j + 39, 176, 0, l + 1, 16);
+        //this.blit(i + 78, j + 39, 176, 0, progression + 1, 16);
 
-        int outputTankAmount = (int) (59 * (this.container.getOutputFluidAmount() / (float) this.container.getOutputTankCapacity()));
-        int inputTankAmount = (int) (59 * (this.container.getInputFluidAmount() / (float) this.container.getInputTankCapacity()));
+        int progression = this.container.getProcessProgressionScaled();
+        progressSliceLocation.setRight(progression);
 
-        int bottom = guiTop + 71;
-        int outputHeight = guiTop + 12 + (59 - outputTankAmount);
-        int outputLeft = guiLeft + 151;
-        int outputRight = guiLeft + 168;
+        drawOverlaySlice(progressSliceLocation, progressDrawLocation);
 
         // fill output
-        fill(outputLeft, outputHeight, outputRight, bottom, 0xffe68f00);
-
-        int inputHeight = guiTop + 12 + (59 - inputTankAmount);
-        int inputLeft = guiLeft + 119;
-        int inputRight = guiLeft + 136;
+        int outputFillHeight = outputFluidLocation.getComputedFillHeight(this.container.getOutputTankCapacity(), this.container.getOutputFluidAmount());
+        fillVertical(outputFluidLocation, outputFillHeight, 0xffe68f00);
 
         // fill input
-        fill(inputLeft, inputHeight, inputRight, bottom, 0xffb300e6);
+        int inputFillHeight = inputFluidLocation.getComputedFillHeight(this.container.getInputTankCapacity(), this.container.getInputFluidAmount());
+        fillVertical(inputFluidLocation, inputFillHeight, 0xffb300e6);
+    }
+
+    protected void drawOverlaySlice(Rect origin, Rect destination) {
+        this.blit(destination.getLeft(), destination.getTop(), origin.getLeft(), origin.getTop(), origin.getRight(), origin.getBottom());
+    }
+
+    protected void fillVertical(Rect rect, int top, int color) {
+        fill(rect.getLeft(), top, rect.getRight(), rect.getBottom(), color);
     }
 }

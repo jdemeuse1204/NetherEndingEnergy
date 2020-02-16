@@ -1,6 +1,9 @@
 package com.agrejus.netherendingenergy.blocks.terra.collector;
 
 import com.agrejus.netherendingenergy.RegistryNames;
+import com.agrejus.netherendingenergy.common.blocks.PartialModelFillBlock;
+import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
+import com.agrejus.netherendingenergy.items.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -12,20 +15,28 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.wrapper.EmptyHandler;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -74,10 +85,45 @@ public class TerraCollectingStationBlock extends Block {
         return state.get(BlockStateProperties.POWERED) ? super.getLightValue(state) : 0;
     }
 
+    private void transferOutOfContainer(PlayerEntity player, Hand hand, NEEFluidTank tankHandler) {
+
+    }
+
+    private void transferIntoContainer(PlayerEntity player, Hand hand, NEEFluidTank tankHandler) {
+        if (player == null || tankHandler == null) {
+            return;
+        }
+        ItemStack heldItem = player.getHeldItem(hand);
+        if (heldItem.isEmpty() == false) {
+            IItemHandler playerInventory = player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).orElse(EmptyHandler.INSTANCE);
+            if (playerInventory != null) {
+                FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(heldItem, 1)).ifPresent(w-> {
+                    int drainAmount = tankHandler.resolveDrainAmount(1000);
+
+                    if (drainAmount == 1000) {
+                        FluidActionResult result = FluidUtil.tryEmptyContainerAndStow(heldItem, tankHandler, playerInventory, Integer.MAX_VALUE, player, true);
+
+                        if (result.isSuccess()) {
+                            player.setHeldItem(hand, result.getResult());
+                        }
+                    }
+                });
+            }
+        }
+    }
+
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
 
         if (!worldIn.isRemote) {
+
+            if (player.getHeldItem(handIn).getItem() == Items.BUCKET) {
+                // Give player 1 bucket of refined acid
+                TerraCollectingStationTile collectingStation = (TerraCollectingStationTile)worldIn.getTileEntity(pos);
+                transferIntoContainer(player, handIn, collectingStation.getInputTank());
+                return true;
+            }
+
             TileEntity tileEntity = worldIn.getTileEntity(pos);
 
             if (tileEntity instanceof INamedContainerProvider) {

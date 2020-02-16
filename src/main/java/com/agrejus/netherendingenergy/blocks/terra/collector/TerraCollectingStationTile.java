@@ -1,18 +1,18 @@
 package com.agrejus.netherendingenergy.blocks.terra.collector;
 
 import com.agrejus.netherendingenergy.Capabilities;
+import com.agrejus.netherendingenergy.Config;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
 import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
 import com.agrejus.netherendingenergy.common.Ratio;
 import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
+import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
@@ -30,6 +30,8 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -46,19 +48,21 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         super(ModBlocks.TERRA_COLLECTING_STATION_TILE);
     }
 
-    private int progression;
     private int tickCounter;
-    private int tickProcessCounter;
     private Item growthMedium;
 
     private IntArraySupplierReferenceHolder referenceHolder;
 
+    private final int cycleProcessAmount = 10; // need at least 10 in the tank to start processing
+    private final int ticksToProcess = 200;
+    private int resovledCycleProcessAmount = 0;
+    private int tickProcessCount = 0;
+    private boolean isProcessing = false;
+
     public static final String INPUT_TANK_NAME = "INPUT";
     public static final String OUTPUT_TANK_NAME = "OUTPUT";
 
-    // how much input produces 1 output?  Ratio = 6:1
-    private int bufferSize;
-
+    private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
     private LazyOptional<IItemHandler> itemHandler = LazyOptional.of(() -> this.createHandler(this));
     private NEEFluidTank inputTank = new NEEFluidTank(INPUT_TANK_NAME, 1000) {
         @Override
@@ -77,6 +81,9 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         }
     };
 
+    private IEnergyStorage createEnergy() {
+        return new CustomEnergyStorage(60000, 200, 0);
+    }
     private IItemHandler createHandler(TerraCollectingStationTile tile) {
         return new ItemStackHandler(1) {
 
@@ -166,60 +173,75 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         }
 
         boolean shouldMarkDirtyAndUpdateBlock = false;
-        boolean canProcessInputTankFill = false;
-        boolean canProcessOutputTankFill = false;
+        boolean hasTwentyTickProcessingStarted = false;
 
         // check to see if we can process input tank filling
         if (tickCounter > 0) {
             tickCounter--;
 
             if (tickCounter <= 0) {
-                canProcessInputTankFill = true;
+                hasTwentyTickProcessingStarted = true;
             }
         }
 
-        // check to see if we can process fluid from input tank
-        if (tickProcessCounter > 0) {
-            tickProcessCounter--;
-
-            if (tickProcessCounter <= 0) {
-                canProcessOutputTankFill = true;
-            }
+        if (this.isProcessing == true && tickProcessCount > 0) {
+            tickProcessCount--;
         }
 
-        if (canProcessInputTankFill && inputTank.canFill() == true) {
+        if (hasTwentyTickProcessingStarted && inputTank.canFill() == true) {
             BlockPos aboveBlock = this.pos.up();
             TileEntity aboveTileEntity = world.getTileEntity(aboveBlock);
             if (aboveTileEntity instanceof CausticBellTile) {
                 CausticBellTile bell = (CausticBellTile) aboveTileEntity;
 
-                // This is a problem if the flower ever changes, introduce mixing?
-                this.bufferSize = bell.getYield(); // mB
+                int yield = bell.getYield(); // mB
                 Ratio strength = bell.getStrengthRatio();
                 Ratio purity = bell.getPurityRatio();
                 Ratio burnTimeAugment = bell.getBurnTimeAugmentRatio();
 
-                //Ratio amount = Ratio.addMany(strength, purity, burnTimeAugment);
+                // we will need to handle if the flower changes
 
-                int resolvedAmount = inputTank.resolveFillAmount(1);
+                Ratio amount = Ratio.addMany(strength, purity, burnTimeAugment);
+                int fillAmount = Math.round(yield * amount.asPercent());
+                int resolvedAmount = inputTank.resolveFillAmount(fillAmount);
 
                 inputTank.fill(new FluidStack(Fluids.LAVA.getStillFluid(), resolvedAmount), IFluidHandler.FluidAction.EXECUTE);
                 shouldMarkDirtyAndUpdateBlock = true;
             }
         }
 
-        if (canProcessOutputTankFill && bufferSize > 0 && this.canProcessInputFluid(bufferSize) && outputTank.canFill() == true) {
+        // keep checking if we have enough to process
+        if (hasTwentyTickProcessingStarted && this.canProcessInputFluid(cycleProcessAmount) && this.isProcessing == false) {
 
             // Make sure we have enough to drain
-            int resultingProcessAmount = 1;
-            int resolvedInputDrainAmount = inputTank.resolveDrainAmount(bufferSize);
+            this.resovledCycleProcessAmount = inputTank.resolveDrainAmount(cycleProcessAmount);
+            this.isProcessing = true; // start processing
+            this.tickProcessCount = this.ticksToProcess;
+        }
 
-            if (resolvedInputDrainAmount > 0) {
-                inputTank.drain(resolvedInputDrainAmount, IFluidHandler.FluidAction.EXECUTE);
+        // if we lose fluid, stop processing
+        if (hasTwentyTickProcessingStarted && this.canProcessInputFluid(this.resovledCycleProcessAmount) == false && this.isProcessing == true) {
+            this.resovledCycleProcessAmount = 0;
+            this.isProcessing = false;
+            this.tickProcessCount = 0;
+        }
 
-                outputTank.fill(new FluidStack(Fluids.LAVA.getStillFluid(), resultingProcessAmount), IFluidHandler.FluidAction.EXECUTE);
-                shouldMarkDirtyAndUpdateBlock = true;
-            }
+        if (tickCounter <= 0) {
+            tickCounter = 20; // Every second
+        }
+
+        if (this.isProcessing == true && tickProcessCount <= 0) {
+
+            // Stop Processing
+            tickProcessCount = 0;
+            this.isProcessing = false;
+
+            inputTank.drain(this.resovledCycleProcessAmount, IFluidHandler.FluidAction.EXECUTE);
+            outputTank.fill(new FluidStack(Fluids.LAVA.getStillFluid(), this.resovledCycleProcessAmount), IFluidHandler.FluidAction.EXECUTE);
+
+            this.tickProcessCount = 0;
+            this.isProcessing = false;
+            shouldMarkDirtyAndUpdateBlock = true;
         }
 
         if (shouldMarkDirtyAndUpdateBlock == true) {
@@ -227,20 +249,12 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             world.notifyBlockUpdate(pos, state, state, 3);
             markDirty();
         }
-
-        if (tickCounter <= 0) {
-            tickCounter = 20; // Every second
-        }
-
-        if (tickProcessCounter <= 0) {
-            tickProcessCounter = 60; // Every 3 seconds
-        }
     }
 
     private boolean canProcessInputFluid(int amountNeeded) {
 
         // need to make wait until we have enough to process
-        return inputTank.getFluidAmount() >= amountNeeded && outputTank.canFill();
+        return inputTank.getFluidAmount() >= amountNeeded && outputTank.canFill() && outputTank.resolveFillAmount(amountNeeded) == amountNeeded;
     }
 
     @Override
@@ -327,6 +341,11 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             return itemHandler.cast();
         }
 
+        if (cap == CapabilityEnergy.ENERGY && side != null && side == Direction.DOWN) {
+            // receive energy in the bottom only
+            return energy.cast();
+        }
+
         return super.getCapability(cap, side);
     }
 
@@ -345,7 +364,8 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                 () -> this.outputTank.getFluidAmount(),
                 () -> this.inputTank.getCapacity(),
                 () -> this.inputTank.getFluidAmount(),
-                () -> this.progression);
+                () -> this.tickProcessCount,
+                () -> this.ticksToProcess);
 
         return new TerraCollectingStationContainer(worldId, world, pos, playerInventory, playerEntity, referenceHolder);
     }
@@ -358,7 +378,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         if (this.world.getTileEntity(this.pos) != this) {
             return false;
         } else {
-            return player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
+            return player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D, (double) this.pos.getZ() + 0.5D) <= 64.0D;
         }
     }
 

@@ -29,7 +29,7 @@ public class TerraCollectingStationContainer extends Container {
     // Exists on both server and client
     // Has slots of inventory and their links
     public TerraCollectingStationContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        this(id, world, pos, playerInventory, playerEntity, new IntArray(5));
+        this(id, world, pos, playerInventory, playerEntity, new IntArray(6));
     }
 
     public TerraCollectingStationContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity, IIntArray intArray) {
@@ -55,10 +55,6 @@ public class TerraCollectingStationContainer extends Container {
         trackIntArray(intArray);
     }
 
-
-    //public boolean canInteractWith(PlayerEntity playerIn) {
-    //      return this.furnaceInventory.isUsableByPlayer(playerIn);
-    //   }
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
         return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerEntity, ModBlocks.TERRA_COLLECTING_STATION_BLOCK);
@@ -110,8 +106,12 @@ public class TerraCollectingStationContainer extends Container {
         return this.tracking.get(3);
     }
 
-    public int getProgression() {
+    public int getTickCounter() {
         return this.tracking.get(4);
+    }
+
+    public int getTotalTicksToProcess() {
+        return this.tracking.get(5);
     }
 
     @Override
@@ -166,8 +166,8 @@ public class TerraCollectingStationContainer extends Container {
     @OnlyIn(Dist.CLIENT)
     public int getProcessProgressionScaled() {
 
-        int i = 400;//this.field_217064_e.get(2); // cook Time
-        int j = 1600;//this.field_217064_e.get(3); // cook Time Total
+        int i = this.getTotalTicksToProcess() - this.getTickCounter();//this.field_217064_e.get(2); // cook Time
+        int j = this.getTotalTicksToProcess();//this.field_217064_e.get(3); // cook Time Total
 
         // 24 is the width of the progression arrow for the GUI
         return j != 0 && i != 0 ? i * 24 / j : 0;

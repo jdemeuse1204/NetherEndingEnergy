@@ -1,4 +1,4 @@
-package com.agrejus.netherendingenergy.blocks.terra.generator;
+package com.agrejus.netherendingenergy.blocks.general.generator;
 
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
@@ -19,7 +19,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-public class TerraFurnaceGeneratorContainer extends Container {
+public class FurnaceGeneratorContainer extends Container {
 
     private TileEntity tileEntity;
     private PlayerEntity playerEntity;
@@ -27,8 +27,8 @@ public class TerraFurnaceGeneratorContainer extends Container {
 
     // Exists on both server and client
     // Has slots of inventory and their links
-    public TerraFurnaceGeneratorContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        super(ModBlocks.TERRA_FURNACE_GENERATOR_CONTAINER, id);
+    public FurnaceGeneratorContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        super(ModBlocks.FURNACE_GENERATOR_CONTAINER, id);
         tileEntity = world.getTileEntity(pos);
         tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         this.playerEntity = playerEntity;
@@ -91,7 +91,7 @@ public class TerraFurnaceGeneratorContainer extends Container {
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
-        return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerEntity, ModBlocks.TERRA_FURNACE_GENERATOR_BLOCK);
+        return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerEntity, ModBlocks.FURNACE_GENERATOR_BLOCK);
     }
 
     @Override
