@@ -41,6 +41,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TerraCollectingStationTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
 
@@ -251,6 +252,13 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         }
     }
 
+    private void receivePower() {
+
+        energy.ifPresent(energy -> {
+
+        });
+    }
+
     private boolean canProcessInputFluid(int amountNeeded) {
 
         // need to make wait until we have enough to process
@@ -267,6 +275,10 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
 
         itemHandler.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(invTag));
 
+        CompoundNBT energyTag = tag.getCompound("energy");
+
+        energy.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(energyTag));
+
         super.read(tag);
     }
 
@@ -282,6 +294,11 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         itemHandler.ifPresent(w -> {
             CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
             tag.put("inv", compound);
+        });
+
+        energy.ifPresent(w -> {
+            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
+            tag.put("energy", compound);
         });
 
         return super.write(tag);
@@ -301,6 +318,10 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             tag.put("inv", compound);
         });
 
+        energy.ifPresent(w -> {
+            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
+            tag.put("energy", compound);
+        });
 
         tag.put("input_tank", inputTankNBT);
         tag.put("output_tank", outputTankNBT);
@@ -321,8 +342,10 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         outputTank.readFromNBT(nbt.getCompound("output_tank"));
 
         CompoundNBT invTag = nbt.getCompound("inv");
+        CompoundNBT energyTag = nbt.getCompound("energy");
 
         itemHandler.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(invTag));
+        energy.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(energyTag));
     }
 
     @Nonnull
@@ -365,7 +388,8 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                 () -> this.inputTank.getCapacity(),
                 () -> this.inputTank.getFluidAmount(),
                 () -> this.tickProcessCount,
-                () -> this.ticksToProcess);
+                () -> this.ticksToProcess,
+                () -> this.energy.map(w -> w.getEnergyStored()).orElse(0));
 
         return new TerraCollectingStationContainer(worldId, world, pos, playerInventory, playerEntity, referenceHolder);
     }

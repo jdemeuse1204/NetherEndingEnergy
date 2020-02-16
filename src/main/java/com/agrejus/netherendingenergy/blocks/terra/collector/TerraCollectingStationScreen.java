@@ -35,10 +35,6 @@ public class TerraCollectingStationScreen extends ContainerScreen<TerraCollectin
     protected void init() {
         super.init();
 
-/*        energyDestinationLocation = new GuiLocation(9, 17, 42, 10);
-        energyImageSliceLocation = new GuiLocation(this.defaultGuiScreenWidth, 17, 62, 11);
-
-        inputFluidOverlayLocation = new GuiLocation(guiLeft + 119, guiTop + 11, 60, 17);*/
         inputFluidLocation = createRectBasedOnGui(11, 119, 136, 71);
         outputFluidLocation = createRectBasedOnGui(11, 151, 168, 71);
 
@@ -86,6 +82,7 @@ public class TerraCollectingStationScreen extends ContainerScreen<TerraCollectin
             tooltip.add(String.format("%s mB", amount));
         }
 
+        System.out.println(container.getEnergyStored());
         if (!tooltip.isEmpty()) {
             this.renderTooltip(tooltip, mouseX, mouseY);
             RenderHelper.enableGUIStandardItemLighting();

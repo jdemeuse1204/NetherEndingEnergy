@@ -29,7 +29,7 @@ public class TerraCollectingStationContainer extends Container {
     // Exists on both server and client
     // Has slots of inventory and their links
     public TerraCollectingStationContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        this(id, world, pos, playerInventory, playerEntity, new IntArray(6));
+        this(id, world, pos, playerInventory, playerEntity, new IntArray(7));
     }
 
     public TerraCollectingStationContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity, IIntArray intArray) {
@@ -113,6 +113,8 @@ public class TerraCollectingStationContainer extends Container {
     public int getTotalTicksToProcess() {
         return this.tracking.get(5);
     }
+
+    public int getEnergyStored() { return this.tracking.get(6); }
 
     @Override
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
