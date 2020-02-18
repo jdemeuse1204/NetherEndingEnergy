@@ -3,17 +3,27 @@ package com.agrejus.netherendingenergy.blocks.flowers;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
 import com.agrejus.netherendingenergy.common.Ratio;
+import com.agrejus.netherendingenergy.common.flowers.CausticBellTrait;
 import com.agrejus.netherendingenergy.common.helpers.NBTHelpers;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IEntityReader;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
@@ -23,8 +33,6 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     private Ratio strength;
     private Ratio purity;
     private Ratio burnTimeAugmentRatio;
-
-    private int operationalSpeedTicks = 200; // 5 seconds
 
     public CausticBellTile() {
         super(ModBlocks.CAUSTIC_BELL_TILE);
@@ -65,100 +73,21 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
         if (counter <= 0) {
 
-            // Start of the operation
-            BlockPos position = getPos().down();
-            TileEntity tileBelow = world.getTileEntity(position);
+            List<LivingEntity> entities = world.getEntitiesWithinAABB(LivingEntity.class, this.getRenderBoundingBox().grow(1.5D,1.5D,1.5D));
 
-            if (tileBelow instanceof TerraCollectingStationTile) {
-/*                TerraAcidCollectorTile collector = (TerraAcidCollectorTile) tileBelow;
-
-                boolean hasGrowthMediumChanged = this.hasGrowthMediumChanged(collector);
-
-                Item growthMediumItem = collector.getGrowthMedium();
-                Block growthMedium = Block.getBlockFromItem(growthMediumItem);
-
-                if (growthMedium instanceof CausticImbuedSoil) {
-                    CausticImbuedSoil soil = (CausticImbuedSoil) growthMedium;
-
-                    ImbueMaterial material = soil.getImbueMaterial();
-
-                    this.strength = getStrengthFromBlock(material);
-                    this.yield = getYieldFromBlock(material);
-                    this.purity = getPurityFromBlock(material);
-
-                } else if (growthMediumItem == Items.DIRT) {
-                    this.strength = 1;
-                    this.yield = 1;
-                    this.purity = 1;
-                } else {
-                    this.strength = 0;
-                    this.yield = 0;
-                    this.purity = 0;
+            entities.forEach(w -> {
+                if (isNoxious()) {
+                    w.addPotionEffect(new EffectInstance(Effects.NAUSEA, 200));
                 }
 
-                if (hasGrowthMediumChanged) {
-                    BlockState state = world.getBlockState(pos);
-                    world.notifyBlockUpdate(pos, state, state, 3);
-                    markDirty();
-                }*/
-
-                counter = 20;
-            }
+            });
+            counter = 20;
         }
     }
 
-/*
-    private boolean hasGrowthMediumChanged(TerraAcidCollectorTile collector) {
-        Item growthMediumItem = collector.getGrowthMedium();
-        Block growthMedium = Block.getBlockFromItem(growthMediumItem);
-
-        if (growthMedium instanceof CausticImbuedSoil) {
-            CausticImbuedSoil soil = (CausticImbuedSoil) growthMedium;
-            ImbueMaterial material = soil.getImbueMaterial();
-
-            return strength != getStrengthFromBlock(material) ||
-                    yield != getYieldFromBlock(material) ||
-                    purity != getPurityFromBlock(material);
-        }
-
-        if (growthMedium == Blocks.DIRT) {
-            return strength != 1 ||
-                    yield != 1 ||
-                    purity != 1;
-        }
-
-        return strength != 0 ||
-                yield != 0 ||
-                purity != 0;
+    public boolean isNoxious() {
+        return this.getBlockState().get(CausticBellBlock.DOMINANT_TRAIT) == CausticBellTrait.NOXIOUS;
     }
-
-    private int getPurityFromBlock(ImbueMaterial material) {
-
-        if (purityBlockValues.containsKey(material)) {
-            return purityBlockValues.get(material);
-        }
-
-        return 0;
-    }
-
-    private int getYieldFromBlock(ImbueMaterial material) {
-
-        if (yieldBlockValues.containsKey(material)) {
-            return yieldBlockValues.get(material);
-        }
-
-        return 0;
-    }
-
-    private int getStrengthFromBlock(ImbueMaterial material) {
-
-        if (strengthBlockValues.containsKey(material)) {
-            return strengthBlockValues.get(material);
-        }
-
-        return 0;
-    }
-*/
 
     @Override
     public void read(CompoundNBT tag) {

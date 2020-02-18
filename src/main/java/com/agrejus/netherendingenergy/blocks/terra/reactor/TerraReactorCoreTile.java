@@ -40,7 +40,7 @@ public class TerraReactorCoreTile  extends TileEntity implements ITickableTileEn
     }
 
     private IEnergyStorage createEnergy() {
-        return new CustomEnergyStorage(Config.FIRSTBLOCK_MAXPOWER.get(), 0);
+        return new CustomEnergyStorage(Config.FIRSTBLOCK_MAXPOWER.get(), 0, 0);
     }
 
     private IItemHandler createHandler() {

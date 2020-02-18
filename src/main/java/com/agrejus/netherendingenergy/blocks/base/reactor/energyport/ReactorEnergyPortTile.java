@@ -29,7 +29,7 @@ public class ReactorEnergyPortTile extends TileEntity {
     }
 
     private IEnergyStorage createEnergy() {
-        return new CustomEnergyStorage(Config.FIRSTBLOCK_MAXPOWER.get(), 0);
+        return new CustomEnergyStorage(Config.FIRSTBLOCK_MAXPOWER.get(), 0, 0);
     }
 
     private IItemHandler createHandler() {

@@ -20,6 +20,7 @@ public class TerraCollectingStationScreen extends ContainerScreen<TerraCollectin
 
     private ResourceLocation GUI = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/terra_collecting_station_gui.png");
 
+    private Rect energyLocation;
     private Rect inputFluidLocation;
     private Rect outputFluidLocation;
     private Rect progressSliceLocation;
@@ -35,6 +36,7 @@ public class TerraCollectingStationScreen extends ContainerScreen<TerraCollectin
     protected void init() {
         super.init();
 
+        energyLocation = createRectBasedOnGui(17, 9, 20, 63);
         inputFluidLocation = createRectBasedOnGui(11, 119, 136, 71);
         outputFluidLocation = createRectBasedOnGui(11, 151, 168, 71);
 
@@ -82,7 +84,12 @@ public class TerraCollectingStationScreen extends ContainerScreen<TerraCollectin
             tooltip.add(String.format("%s mB", amount));
         }
 
-        System.out.println(container.getEnergyStored());
+        if (this.isMouseOver(this.energyLocation, mouseX, mouseY)) {
+            int amount = container.getEnergyStored();
+            tooltip.add("Energy:");
+            tooltip.add(String.format("%s FE", amount));
+        }
+
         if (!tooltip.isEmpty()) {
             this.renderTooltip(tooltip, mouseX, mouseY);
             RenderHelper.enableGUIStandardItemLighting();
@@ -105,7 +112,6 @@ public class TerraCollectingStationScreen extends ContainerScreen<TerraCollectin
         this.blit(i, j, 0, 0, this.xSize, this.ySize);
 
 
-
         // 176,14 is where the image is from
         // 16 is the height of the image
         // 24 is the width, comes from getCookProgressionScaled
@@ -117,6 +123,10 @@ public class TerraCollectingStationScreen extends ContainerScreen<TerraCollectin
         progressSliceLocation.setRight(progression);
 
         drawOverlaySlice(progressSliceLocation, progressDrawLocation);
+
+        // fill energy
+        int energyStored = energyLocation.getComputedFillHeight(this.container.getMaxEnergyStored(), this.container.getEnergyStored());
+        fillVertical(energyLocation, energyStored, 0xff8cff72);
 
         // fill output
         int outputFillHeight = outputFluidLocation.getComputedFillHeight(this.container.getOutputTankCapacity(), this.container.getOutputFluidAmount());

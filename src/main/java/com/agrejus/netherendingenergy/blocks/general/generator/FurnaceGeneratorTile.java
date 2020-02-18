@@ -40,7 +40,7 @@ public class FurnaceGeneratorTile extends TileEntity implements ITickableTileEnt
     }
 
     private IEnergyStorage createEnergy() {
-        return new CustomEnergyStorage(Config.FIRSTBLOCK_MAXPOWER.get(), 0);
+        return new CustomEnergyStorage(Config.FIRSTBLOCK_MAXPOWER.get(), 0, 0);
     }
 
     private IItemHandler createHandler() {

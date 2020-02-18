@@ -121,7 +121,7 @@ public class FirstBlockTile extends TileEntity implements ITickableTileEntity, I
                     TileEntity te = world.getTileEntity(pos.offset(direction));
 
                     if (te != null) {
-                        boolean doContinue = te.getCapability(CapabilityEnergy.ENERGY, direction).map(handler -> {
+                        boolean doContinue = te.getCapability(CapabilityEnergy.ENERGY, Direction.DOWN).map(handler -> {
                             if (handler.canReceive()) {
                                 int received = handler.receiveEnergy(Math.min(capacity.get(), Config.FIRSTBLOCK_SEND.get()), false);
                                 capacity.addAndGet(-received);

@@ -27,20 +27,33 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreConta
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreTile;
 import com.agrejus.netherendingenergy.blocks.test.BlockTank;
 import com.agrejus.netherendingenergy.blocks.test.TileTank;
+import com.agrejus.netherendingenergy.common.flowers.CausticBellTrait;
 import com.agrejus.netherendingenergy.fluids.RawAcidFluid;
 import com.agrejus.netherendingenergy.items.FirstItem;
 import com.agrejus.netherendingenergy.setup.ClientProxy;
 import com.agrejus.netherendingenergy.setup.IProxy;
 import com.agrejus.netherendingenergy.setup.ModSetup;
 import com.agrejus.netherendingenergy.setup.ServerProxy;
+import com.agrejus.netherendingenergy.setup.config.CausticBellConfig;
+import com.agrejus.netherendingenergy.setup.config.CausticBellFeature;
 import com.agrejus.netherendingenergy.tools.CapabilityVapor;
+import com.google.common.collect.ImmutableSet;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.SeaGrassConfig;
+import net.minecraft.world.gen.placement.AtSurfaceWithExtraConfig;
+import net.minecraft.world.gen.placement.IPlacementConfig;
+import net.minecraft.world.gen.placement.Placement;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -54,8 +67,12 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Random;
+import java.util.Set;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("netherendingenergy")
@@ -72,6 +89,7 @@ public class NetherEndingEnergy {
     public static final DeferredRegister<Block> BLOCKS = new DeferredRegister<>(ForgeRegistries.BLOCKS, MODID);
     public static final DeferredRegister<Fluid> FLUIDS = new DeferredRegister<>(ForgeRegistries.FLUIDS, MODID);
     public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, MODID);
+    public static final Feature<CausticBellConfig> CAUSTIC_BELLS = new CausticBellFeature(CausticBellConfig::deserialize);
 
     static {
         RawAcidFluid.create("raw_acid_fluid");
@@ -93,12 +111,14 @@ public class NetherEndingEnergy {
 
         Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve("netherendingenergy-client.toml"));
         Config.loadConfig(Config.COMMON_CONFIG, FMLPaths.CONFIGDIR.get().resolve("netherendingenergy-common.toml"));
+
     }
 
     private void setup(final FMLCommonSetupEvent event) {
         setup.init();
         proxy.init();
         CapabilityVapor.register();
+        RegistryEvents.addWorldgen();
     }
 
 /*    private void doClientStuff(final FMLClientSetupEvent event) {
@@ -136,6 +156,15 @@ public class NetherEndingEnergy {
     // Event bus for receiving Registry Events)
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents {
+
+        @SubscribeEvent
+        public static void onRegisterFeatures(RegistryEvent.Register<Feature<?>> event) {
+            IForgeRegistry<Feature<?>> r = event.getRegistry();
+
+/*            register(r, MYSTICAL_FLOWERS, "mystical_flowers");
+            register(r, MYSTICAL_MUSHROOMS, "mystical_mushrooms");*/
+            //r.register(new CausticBellFeature(new ));
+        }
 
         @SubscribeEvent
         public static void onBlocksRegistry(final RegistryEvent.Register<Block> event) {
@@ -259,6 +288,23 @@ public class NetherEndingEnergy {
                 BlockPos pos = data.readBlockPos();
                 return new ImbuingMachineContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
             }).setRegistryName(RegistryNames.IMBUING_MACHINE));
+        }
+
+        public static final Set<BiomeDictionary.Type> TYPE_BLACKLIST = ImmutableSet.of(
+                BiomeDictionary.Type.DEAD,
+                BiomeDictionary.Type.NETHER,
+                BiomeDictionary.Type.END,
+                BiomeDictionary.Type.SNOWY,
+                BiomeDictionary.Type.WASTELAND,
+                BiomeDictionary.Type.VOID
+        );
+
+        public static void addWorldgen() {
+            for(Biome biome : ForgeRegistries.BIOMES) {
+                if (BiomeDictionary.getTypes(biome).stream().noneMatch(TYPE_BLACKLIST::contains)) {
+                    biome.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, biome.createDecoratedFeature(CAUSTIC_BELLS, new CausticBellConfig(), Placement.TOP_SOLID_HEIGHTMAP, IPlacementConfig.NO_PLACEMENT_CONFIG));
+                }
+            }
         }
     }
 }

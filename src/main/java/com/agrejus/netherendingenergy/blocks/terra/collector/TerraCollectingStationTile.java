@@ -41,6 +41,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TerraCollectingStationTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
@@ -56,6 +57,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
 
     private final int cycleProcessAmount = 10; // need at least 10 in the tank to start processing
     private final int ticksToProcess = 200;
+    private final int energyUsePerTick = 25;
     private int resovledCycleProcessAmount = 0;
     private int tickProcessCount = 0;
     private boolean isProcessing = false;
@@ -85,6 +87,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
     private IEnergyStorage createEnergy() {
         return new CustomEnergyStorage(60000, 200, 0);
     }
+
     private IItemHandler createHandler(TerraCollectingStationTile tile) {
         return new ItemStackHandler(1) {
 
@@ -173,7 +176,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             return;
         }
 
-        boolean shouldMarkDirtyAndUpdateBlock = false;
+        AtomicBoolean shouldMarkDirtyAndUpdateBlock = new AtomicBoolean(false);
         boolean hasTwentyTickProcessingStarted = false;
 
         // check to see if we can process input tank filling
@@ -186,7 +189,16 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         }
 
         if (this.isProcessing == true && tickProcessCount > 0) {
-            tickProcessCount--;
+            AtomicBoolean finalShouldMarkDirtyAndUpdateBlock = shouldMarkDirtyAndUpdateBlock;
+            energy.ifPresent(w -> {
+
+                if (w.getEnergyStored() >= this.energyUsePerTick) {
+                    ((CustomEnergyStorage)w).consumeEnergy(energyUsePerTick);
+
+                    tickProcessCount--;
+                    finalShouldMarkDirtyAndUpdateBlock.set(true);
+                }
+            });
         }
 
         if (hasTwentyTickProcessingStarted && inputTank.canFill() == true) {
@@ -207,7 +219,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                 int resolvedAmount = inputTank.resolveFillAmount(fillAmount);
 
                 inputTank.fill(new FluidStack(Fluids.LAVA.getStillFluid(), resolvedAmount), IFluidHandler.FluidAction.EXECUTE);
-                shouldMarkDirtyAndUpdateBlock = true;
+                shouldMarkDirtyAndUpdateBlock.set(true);
             }
         }
 
@@ -242,21 +254,14 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
 
             this.tickProcessCount = 0;
             this.isProcessing = false;
-            shouldMarkDirtyAndUpdateBlock = true;
+            shouldMarkDirtyAndUpdateBlock.set(true);
         }
 
-        if (shouldMarkDirtyAndUpdateBlock == true) {
+        if (shouldMarkDirtyAndUpdateBlock.get() == true) {
             BlockState state = world.getBlockState(pos);
             world.notifyBlockUpdate(pos, state, state, 3);
             markDirty();
         }
-    }
-
-    private void receivePower() {
-
-        energy.ifPresent(energy -> {
-
-        });
     }
 
     private boolean canProcessInputFluid(int amountNeeded) {
@@ -356,9 +361,9 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             return LazyOptional.of(() -> (T) outputTank);
         }
 
-        if (cap == Capabilities.MULTI_FLUID_HANDLER_CAPABILITY) {
+/*        if (cap == Capabilities.MULTI_FLUID_HANDLER_CAPABILITY) {
             return LazyOptional.of(() -> (T) new NEEFluidTank[]{outputTank, inputTank});
-        }
+        }*/
 
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return itemHandler.cast();
@@ -389,7 +394,8 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                 () -> this.inputTank.getFluidAmount(),
                 () -> this.tickProcessCount,
                 () -> this.ticksToProcess,
-                () -> this.energy.map(w -> w.getEnergyStored()).orElse(0));
+                () -> this.energy.map(w -> w.getEnergyStored()).orElse(0),
+                () -> this.energy.map(w -> w.getMaxEnergyStored()).orElse(0));
 
         return new TerraCollectingStationContainer(worldId, world, pos, playerInventory, playerEntity, referenceHolder);
     }
@@ -405,39 +411,4 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             return player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D, (double) this.pos.getZ() + 0.5D) <= 64.0D;
         }
     }
-
-    /*@Override
-    public void clear() {
-
-    }
-
-    @Override
-    public int getSizeInventory() {
-        return 0;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public ItemStack getStackInSlot(int index) {
-        return null;
-    }
-
-    @Override
-    public ItemStack decrStackSize(int index, int count) {
-        return null;
-    }
-
-    @Override
-    public ItemStack removeStackFromSlot(int index) {
-        return null;
-    }
-
-    @Override
-    public void setInventorySlotContents(int index, ItemStack stack) {
-
-    }*/
 }

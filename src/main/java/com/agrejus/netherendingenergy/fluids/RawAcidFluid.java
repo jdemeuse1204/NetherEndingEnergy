@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.IFluidState;
@@ -16,10 +17,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.item.Rarity;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -76,8 +81,14 @@ public class RawAcidFluid {
 
         @Override
         public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
-            // poison
-
+            if (!worldIn.isRemote && worldIn.getDifficulty() != Difficulty.PEACEFUL) {
+                if (entityIn instanceof LivingEntity) {
+                    LivingEntity livingentity = (LivingEntity) entityIn;
+                    if (!livingentity.isInvulnerableTo(DamageSource.WITHER)) {
+                        livingentity.addPotionEffect(new EffectInstance(Effects.POISON, 40));
+                    }
+                }
+            }
         }
     }
 }
