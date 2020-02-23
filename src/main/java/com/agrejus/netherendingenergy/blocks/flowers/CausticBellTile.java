@@ -31,11 +31,13 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
     private int counter;
 
+    // Statistics
     private int yield; // mB
     private Ratio strength;
     private Ratio purity;
     private Ratio burnTimeAugmentRatio;
 
+    // Traits
     private CausticBellTrait superiorTrait;
     private CausticBellTrait inferiorTrait;
     private CausticBellTrait recessiveTrait;

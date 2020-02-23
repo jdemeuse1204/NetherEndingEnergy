@@ -9,9 +9,7 @@ import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.fluid.FlowingFluid;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.*;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -24,6 +22,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -45,6 +44,12 @@ public class RawAcidFluid {
     protected RegistryObject<Item> bucket;
 
     protected ForgeFlowingFluid.Properties properties;
+
+    public static final FlowingFluid LAVA = register("lava", new LavaFluid.Source());
+
+    private static <T extends Fluid> T register(String key, T p_215710_1_) {
+        return (T)(Registry.register(Registry.FLUID, key, p_215710_1_));
+    }
 
     protected RawAcidFluid(String key, String stillTexture, String flowTexture) {
 

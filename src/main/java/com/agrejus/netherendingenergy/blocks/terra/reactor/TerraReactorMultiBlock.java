@@ -2,6 +2,7 @@ package com.agrejus.netherendingenergy.blocks.terra.reactor;
 
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.common.interfaces.IMultiBlockType;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -25,10 +26,9 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
         } else if (isFormedSuperchestPart(world, p)) {
             TerraReactorPartIndex index = world.getBlockState(p).get(TerraReactorCoreBlock.FORMED);
             return index == TerraReactorPartIndex.getIndex(dx, dy, dz);
-        } else {
-            // We can already stop here
-            return false;
         }
+
+        return false;
     }
 
     private boolean isValidUnformedBlockPart(World world, BlockPos pos, int dx, int dy, int dz) {
@@ -68,9 +68,9 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
     @Override
     public boolean isValidUnformedMultiBlock(World world, BlockPos pos) {
         int cntSuper = 0;
-        for (int dx = 0 ; dx < getWidth() ; dx++) {
-            for (int dy = 0 ; dy < getHeight() ; dy++) {
-                for (int dz = 0 ; dz < getDepth() ; dz++) {
+        for (int dx = 0; dx < getWidth(); dx++) {
+            for (int dy = 0; dy < getHeight(); dy++) {
+                for (int dz = 0; dz < getDepth(); dz++) {
                     BlockPos p = pos.add(dx, dy, dz);
                     if (!isValidUnformedBlockPart(world, p, dx, dy, dz)) {
                         return false;
@@ -86,12 +86,34 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
 
     @Override
     public boolean isValidFormedMultiBlock(World world, BlockPos pos) {
-        int cntSuper = 0;
-        for (int dx = 0; dx < getWidth(); dx++) {
-            for (int dy = 0; dy < getHeight(); dy++) {
-                for (int dz = 0; dz < getDepth(); dz++) {
-                    BlockPos p = pos.add(dx, dy, dz);
-                    if (!isValidFormedBlockPart(world, p, dx, dy, dz)) {
+
+        int startX = pos.getX() - 2;
+        int startY = pos.getY();
+        int startZ = pos.getZ();
+        BlockPos start = new BlockPos(startX, startY, startZ);
+
+        for (TerraReactorPartIndex part : TerraReactorPartIndex.values()) {
+
+            if (part.getAllowedBlockTypes() == null) {
+                continue;// Dont care whats here
+            }
+
+            BlockPos position = start.add(part.getDx(), part.getDy(), part.getDz());
+            Block block = world.getBlockState(position).getBlock();
+            Class blockClass = block.getClass();
+
+            if (part.getAllowedBlockTypes().contains(blockClass) == false) {
+                return false;
+            }
+        }
+
+        return true;
+/*        int cntSuper = 0;
+        for (int x = 0; x < getWidth(); x++) {
+            for (int y = 0; y < getHeight(); y++) {
+                for (int z = 0; z < getDepth(); z++) {
+                    BlockPos p = pos.add(x, y, z);
+                    if (!isValidFormedBlockPart(world, p, x, y, z)) {
                         return false;
                     }
                     if (world.getBlockState(p).getBlock() == ModBlocks.TERRA_REACTOR_CORE_BLOCK) {
@@ -100,22 +122,22 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
                 }
             }
         }
-        return cntSuper == 1;
+        return cntSuper == 1;*/
     }
 
     @Override
     public int getWidth() {
-        return 2;
+        return 5;
     }
 
     @Override
     public int getHeight() {
-        return 2;
+        return 5;
     }
 
     @Override
     public int getDepth() {
-        return 2;
+        return 5;
     }
 
     private static boolean isUnformedSuperchestController(World world, BlockPos pos) {

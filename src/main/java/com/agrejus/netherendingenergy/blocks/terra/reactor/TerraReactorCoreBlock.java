@@ -87,10 +87,6 @@ public class TerraReactorCoreBlock extends Block {
         return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
     }
 
-/*    public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity placer) {
-        return Direction.getFacingFromVector((float) (placer.posX - clickedBlock.getX()), (float) (placer.posY - clickedBlock.getY()), (float) (placer.posZ - clickedBlock.getZ()));
-    }*/
-
     @Override
     public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {
         return false;
