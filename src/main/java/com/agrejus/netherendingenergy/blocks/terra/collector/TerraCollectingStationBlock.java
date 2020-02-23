@@ -85,10 +85,6 @@ public class TerraCollectingStationBlock extends Block {
         return state.get(BlockStateProperties.POWERED) ? super.getLightValue(state) : 0;
     }
 
-    private void transferOutOfContainer(PlayerEntity player, Hand hand, NEEFluidTank tankHandler) {
-
-    }
-
     private void transferIntoContainer(PlayerEntity player, Hand hand, NEEFluidTank tankHandler) {
         if (player == null || tankHandler == null) {
             return;

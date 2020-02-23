@@ -46,6 +46,39 @@
               ]
             },
             {
+              "function": "minecraft:copy_nbt",
+              "source": "block_entity",
+              "ops": [
+                {
+                  "source": "superior_trait",
+                  "target": "BlockEntityTag.superior_trait",
+                  "op": "replace"
+                }
+              ]
+            },
+            {
+              "function": "minecraft:copy_nbt",
+              "source": "block_entity",
+              "ops": [
+                {
+                  "source": "inferior_trait",
+                  "target": "BlockEntityTag.inferior_trait",
+                  "op": "replace"
+                }
+              ]
+            },
+            {
+              "function": "minecraft:copy_nbt",
+              "source": "block_entity",
+              "ops": [
+                {
+                  "source": "recessive_trait",
+                  "target": "BlockEntityTag.recessive_trait",
+                  "op": "replace"
+                }
+              ]
+            },
+            {
               "function": "minecraft:set_contents",
               "entries": [
                 {

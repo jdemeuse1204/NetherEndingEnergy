@@ -4,7 +4,9 @@ import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
 import com.agrejus.netherendingenergy.common.Ratio;
 import com.agrejus.netherendingenergy.common.flowers.CausticBellTrait;
+import com.agrejus.netherendingenergy.common.flowers.CausticBellTraitConfig;
 import com.agrejus.netherendingenergy.common.helpers.NBTHelpers;
+import com.agrejus.netherendingenergy.setup.config.CausticBellConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -34,14 +36,55 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     private Ratio purity;
     private Ratio burnTimeAugmentRatio;
 
+    private CausticBellTrait superiorTrait;
+    private CausticBellTrait inferiorTrait;
+    private CausticBellTrait recessiveTrait;
+
+    public CausticBellTile(CausticBellTrait superiorTrait, CausticBellTrait inferiorTrait, CausticBellTrait recessiveTrait) {
+        this();
+
+        if (this.superiorTrait == null) {
+            this.superiorTrait = superiorTrait;
+        }
+
+        if (this.inferiorTrait == null) {
+            this.inferiorTrait = inferiorTrait;
+        }
+
+        if (this.recessiveTrait == null) {
+            this.recessiveTrait = recessiveTrait;
+        }
+
+        this.yield = CausticBellTraitConfig.getDefaultYield(this.superiorTrait);
+        this.strength = CausticBellTraitConfig.getDefaultStrength(this.superiorTrait);
+        this.purity= CausticBellTraitConfig.getDefaultPurity(this.superiorTrait);
+        this.burnTimeAugmentRatio = CausticBellTraitConfig.getDefaultBurnTimeAugment(this.superiorTrait);
+    }
+
     public CausticBellTile() {
         super(ModBlocks.CAUSTIC_BELL_TILE);
 
+        this.superiorTrait = null;
+        this.inferiorTrait = null;
+        this.recessiveTrait = null;
+
         // Default
-        yield = 5;
+        yield = 1;
         strength = new Ratio(1, 1);
-        purity = new Ratio(5, 6); // for every 6 you get 5
+        purity = new Ratio(1, 1); // for every 6 you get 5
         burnTimeAugmentRatio = new Ratio(1, 1);
+    }
+
+    public CausticBellTrait getSuperiorTrait() {
+        return this.superiorTrait;
+    }
+
+    public CausticBellTrait getInferiorTrait() {
+        return this.inferiorTrait;
+    }
+
+    public CausticBellTrait getRecessiveTrait() {
+        return this.recessiveTrait;
     }
 
     public int getYield() {
@@ -73,7 +116,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
         if (counter <= 0) {
 
-            List<LivingEntity> entities = world.getEntitiesWithinAABB(LivingEntity.class, this.getRenderBoundingBox().grow(1.5D,1.5D,1.5D));
+            List<LivingEntity> entities = world.getEntitiesWithinAABB(LivingEntity.class, this.getRenderBoundingBox().grow(1.5D, 1.5D, 1.5D));
 
             entities.forEach(w -> {
                 if (isNoxious()) {
@@ -86,7 +129,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     }
 
     public boolean isNoxious() {
-        return this.getBlockState().get(CausticBellBlock.DOMINANT_TRAIT) == CausticBellTrait.NOXIOUS;
+        return this.superiorTrait == CausticBellTrait.NOXIOUS;
     }
 
     @Override
@@ -100,6 +143,25 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         this.purity.deserializeNBT(purityNBT);
 
         this.yield = tag.getInt("yield");
+
+        CausticBellTrait[] traits = CausticBellTrait.values();
+        String superiorTrait = tag.getString("superior_trait");
+        String inferiorTrait = tag.getString("inferior_trait");
+        String recessiveTrait = tag.getString("recessive_trait");
+
+        for (CausticBellTrait trait : traits) {
+            if (trait.getName() == superiorTrait) {
+                this.superiorTrait = trait;
+            }
+
+            if (trait.getName() == inferiorTrait) {
+                this.inferiorTrait = trait;
+            }
+
+            if (trait.getName() == recessiveTrait) {
+                this.recessiveTrait = trait;
+            }
+        }
     }
 
     @Override
@@ -113,6 +175,10 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         tag.put("purity", purityNBT);
 
         tag.putInt("yield", this.yield);
+
+        tag.putString("superior_trait", this.superiorTrait.getName());
+        tag.putString("inferior_trait", this.inferiorTrait.getName());
+        tag.putString("recessive_trait", this.recessiveTrait.getName());
 
         return tag;
     }

@@ -2,19 +2,21 @@ package com.agrejus.netherendingenergy.blocks.flowers;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
 import com.agrejus.netherendingenergy.common.flowers.CausticBellTrait;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.FlowerBlock;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.potion.*;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
@@ -34,7 +36,8 @@ import java.util.Random;
 
 public class CausticBellBlock extends FlowerBlock {
 
-    public static final EnumProperty<CausticBellTrait> DOMINANT_TRAIT = EnumProperty.<CausticBellTrait>create("dominant_trait", CausticBellTrait.class);
+    public static final EnumProperty<CausticBellTrait> SUPERIOR_TRAIT = EnumProperty.<CausticBellTrait>create("superior_trait", CausticBellTrait.class);
+    public static final EnumProperty<CausticBellTrait> INFERIOR_TRAIT = EnumProperty.<CausticBellTrait>create("inferior_trait", CausticBellTrait.class);
     public static final EnumProperty<CausticBellTrait> RECESSIVE_TRAIT = EnumProperty.<CausticBellTrait>create("recessive_trait", CausticBellTrait.class);
 
     public CausticBellBlock() {
@@ -59,7 +62,7 @@ public class CausticBellBlock extends FlowerBlock {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new CausticBellTile();
+        return new CausticBellTile(state.get(this.SUPERIOR_TRAIT), state.get(this.INFERIOR_TRAIT), state.get(this.RECESSIVE_TRAIT));
     }
 
     protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
@@ -75,7 +78,7 @@ public class CausticBellBlock extends FlowerBlock {
         double d0 = (double) pos.getX() + vec3d.x;
         double d1 = (double) pos.getZ() + vec3d.z;
 
-        BasicParticleType particleType = this.isNoxious(stateIn) ? ParticleTypes.DAMAGE_INDICATOR: ParticleTypes.WITCH;
+        BasicParticleType particleType = this.isNoxious(pos, worldIn) ? ParticleTypes.DAMAGE_INDICATOR: ParticleTypes.WITCH;
 
         for (int i = 0; i < 3; ++i) {
             if (rand.nextBoolean()) {
@@ -91,7 +94,7 @@ public class CausticBellBlock extends FlowerBlock {
                 LivingEntity livingentity = (LivingEntity) entityIn;
                 if (!livingentity.isInvulnerableTo(DamageSource.WITHER)) {
 
-                    if (this.isNoxious(state)) {
+                    if (this.isNoxious(pos, worldIn)) {
                         livingentity.addPotionEffect(new EffectInstance(Effects.WITHER, 100));
                     } else {
                         livingentity.addPotionEffect(new EffectInstance(Effects.POISON, 60));
@@ -104,8 +107,12 @@ public class CausticBellBlock extends FlowerBlock {
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (!worldIn.isRemote) {
-            System.out.println("DOMINANT: " +  state.get(this.DOMINANT_TRAIT));
-            System.out.println("RECESSIVE: " +  state.get(this.RECESSIVE_TRAIT));
+            CausticBellTile tile = (CausticBellTile)worldIn.getTileEntity(pos);
+            System.out.println("SUPERIOR: " +  tile.getSuperiorTrait());
+            System.out.println("INFERIOR: " +  tile.getInferiorTrait());
+            System.out.println("RECESSIVE: " +  tile.getRecessiveTrait());
+            System.out.println("YIELD: " +  tile.getYield());
+            //world.setBlockState(pos, state.with(TerraReactorCoreBlock.FORMED, TerraReactorPartIndex.UNFORMED), 3);
         }
 
         return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
@@ -113,10 +120,11 @@ public class CausticBellBlock extends FlowerBlock {
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(DOMINANT_TRAIT, RECESSIVE_TRAIT);
+        builder.add(SUPERIOR_TRAIT, INFERIOR_TRAIT, RECESSIVE_TRAIT);
     }
 
-    public boolean isNoxious(BlockState state) {
-        return state.get(DOMINANT_TRAIT) == CausticBellTrait.NOXIOUS;
+    public boolean isNoxious(BlockPos pos, World world) {
+        CausticBellTile tile = (CausticBellTile)world.getTileEntity(pos);
+        return tile.getSuperiorTrait() == CausticBellTrait.NOXIOUS;
     }
 }

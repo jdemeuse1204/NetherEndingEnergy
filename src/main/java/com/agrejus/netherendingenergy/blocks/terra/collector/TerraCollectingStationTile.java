@@ -361,10 +361,6 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             return LazyOptional.of(() -> (T) outputTank);
         }
 
-/*        if (cap == Capabilities.MULTI_FLUID_HANDLER_CAPABILITY) {
-            return LazyOptional.of(() -> (T) new NEEFluidTank[]{outputTank, inputTank});
-        }*/
-
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return itemHandler.cast();
         }

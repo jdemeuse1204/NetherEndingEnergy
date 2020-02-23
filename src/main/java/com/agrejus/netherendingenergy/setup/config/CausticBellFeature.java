@@ -1,6 +1,5 @@
 package com.agrejus.netherendingenergy.setup.config;
 
-import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellBlock;
 import com.agrejus.netherendingenergy.common.flowers.CausticBellTrait;
@@ -40,14 +39,8 @@ public class CausticBellFeature extends Feature<CausticBellConfig> {
             int y = rand.nextInt(4) - rand.nextInt(4);
             int z = rand.nextInt(8) - rand.nextInt(8);
             BlockPos blockpos = pos.add(x, y, z);
-
-            //               if (direction != Direction.DOWN && VineBlock.canAttachTo(worldIn, blockpos$mutableblockpos, direction)) {
-            //                  worldIn.setBlockState(blockpos$mutableblockpos, Blocks.VINE.getDefaultState().with(VineBlock.getPropertyFor(direction), Boolean.valueOf(true)), 2);
-            //                  break;
-            //               }
-            //
             CausticBellTraitHolder randomTraits = this.createRandomBellTraits(rand);
-            BlockState bell = ModBlocks.CAUSTIC_BELL_BLOCK.getDefaultState().with(CausticBellBlock.DOMINANT_TRAIT, randomTraits.DominantTrait).with(CausticBellBlock.RECESSIVE_TRAIT, randomTraits.RecessiveTrait);
+            BlockState bell = ModBlocks.CAUSTIC_BELL_BLOCK.getDefaultState().with(CausticBellBlock.SUPERIOR_TRAIT, randomTraits.SuperiorTrait).with(CausticBellBlock.INFERIOR_TRAIT, randomTraits.InferiorTrait).with(CausticBellBlock.RECESSIVE_TRAIT, randomTraits.RecessiveTrait);
 
             if (canPlantFlower(world, blockpos, bell)) {
 
@@ -64,7 +57,7 @@ public class CausticBellFeature extends Feature<CausticBellConfig> {
                         if (canPlantFlower(world, adjacentLocation, bell) && canPlantBell(rand, patchMaxCount, plantedCount)) {
 
                             randomTraits = this.createRandomBellTraits(rand);
-                            bell = ModBlocks.CAUSTIC_BELL_BLOCK.getDefaultState().with(CausticBellBlock.DOMINANT_TRAIT, randomTraits.DominantTrait).with(CausticBellBlock.RECESSIVE_TRAIT, randomTraits.RecessiveTrait);
+                            bell = ModBlocks.CAUSTIC_BELL_BLOCK.getDefaultState().with(CausticBellBlock.SUPERIOR_TRAIT, randomTraits.SuperiorTrait).with(CausticBellBlock.INFERIOR_TRAIT, randomTraits.InferiorTrait).with(CausticBellBlock.RECESSIVE_TRAIT, randomTraits.RecessiveTrait);
                             world.setBlockState(blockpos, bell, 2);
                             ++plantedCount;
                         }
@@ -80,21 +73,24 @@ public class CausticBellFeature extends Feature<CausticBellConfig> {
         return plantedCount > 0;
     }
 
+    private static int roll(Random random) {
+        return random.nextInt(1000 - 0 + 1) + 0;
+    }
+
     public static CausticBellTraitHolder createRandomBellTraits(Random random) {
-        // Dominant Roll
-        int dominant = random.nextInt(1000 - 0 + 1) + 0;
-        CausticBellTrait dominantTrait = CausticBellTrait.getTrait(dominant);
+        // Superior Roll
+        int superior = roll(random);
+        CausticBellTrait superiorTrait = CausticBellTrait.getTrait(superior);
+
+        // Inferior Roll
+        int inferior = roll(random);
+        CausticBellTrait inferiorTrait = CausticBellTrait.getTrait(inferior);
 
         // Recessive Roll
-        int recessive = random.nextInt(1000 - 0 + 1) + 0;
+        int recessive = roll(random);
         CausticBellTrait recessiveTrait = CausticBellTrait.getTrait(recessive);
 
-        while(recessiveTrait.getName() == dominantTrait.getName()) {
-            recessive = random.nextInt(1000 - 0 + 1) + 0;
-            recessiveTrait = CausticBellTrait.getTrait(recessive);
-        }
-
-        return new CausticBellTraitHolder(dominantTrait, recessiveTrait);
+        return new CausticBellTraitHolder(superiorTrait, inferiorTrait, recessiveTrait);
     }
 
     private List<BlockPos> getNearByPlantLocations(BlockPos blockpos) {
