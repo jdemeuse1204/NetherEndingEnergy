@@ -108,21 +108,6 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
         }
 
         return true;
-/*        int cntSuper = 0;
-        for (int x = 0; x < getWidth(); x++) {
-            for (int y = 0; y < getHeight(); y++) {
-                for (int z = 0; z < getDepth(); z++) {
-                    BlockPos p = pos.add(x, y, z);
-                    if (!isValidFormedBlockPart(world, p, x, y, z)) {
-                        return false;
-                    }
-                    if (world.getBlockState(p).getBlock() == ModBlocks.TERRA_REACTOR_CORE_BLOCK) {
-                        cntSuper++;
-                    }
-                }
-            }
-        }
-        return cntSuper == 1;*/
     }
 
     @Override

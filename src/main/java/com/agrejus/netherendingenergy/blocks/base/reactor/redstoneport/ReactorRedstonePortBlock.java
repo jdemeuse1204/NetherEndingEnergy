@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.base.reactor.redstoneport;
 
 import com.agrejus.netherendingenergy.RegistryNames;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
 import com.agrejus.netherendingenergy.common.blocks.RedstoneDetectorBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -9,6 +10,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
@@ -22,6 +24,7 @@ import javax.annotation.Nullable;
 // RENAME TO INPUT PORT, WE ARE HAVING AN OUTPUT PORT AS WELL
 public class ReactorRedstonePortBlock extends RedstoneDetectorBlock {
 
+    public static final EnumProperty<TerraReactorPartIndex> FORMED = EnumProperty.<TerraReactorPartIndex>create("formed", TerraReactorPartIndex.class);
     public static final BooleanProperty ON = BooleanProperty.create("on");
 
     public ReactorRedstonePortBlock() {
@@ -30,7 +33,7 @@ public class ReactorRedstonePortBlock extends RedstoneDetectorBlock {
                 .hardnessAndResistance(.01f)
                 .lightValue(0));
         setRegistryName(RegistryNames.REACTOR_REDSTONE_PORT);
-        setDefaultState(this.stateContainer.getBaseState().with(ON, Boolean.valueOf(false)));
+        setDefaultState(getStateContainer().getBaseState().with(FORMED, TerraReactorPartIndex.UNFORMED).with(ON, Boolean.valueOf(false)));
     }
 
     @Override
@@ -66,7 +69,7 @@ public class ReactorRedstonePortBlock extends RedstoneDetectorBlock {
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(BlockStateProperties.FACING, ON);
+        builder.add(BlockStateProperties.FACING, ON, FORMED);
     }
 
     @Override

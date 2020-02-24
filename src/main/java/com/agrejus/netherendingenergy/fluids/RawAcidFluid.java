@@ -45,12 +45,6 @@ public class RawAcidFluid {
 
     protected ForgeFlowingFluid.Properties properties;
 
-    public static final FlowingFluid LAVA = register("lava", new LavaFluid.Source());
-
-    private static <T extends Fluid> T register(String key, T p_215710_1_) {
-        return (T)(Registry.register(Registry.FLUID, key, p_215710_1_));
-    }
-
     protected RawAcidFluid(String key, String stillTexture, String flowTexture) {
 
         stillFluid = NetherEndingEnergy.FLUIDS.register(key, () -> new ForgeFlowingFluid.Source(properties));

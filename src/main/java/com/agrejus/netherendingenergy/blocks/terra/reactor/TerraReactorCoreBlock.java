@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -15,6 +16,7 @@ import net.minecraft.item.Items;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -49,18 +51,6 @@ public class TerraReactorCoreBlock extends Block {
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new TerraReactorCoreTile();
     }
-
-/*    @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (placer != null) {
-            worldIn.setBlockState(pos, state.with(BlockStateProperties.FACING, getFacingFromEntity(pos, placer)), 2);
-        }
-    }*/
-
-/*    @Override
-    public int getLightValue(BlockState state) {
-        return state.get(BlockStateProperties.POWERED) ? super.getLightValue(state) : 0;
-    }*/
 
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
@@ -100,13 +90,17 @@ public class TerraReactorCoreBlock extends Block {
         super.harvestBlock(world, player, pos, state, te, stack);
     }
 
+    public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity placer) {
+        return Direction.getFacingFromVector((float) (placer.posX - clickedBlock.getX()), (float) (placer.posY - clickedBlock.getY()), (float) (placer.posZ - clickedBlock.getZ()));
+    }
 
     public static void toggleMultiBlock(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         // Form or break the multiblock
         if (!world.isRemote) {
             TerraReactorPartIndex formed = state.get(FORMED);
             if (formed == TerraReactorPartIndex.UNFORMED) {
-                if (MultiBlockTools.formMultiblock(TerraReactorMultiBlock.INSTANCE, world, pos)) {
+                Direction playerFacingDirection = getFacingFromEntity(pos, player);
+                if (MultiBlockTools.formMultiblock(TerraReactorMultiBlock.INSTANCE, world, pos, playerFacingDirection)) {
                     player.sendStatusMessage(new StringTextComponent(TextFormatting.GREEN + "Made a superchest!"), false);
                 } else {
                     player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "Could not form superchest!"), false);
@@ -130,6 +124,7 @@ public class TerraReactorCoreBlock extends Block {
         if (state.getBlock() == ModBlocks.TERRA_REACTOR_CORE_BLOCK && state.get(TerraReactorCoreBlock.FORMED) != TerraReactorPartIndex.UNFORMED) {
             return pos;
         }
+
         if (state.getBlock() == ModBlocks.TERRA_MACHINE_CASING_BLOCK && state.get(TerraReactorCoreBlock.FORMED) != TerraReactorPartIndex.UNFORMED) {
             TerraReactorPartIndex index = state.get(TerraReactorCoreBlock.FORMED);
             // This index indicates where in the superblock this part is located. From this we can find the location of the bottom-left coordinate

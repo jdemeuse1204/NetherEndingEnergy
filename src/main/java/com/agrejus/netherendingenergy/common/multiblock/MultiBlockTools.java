@@ -1,8 +1,17 @@
 package com.agrejus.netherendingenergy.common.multiblock;
 
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
 import com.agrejus.netherendingenergy.common.interfaces.IMultiBlockType;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.function.Supplier;
 
 public class MultiBlockTools {
 
@@ -29,54 +38,77 @@ public class MultiBlockTools {
         return false;
     }
 
-    public static boolean formMultiblock(IMultiBlockType type, World world, BlockPos pos) {
+    private int getStart(BlockPos pos, Direction direction) {
 
-        // controller in the middle
-        // 4 up, 4 back and 2 right/left
-        // start x =
-        // start bottom left
-        int startX = pos.getX() - 2;
-        int endX = startX + type.getWidth();
-        int startY = startX;
-        int endY = startY + type.getHeight();
-        int startZ = startX;
-        int endZ = startZ + type.getDepth();
+        //facing south
+        //
+        //	start x + 2
+        //	subtract x
+        //	add z
+        //
+        //facing west
+        //
+        //	start z + 2
+        //	x becomes z subtract
+        //	z becomes x add
+        //
+        //facing north
+        //
+        //	start x - 2
+        //	add x
+        //	subtract z
+        //
+        //facing east
+        //
+        //	start z - 2
+        //	x becomes z add
+        //	z becomes x subtract
+        //
+        //
 
-        for (int x = startX; x < endX; x++) {
+        switch (direction) {
+            case SOUTH:
+                return pos.getX() + 2;
+            case WEST:
+                return pos.getZ() + 2;
+            case NORTH:
+                return pos.getX() + 2;
+            case EAST:
+                return pos.getX() + 2;
+            default:
+                return -1;
+        }
+    }
 
-            for (int y = startY; y < endY; y++) {
+    public static boolean formMultiblock(IMultiBlockType type, World world, BlockPos pos, Direction playerEntityFacing) {
 
-                for(int z = startZ; z < endZ; z++) {
+        int startX = pos.getX() + 2;
+        int startY = pos.getY();
+        int startZ = pos.getZ();
+        BlockPos start = new BlockPos(startX, startY, startZ);
 
-                }
+        for (TerraReactorPartIndex part : TerraReactorPartIndex.values()) {
 
+            if (part == TerraReactorPartIndex.UNFORMED) {
+                continue;
             }
 
-        }
+            BlockPos position = start.add(-part.getDx(), part.getDy(), part.getDz());
 
-
-        for (int dx = type.getWidth(); dx <= 0; dx++) {
-            for (int dy = -type.getHeight() + 1; dy <= 0; dy++) {
-                for (int dz = -type.getDepth() + 1; dz <= 0; dz++) {
-                    BlockPos p = pos.add(dx, dy, dz);
-                    if (type.isValidUnformedMultiBlock(world, p)) {
-                        createMultiblock(type, world, p);
-                        return true;
-                    }
-                }
+            if (world.getBlockState(position).getBlock() == Blocks.AIR) {
+                System.out.println(position);
+                return false;
             }
+
+            createMultiblock(type, world, position, part);
         }
-        return false;
+
+        return true;
     }
 
     // pos is lower bottom coordinate of an unformed multiblock
-    private static void createMultiblock(IMultiBlockType type, World world, BlockPos pos) {
-        for (int dx = 0; dx < type.getWidth(); dx++) {
-            for (int dy = 0; dy < type.getHeight(); dy++) {
-                for (int dz = 0; dz < type.getDepth(); dz++) {
-                    type.formBlock(world, pos.add(dx, dy, dz), dx, dy, dz);
-                }
-            }
-        }
+    private static void createMultiblock(IMultiBlockType type, World world, BlockPos pos, TerraReactorPartIndex index) {
+        BlockState state = world.getBlockState(pos);
+        world.setBlockState(pos, state.with(TerraReactorCoreBlock.FORMED, index), 3);
     }
 }
