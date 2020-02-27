@@ -20,13 +20,13 @@ import javax.annotation.Nullable;
 
 import static com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock.FORMED;
 
-public class ReactorEnergyPortBlock extends ReactorPartBlock {
+public class TerraReactorEnergyPortBlock extends ReactorPartBlock {
 
-    public ReactorEnergyPortBlock() {
+    public TerraReactorEnergyPortBlock() {
         super(Properties.create(Material.IRON)
                 .sound(SoundType.WOOD)
                 .hardnessAndResistance(1.0f)
-                .lightValue(0), RegistryNames.REACTOR_ENERGY_PORT, TerraReactorMultiBlock.INSTANCE);
+                .lightValue(0), RegistryNames.TERRA_REACTOR_ENERGY_PORT, TerraReactorMultiBlock.INSTANCE);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ReactorEnergyPortBlock extends ReactorPartBlock {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new ReactorEnergyPortTile();
+        return new TerraReactorEnergyPortTile();
     }
 
     @Override

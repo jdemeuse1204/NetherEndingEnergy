@@ -1,10 +1,10 @@
 package com.agrejus.netherendingenergy.blocks.terra.reactor;
 
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
-import com.agrejus.netherendingenergy.blocks.base.reactor.energyport.ReactorEnergyPortBlock;
-import com.agrejus.netherendingenergy.blocks.base.reactor.redstoneport.ReactorRedstonePortBlock;
-import com.agrejus.netherendingenergy.blocks.terra.heatsink.TerraHeatSinkBlock;
-import com.agrejus.netherendingenergy.blocks.terra.machinecasing.TerraMachineCasingBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneInputPortBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.heatsink.TerraHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.casing.TerraMachineCasingBlock;
 import com.agrejus.netherendingenergy.common.interfaces.IMultiBlockType;
 import com.agrejus.netherendingenergy.common.multiblock.MultiBlockTools;
 import com.agrejus.netherendingenergy.common.reactor.IReactorConfig;
@@ -231,8 +231,8 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
 
         this.menuAccessibleClasses.add(TerraMachineCasingBlock.class);
         this.menuAccessibleClasses.add(TerraReactorCoreBlock.class);
-        this.menuAccessibleClasses.add(ReactorEnergyPortBlock.class);
-        this.menuAccessibleClasses.add(ReactorRedstonePortBlock.class);
+        this.menuAccessibleClasses.add(TerraReactorEnergyPortBlock.class);
+        this.menuAccessibleClasses.add(TerraReactorRedstoneInputPortBlock.class);
         this.menuAccessibleClasses.add(TerraHeatSinkBlock.class);
 
         return this.menuAccessibleClasses;

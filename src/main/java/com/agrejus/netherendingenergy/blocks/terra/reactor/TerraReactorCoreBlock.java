@@ -15,7 +15,9 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.state.EnumProperty;
+import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -42,6 +44,7 @@ public class TerraReactorCoreBlock extends ReactorPartBlock {
                 .lightValue(0), RegistryNames.TERRA_REACTOR_CORE, TerraReactorMultiBlock.INSTANCE);
     }
 
+    // When formed, make block invisible/not clickable
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         return state.get(FORMED) != TerraReactorPartIndex.UNFORMED ? Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D) : super.getShape(state, worldIn, pos, context);
@@ -61,5 +64,10 @@ public class TerraReactorCoreBlock extends ReactorPartBlock {
     @Override
     public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {
         return false;
+    }
+
+    @Override
+    protected IProperty<?>[] getFillStateProperties() {
+        return new IProperty<?>[]{FORMED};
     }
 }

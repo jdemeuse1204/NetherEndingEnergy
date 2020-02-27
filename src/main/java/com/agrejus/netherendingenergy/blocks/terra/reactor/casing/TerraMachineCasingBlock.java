@@ -1,4 +1,4 @@
-package com.agrejus.netherendingenergy.blocks.terra.machinecasing;
+package com.agrejus.netherendingenergy.blocks.terra.reactor.casing;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;

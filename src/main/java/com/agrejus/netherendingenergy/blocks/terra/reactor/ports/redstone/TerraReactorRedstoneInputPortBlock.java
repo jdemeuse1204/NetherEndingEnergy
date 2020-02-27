@@ -22,13 +22,13 @@ import javax.annotation.Nullable;
 import static com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock.FORMED;
 
 // RENAME TO INPUT PORT, WE ARE HAVING AN OUTPUT PORT AS WELL
-public class ReactorRedstonePortBlock extends ReactorRedstoneInputPartBlock {
+public class TerraReactorRedstoneInputPortBlock extends ReactorRedstoneInputPartBlock {
 
-    public ReactorRedstonePortBlock() {
+    public TerraReactorRedstoneInputPortBlock() {
         super(Properties.create(Material.IRON)
                 .sound(SoundType.WOOD)
                 .hardnessAndResistance(.01f)
-                .lightValue(0), RegistryNames.REACTOR_REDSTONE_PORT, TerraReactorMultiBlock.INSTANCE);
+                .lightValue(0), RegistryNames.TERRA_REACTOR_REDSTONE_INPUT_PORT, TerraReactorMultiBlock.INSTANCE);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ReactorRedstonePortBlock extends ReactorRedstoneInputPartBlock {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new ReactorRedstonePortTile();
+        return new TerraReactorRedstoneInputPortTile();
     }
 
     @Override

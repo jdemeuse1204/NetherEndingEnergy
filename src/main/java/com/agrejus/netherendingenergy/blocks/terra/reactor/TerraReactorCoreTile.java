@@ -2,7 +2,6 @@ package com.agrejus.netherendingenergy.blocks.terra.reactor;
 
 import com.agrejus.netherendingenergy.Config;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
-import com.agrejus.netherendingenergy.blocks.base.reactor.redstoneport.ReactorRedstonePortBlock;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,9 +35,11 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
     private LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
     private @Nullable
-    BlockPos redstonePortPosition;
+    BlockPos redstoneInputPortPosition;
     private @Nullable
     BlockPos energyPortPosition;
+    private @Nullable
+    BlockPos redstoneOutputPortPosition;
     private int counter;
 
     public TerraReactorCoreTile() {
@@ -83,20 +84,40 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
         }
 
         // store block positions in NBT so we dont need to keep looking them up?
-        if (this.redstonePortPosition == null) {
-            this.redstonePortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK);
+        if (this.redstoneInputPortPosition == null) {
+            this.redstoneInputPortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK);
         }
 
         if (this.energyPortPosition == null) {
             this.energyPortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.REACTOR_ENERGY_PORT_BLOCK);
         }
 
-        if (this.redstonePortPosition != null) {
-            BlockState redstonePortState = world.getBlockState(this.redstonePortPosition);
+        if (this.redstoneOutputPortPosition == null) {
+            this.redstoneOutputPortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.TERRA_REACTOR_REDSTONE_OUTPUT_PORT_BLOCK);
+        }
+
+        if (this.redstoneInputPortPosition != null) {
+            BlockState redstonePortState = world.getBlockState(this.redstoneInputPortPosition);
 
             if (redstonePortState != null && redstonePortState.get(BlockStateProperties.POWERED) == true) {
                 // Reactor On
-                energy.ifPresent(w -> ((CustomEnergyStorage) w).addEnergy(Config.FIRSTBLOCK_GENERATE.get()));
+                energy.ifPresent(w -> {
+
+                    ((CustomEnergyStorage) w).addEnergy(Config.FIRSTBLOCK_GENERATE.get());
+
+                    // OPTIMIZE THIS!!!!
+                    if (((CustomEnergyStorage) w).getEnergyStored() > 0) {
+                        if (this.redstoneOutputPortPosition != null) {
+                            BlockState redstoneOutputPortState = world.getBlockState(this.redstoneOutputPortPosition);
+                            world.setBlockState(this.redstoneOutputPortPosition, redstoneOutputPortState.with(BlockStateProperties.POWERED, Boolean.valueOf(true)).with(BlockStateProperties.POWER_0_15, 2));
+                        }
+                    } else {
+                        if (this.redstoneOutputPortPosition != null) {
+                            BlockState redstoneOutputPortState = world.getBlockState(this.redstoneOutputPortPosition);
+                            world.setBlockState(this.redstoneOutputPortPosition, redstoneOutputPortState.with(BlockStateProperties.POWERED, Boolean.valueOf(false)).with(BlockStateProperties.POWER_0_15, 0));
+                        }
+                    }
+                });
 
                 if (counter <= 0) {
                     // Extract 1 diamond

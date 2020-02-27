@@ -20,13 +20,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ReactorEnergyPortTile extends TileEntity {
+public class TerraReactorEnergyPortTile extends TileEntity {
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
     private int counter;
 
-    public ReactorEnergyPortTile() {
+    public TerraReactorEnergyPortTile() {
 
-        super(ModBlocks.REACTOR_REDSTONE_PORT_TILE);
+        super(ModBlocks.REACTOR_ENERGY_PORT_TILE);
     }
 
     // On block break save energy amount to core

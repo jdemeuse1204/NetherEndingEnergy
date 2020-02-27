@@ -18,9 +18,9 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ReactorRedstonePortTile extends TileEntity {
+public class TerraReactorRedstoneInputPortTile extends TileEntity {
     // Do we need a tile entity? I dont think so
-    public ReactorRedstonePortTile() {
+    public TerraReactorRedstoneInputPortTile() {
         super(ModBlocks.REACTOR_REDSTONE_PORT_TILE);
     }
 }

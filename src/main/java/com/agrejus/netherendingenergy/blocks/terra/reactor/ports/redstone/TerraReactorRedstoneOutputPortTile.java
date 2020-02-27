@@ -1,4 +1,4 @@
-package com.agrejus.netherendingenergy.blocks.terra.ports.redstone;
+package com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone;
 
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import net.minecraft.tileentity.TileEntity;

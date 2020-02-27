@@ -2,10 +2,10 @@ package com.agrejus.netherendingenergy.blocks;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
-import com.agrejus.netherendingenergy.blocks.base.reactor.energyport.ReactorEnergyPortBlock;
-import com.agrejus.netherendingenergy.blocks.base.reactor.energyport.ReactorEnergyPortTile;
-import com.agrejus.netherendingenergy.blocks.base.reactor.redstoneport.ReactorRedstonePortBlock;
-import com.agrejus.netherendingenergy.blocks.base.reactor.redstoneport.ReactorRedstonePortTile;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortTile;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneInputPortBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneInputPortTile;
 import com.agrejus.netherendingenergy.blocks.chaotic.heatsink.ChaoticHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
@@ -19,17 +19,17 @@ import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStat
 import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorBlock;
 import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorContainer;
 import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorTile;
-import com.agrejus.netherendingenergy.blocks.terra.heatsink.TerraHeatSinkBlock;
-import com.agrejus.netherendingenergy.blocks.terra.machinecasing.TerraMachineCasingBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.heatsink.TerraHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.casing.TerraMachineCasingBlock;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerBlock;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerContainer;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerTile;
-import com.agrejus.netherendingenergy.blocks.terra.ports.item.TerraReactorItemPortBlock;
-import com.agrejus.netherendingenergy.blocks.terra.ports.item.TerraReactorItemPortTile;
-import com.agrejus.netherendingenergy.blocks.terra.ports.liquid.TerraReactorAcidPortBlock;
-import com.agrejus.netherendingenergy.blocks.terra.ports.liquid.TerraReactorAcidPortTile;
-import com.agrejus.netherendingenergy.blocks.terra.ports.redstone.TerraReactorRedstoneOutputPortBlock;
-import com.agrejus.netherendingenergy.blocks.terra.ports.redstone.TerraReactorRedstoneOutputPortTile;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.item.TerraReactorItemPortBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.item.TerraReactorItemPortTile;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.liquid.TerraReactorAcidPortBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.liquid.TerraReactorAcidPortTile;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneOutputPortBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneOutputPortTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreContainer;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreTile;
@@ -118,15 +118,15 @@ public class ModBlocks {
     public static ContainerType<TerraMixerContainer> TERRA_MIXER_CONTAINER;
 
     /* General Reactor */
-    @ObjectHolder("netherendingenergy:" + RegistryNames.REACTOR_REDSTONE_PORT)
-    public static ReactorRedstonePortBlock REACTOR_REDSTONE_PORT_BLOCK;
-    @ObjectHolder("netherendingenergy:" + RegistryNames.REACTOR_REDSTONE_PORT)
-    public static TileEntityType<ReactorRedstonePortTile> REACTOR_REDSTONE_PORT_TILE;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_REDSTONE_INPUT_PORT)
+    public static TerraReactorRedstoneInputPortBlock REACTOR_REDSTONE_PORT_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_REDSTONE_INPUT_PORT)
+    public static TileEntityType<TerraReactorRedstoneInputPortTile> REACTOR_REDSTONE_PORT_TILE;
 
-    @ObjectHolder("netherendingenergy:" + RegistryNames.REACTOR_ENERGY_PORT)
-    public static ReactorEnergyPortBlock REACTOR_ENERGY_PORT_BLOCK;
-    @ObjectHolder("netherendingenergy:" + RegistryNames.REACTOR_ENERGY_PORT)
-    public static TileEntityType<ReactorEnergyPortTile> REACTOR_ENERGY_PORT_TILE;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ENERGY_PORT)
+    public static TerraReactorEnergyPortBlock REACTOR_ENERGY_PORT_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ENERGY_PORT)
+    public static TileEntityType<TerraReactorEnergyPortTile> REACTOR_ENERGY_PORT_TILE;
 
     public static class Test {
         /* Tutorial */

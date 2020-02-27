@@ -1,10 +1,8 @@
-package com.agrejus.netherendingenergy.blocks.terra.ports.redstone;
+package com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.base.reactor.ReactorPartBlock;
-import com.agrejus.netherendingenergy.blocks.terra.ports.item.TerraReactorItemPortTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
