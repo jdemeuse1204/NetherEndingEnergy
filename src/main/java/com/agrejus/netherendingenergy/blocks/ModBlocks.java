@@ -2,6 +2,8 @@ package com.agrejus.netherendingenergy.blocks;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.base.reactor.energyport.ReactorEnergyPortBlock;
+import com.agrejus.netherendingenergy.blocks.base.reactor.energyport.ReactorEnergyPortTile;
 import com.agrejus.netherendingenergy.blocks.base.reactor.redstoneport.ReactorRedstonePortBlock;
 import com.agrejus.netherendingenergy.blocks.base.reactor.redstoneport.ReactorRedstonePortTile;
 import com.agrejus.netherendingenergy.blocks.chaotic.heatsink.ChaoticHeatSinkBlock;
@@ -22,6 +24,12 @@ import com.agrejus.netherendingenergy.blocks.terra.machinecasing.TerraMachineCas
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerBlock;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerContainer;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerTile;
+import com.agrejus.netherendingenergy.blocks.terra.ports.item.TerraReactorItemPortBlock;
+import com.agrejus.netherendingenergy.blocks.terra.ports.item.TerraReactorItemPortTile;
+import com.agrejus.netherendingenergy.blocks.terra.ports.liquid.TerraReactorAcidPortBlock;
+import com.agrejus.netherendingenergy.blocks.terra.ports.liquid.TerraReactorAcidPortTile;
+import com.agrejus.netherendingenergy.blocks.terra.ports.redstone.TerraReactorRedstoneOutputPortBlock;
+import com.agrejus.netherendingenergy.blocks.terra.ports.redstone.TerraReactorRedstoneOutputPortTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreContainer;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreTile;
@@ -55,6 +63,21 @@ public class ModBlocks {
     public static AbyssHeatSinkBlock ABYSS_HEAT_SINK_BLOCK;
 
     /* Reactor */
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ITEM_PORT)
+    public static TerraReactorItemPortBlock TERRA_REACTOR_ITEM_PORT_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ITEM_PORT)
+    public static TileEntityType<TerraReactorItemPortTile> TERRA_REACTOR_ITEM_PORT_TILE;
+
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ACID_PORT)
+    public static TerraReactorAcidPortBlock TERRA_REACTOR_ACID_PORT_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ACID_PORT)
+    public static TileEntityType<TerraReactorAcidPortTile> TERRA_REACTOR_ACID_PORT_TILE;
+
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_REDSTONE_OUTPUT_PORT)
+    public static TerraReactorRedstoneOutputPortBlock TERRA_REACTOR_REDSTONE_OUTPUT_PORT_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_REDSTONE_OUTPUT_PORT)
+    public static TileEntityType<TerraReactorRedstoneOutputPortTile> TERRA_REACTOR_REDSTONE_OUTPUT_PORT_TILE;
+
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_CORE)
     public static TerraReactorCoreBlock TERRA_REACTOR_CORE_BLOCK;
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_CORE)
@@ -99,6 +122,11 @@ public class ModBlocks {
     public static ReactorRedstonePortBlock REACTOR_REDSTONE_PORT_BLOCK;
     @ObjectHolder("netherendingenergy:" + RegistryNames.REACTOR_REDSTONE_PORT)
     public static TileEntityType<ReactorRedstonePortTile> REACTOR_REDSTONE_PORT_TILE;
+
+    @ObjectHolder("netherendingenergy:" + RegistryNames.REACTOR_ENERGY_PORT)
+    public static ReactorEnergyPortBlock REACTOR_ENERGY_PORT_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.REACTOR_ENERGY_PORT)
+    public static TileEntityType<ReactorEnergyPortTile> REACTOR_ENERGY_PORT_TILE;
 
     public static class Test {
         /* Tutorial */

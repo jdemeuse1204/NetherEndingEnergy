@@ -5,6 +5,10 @@ public class RegistryNames {
     public static final String CAUSTIC_IMBUED_SOIL = "caustic_imbued_soil";
 
     /* Terra */
+    public static final String TERRA_REACTOR_REDSTONE_INPUT_PORT = "terra_reactor_redstone_input_port";
+    public static final String TERRA_REACTOR_REDSTONE_OUTPUT_PORT = "terra_reactor_redstone_output_port";
+    public static final String TERRA_REACTOR_ACID_PORT = "terra_reactor_acid_port";
+    public static final String TERRA_REACTOR_ITEM_PORT = "terra_reactor_item_port";
     public static final String TERRA_MACHINE_CASING = "terra_machine_casing";
     public static final String TERRA_HEAT_SINK = "terra_heat_sink";
     public static final String TERRA_REACTOR_CORE = "terra_reactor_core";
@@ -18,7 +22,9 @@ public class RegistryNames {
     public static final String CHAOTIC_HEAT_SINK = "chaotic_heat_sink";
 
     /* General */
-    public static final String REACTOR_REDSTONE_PORT = "reactor_redstone_port";
+    public static final String TERRA_REACTOR_ENERGY_PORT = "terra_reactor_energy_port";
+    public static final String REACTOR_ITEM_STABILIZER = "reactor_item_stabilizer";
+
     public static final String IMBUING_MACHINE = "imbuing_machine";
     public static final String FURNACE_GENERATOR = "furnace_generator";
 

@@ -365,7 +365,8 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             return itemHandler.cast();
         }
 
-        if (cap == CapabilityEnergy.ENERGY && side != null && side == Direction.DOWN) {
+        //if (cap == CapabilityEnergy.ENERGY && side != null && side == Direction.DOWN) {
+        if (cap == CapabilityEnergy.ENERGY) {
             // receive energy in the bottom only
             return energy.cast();
         }

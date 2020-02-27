@@ -16,10 +16,14 @@
   "block.netherendingenergy.terra_machine_casing": "Terra Machine Casing",
   "block.netherendingenergy.terra_collecting_station": "Terra Collecting Station",
   "block.netherendingenergy.terra_mixer": "Terra Mixer",
+  "block.netherendingenergy.terra_reactor_item_port": "Terra Reactor Item Port",
+  "block.netherendingenergy.terra_reactor_acid_port": "Terra Reactor Acid Port",
+  "block.netherendingenergy.terra_reactor_redstone_output_port": "Terra Reactor Redstone Output Port",
+  "block.netherendingenergy.terra_reactor_redstone_input_port": "Terra Reactor Redstone Input Port",
+  "block.netherendingenergy.terra_reactor_energy_port": "Terra Reactor Energy Port",
 
   "block.netherendingenergy.chaotic_heat_sink": "Chaotic Heat Sink",
 
-  "block.netherendingenergy.reactor_redstone_port": "Reactor Redstone Port",
   "block.netherendingenergy.furnace_generator": "Furnace Generator",
   "block.netherendingenergy.caustic_imbued_soil": "Caustic Imbued Soil",
   "block.netherendingenergy.imbuing_machine": "Imbuing Machine",

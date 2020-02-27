@@ -2,6 +2,7 @@ package com.agrejus.netherendingenergy.blocks.terra.reactor;
 
 import com.agrejus.netherendingenergy.Config;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
+import com.agrejus.netherendingenergy.blocks.base.reactor.redstoneport.ReactorRedstonePortBlock;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,6 +16,7 @@ import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -30,9 +32,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TerraReactorCoreTile  extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public class TerraReactorCoreTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
     private LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
+    private @Nullable
+    BlockPos redstonePortPosition;
+    private @Nullable
+    BlockPos energyPortPosition;
     private int counter;
 
     public TerraReactorCoreTile() {
@@ -72,73 +78,85 @@ public class TerraReactorCoreTile  extends TileEntity implements ITickableTileEn
 
     @Override
     public void tick() {
-        //System.out.println("CORE");
-        /*if (world.isRemote) {
+        if (world.isRemote) {
             return;
         }
 
-        if (counter > 0) {
-            // Produce Power
-            counter--;
-            if (counter <= 0) {
+        // store block positions in NBT so we dont need to keep looking them up?
+        if (this.redstonePortPosition == null) {
+            this.redstonePortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK);
+        }
+
+        if (this.energyPortPosition == null) {
+            this.energyPortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.REACTOR_ENERGY_PORT_BLOCK);
+        }
+
+        if (this.redstonePortPosition != null) {
+            BlockState redstonePortState = world.getBlockState(this.redstonePortPosition);
+
+            if (redstonePortState != null && redstonePortState.get(BlockStateProperties.POWERED) == true) {
+                // Reactor On
                 energy.ifPresent(w -> ((CustomEnergyStorage) w).addEnergy(Config.FIRSTBLOCK_GENERATE.get()));
-            }
-            markDirty();
-        }
 
-        if (counter <= 0){
-            // Extract 1 diamond
-            handler.ifPresent((w -> {
-                ItemStack stack = w.getStackInSlot(0);
-                if (stack.getItem() == Items.DIAMOND) {
-                    w.extractItem(0, 1, false);
-                    counter = Config.FIRSTBLOCK_TICKS.get();
-                    markDirty();
+                if (counter <= 0) {
+                    // Extract 1 diamond
+                    handler.ifPresent((w -> {
+                        ItemStack stack = w.getStackInSlot(0);
+                        if (stack.getItem() == Items.DIAMOND) {
+                            w.extractItem(0, 1, false);
+                            counter = Config.FIRSTBLOCK_TICKS.get();
+                            markDirty();
+                        }
+                    }));
                 }
-            }));
+            }
         }
 
-        // Generating Power when counter is greater than 0
+        if (this.energyPortPosition != null) {
+            this.sendOutPower(this.energyPortPosition);
+        }
+
+/*        // Generating Power when counter is greater than 0
         BlockState blockState = world.getBlockState(pos);
         if (blockState.get(BlockStateProperties.POWERED) != (counter > 0)) {
             world.setBlockState(pos, blockState.with(BlockStateProperties.POWERED, counter > 0), 3);
-        }
+        }*/
 
-        sendOutPower();*/
+        if (counter <= 0) {
+            counter = 20; // Every second
+        }
     }
 
-    private void sendOutPower() {
+    private void sendOutPower(BlockPos energyPortPosition) {
         //Config.FIRSTBLOCK_SEND.get()
         energy.ifPresent(energy -> {
             // Atomic Integer is a value that you can change inside of a lambda
             AtomicInteger capacity = new AtomicInteger(energy.getEnergyStored());
 
-            if(capacity.get() > 0) {
+            if (capacity.get() > 0) {
 
-                // Check each direction and see if we can send out power
-                for(Direction direction: Direction.values()) {
-                    TileEntity te = world.getTileEntity(pos.offset(direction));
+                Direction direction = world.getBlockState(energyPortPosition).get(BlockStateProperties.FACING);
+                TileEntity te = world.getTileEntity(energyPortPosition.offset(direction));
 
-                    if (te != null) {
-                        boolean doContinue = te.getCapability(CapabilityEnergy.ENERGY, direction).map(handler -> {
-                            if (handler.canReceive()) {
-                                int received = handler.receiveEnergy(Math.min(capacity.get(), Config.FIRSTBLOCK_SEND.get()), false);
-                                capacity.addAndGet(-received);
+                if (te != null) {
+                    boolean doContinue = te.getCapability(CapabilityEnergy.ENERGY, direction).map(handler -> {
+                        if (handler.canReceive()) {
+                            int received = handler.receiveEnergy(Math.min(capacity.get(), Config.FIRSTBLOCK_SEND.get()), false);
+                            capacity.addAndGet(-received);
 
-                                // Extract from our own energy
-                                ((CustomEnergyStorage)energy).consumeEnergy(received);
+                            // Extract from our own energy
+                            ((CustomEnergyStorage) energy).consumeEnergy(received);
 
-                                markDirty();
+                            markDirty();
 
-                                return capacity.get() > 0;
-                            } else {
-                                return true;
-                            }
-                        }).orElse(true);
-
-                        if (!doContinue) {
-                            return;
+                            return capacity.get() > 0;
+                        } else {
+                            return true;
                         }
+                    }).orElse(true);
+
+                    if (!doContinue) {
+                        return;
                     }
                 }
             }

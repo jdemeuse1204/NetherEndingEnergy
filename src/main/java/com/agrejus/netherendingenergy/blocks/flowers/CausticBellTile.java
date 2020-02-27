@@ -59,7 +59,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
         this.yield = CausticBellTraitConfig.getDefaultYield(this.superiorTrait);
         this.strength = CausticBellTraitConfig.getDefaultStrength(this.superiorTrait);
-        this.purity= CausticBellTraitConfig.getDefaultPurity(this.superiorTrait);
+        this.purity = CausticBellTraitConfig.getDefaultPurity(this.superiorTrait);
         this.burnTimeAugmentRatio = CausticBellTraitConfig.getDefaultBurnTimeAugment(this.superiorTrait);
     }
 
@@ -168,41 +168,25 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
     @Override
     public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
 
-        CompoundNBT strengthNBT = this.strength.serializeNBT();
-        tag.put("strength", strengthNBT);
+        try {
+            CompoundNBT strengthNBT = this.strength.serializeNBT();
+            tag.put("strength", strengthNBT);
 
-        CompoundNBT purityNBT = this.purity.serializeNBT();
-        tag.put("purity", purityNBT);
+            CompoundNBT purityNBT = this.purity.serializeNBT();
+            tag.put("purity", purityNBT);
 
-        tag.putInt("yield", this.yield);
+            tag.putInt("yield", this.yield);
 
-        tag.putString("superior_trait", this.superiorTrait.getName());
-        tag.putString("inferior_trait", this.inferiorTrait.getName());
-        tag.putString("recessive_trait", this.recessiveTrait.getName());
+            tag.putString("superior_trait", this.superiorTrait.getName());
+            tag.putString("inferior_trait", this.inferiorTrait.getName());
+            tag.putString("recessive_trait", this.recessiveTrait.getName());
+        } catch (Exception e) {
+            if (1 == 1) {
 
-        return tag;
-    }
+            }
+        }
 
-    @Override
-    public CompoundNBT getUpdateTag() {
-        CompoundNBT tag = super.getUpdateTag();
-
-        return write(tag);
-    }
-
-    @Nullable
-    @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
-
-        CompoundNBT tag = packet.getNbtCompound();
-
-        read(tag);
+        return super.write(tag);
     }
 }
