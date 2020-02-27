@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone;
 
 import com.agrejus.netherendingenergy.RegistryNames;
+import com.agrejus.netherendingenergy.blocks.base.reactor.DirectionalReactorPartBlock;
 import com.agrejus.netherendingenergy.blocks.base.reactor.ReactorPartBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
 import net.minecraft.block.BlockState;
@@ -18,9 +19,11 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-import static com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock.FORMED;
+import java.util.List;
 
-public class TerraReactorRedstoneOutputPortBlock extends ReactorPartBlock {
+import static com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreBlock.FORMED;
+
+public class TerraReactorRedstoneOutputPortBlock extends DirectionalReactorPartBlock {
     public TerraReactorRedstoneOutputPortBlock() {
         super(Properties.create(Material.IRON)
                 .sound(SoundType.WOOD)
@@ -40,19 +43,11 @@ public class TerraReactorRedstoneOutputPortBlock extends ReactorPartBlock {
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (placer != null) {
-            world.setBlockState(pos, state.with(BlockStateProperties.FACING, getFacingFromEntity(pos, placer)), 2);
-        }
-    }
-
-    public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity placer) {
-        return Direction.getFacingFromVector((float) (placer.posX - clickedBlock.getX()), (float) (placer.posY - clickedBlock.getY()), (float) (placer.posZ - clickedBlock.getZ()));
-    }
-
-    @Override
-    protected IProperty<?>[] getFillStateProperties() {
-        return new IProperty<?>[]{BlockStateProperties.FACING, FORMED, BlockStateProperties.POWERED, BlockStateProperties.POWER_0_15};
+    protected List<IProperty<?>> getFillStateProperties() {
+        List<IProperty<?>> result = super.getFillStateProperties();
+        result.add(BlockStateProperties.POWERED);
+        result.add(BlockStateProperties.POWER_0_15);
+        return result;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy;
 
 import com.agrejus.netherendingenergy.RegistryNames;
+import com.agrejus.netherendingenergy.blocks.base.reactor.DirectionalReactorPartBlock;
 import com.agrejus.netherendingenergy.blocks.base.reactor.ReactorPartBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
 import net.minecraft.block.BlockState;
@@ -18,9 +19,9 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-import static com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock.FORMED;
+import java.util.List;
 
-public class TerraReactorEnergyPortBlock extends ReactorPartBlock {
+public class TerraReactorEnergyPortBlock extends DirectionalReactorPartBlock {
 
     public TerraReactorEnergyPortBlock() {
         super(Properties.create(Material.IRON)
@@ -38,21 +39,5 @@ public class TerraReactorEnergyPortBlock extends ReactorPartBlock {
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new TerraReactorEnergyPortTile();
-    }
-
-    @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (placer != null) {
-            world.setBlockState(pos, state.with(BlockStateProperties.FACING, getFacingFromEntity(pos, placer)), 2);
-        }
-    }
-
-    public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity placer) {
-        return Direction.getFacingFromVector((float) (placer.posX - clickedBlock.getX()), (float) (placer.posY - clickedBlock.getY()), (float) (placer.posZ - clickedBlock.getZ()));
-    }
-
-    @Override
-    protected IProperty<?>[] getFillStateProperties() {
-        return new IProperty<?>[]{BlockStateProperties.FACING, FORMED};
     }
 }

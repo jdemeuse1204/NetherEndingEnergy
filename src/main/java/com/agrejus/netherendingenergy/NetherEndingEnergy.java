@@ -20,7 +20,7 @@ import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorB
 import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorContainer;
 import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.heatsink.TerraHeatSinkBlock;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.casing.TerraMachineCasingBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.casing.TerraReactorCasingBlock;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerBlock;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerContainer;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerTile;
@@ -30,9 +30,9 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.liquid.TerraRea
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.liquid.TerraReactorAcidPortTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneOutputPortBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneOutputPortTile;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreContainer;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreTile;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreContainer;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTile;
 import com.agrejus.netherendingenergy.blocks.test.BlockTank;
 import com.agrejus.netherendingenergy.blocks.test.TileTank;
 import com.agrejus.netherendingenergy.fluids.RawAcidFluid;
@@ -187,7 +187,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new ImbuingMachineBlock());
 
             // Terra
-            event.getRegistry().register(new TerraMachineCasingBlock());
+            event.getRegistry().register(new TerraReactorCasingBlock());
             event.getRegistry().register(new TerraReactorCoreBlock());
             event.getRegistry().register(new TerraHeatSinkBlock());
             event.getRegistry().register(new TerraCollectingStationBlock());
@@ -226,7 +226,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new BlockItem(ModBlocks.IMBUING_MACHINE_BLOCK, properties).setRegistryName(RegistryNames.IMBUING_MACHINE));
 
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_BELL_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_BELL));
-            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_MACHINE_CASING_BLOCK, properties).setRegistryName(RegistryNames.TERRA_MACHINE_CASING));
+            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_MACHINE_CASING_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_CASING));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_HEAT_SINK_BLOCK, properties).setRegistryName(RegistryNames.TERRA_HEAT_SINK));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_CORE_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_COLLECTING_STATION_BLOCK, properties).setRegistryName(RegistryNames.TERRA_COLLECTING_STATION));

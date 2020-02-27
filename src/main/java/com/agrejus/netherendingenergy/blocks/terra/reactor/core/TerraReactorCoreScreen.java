@@ -1,4 +1,4 @@
-package com.agrejus.netherendingenergy.blocks.terra.reactor;
+package com.agrejus.netherendingenergy.blocks.terra.reactor.core;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.mojang.blaze3d.platform.GlStateManager;

@@ -1,6 +1,5 @@
 package com.agrejus.netherendingenergy.blocks.test;
 
-import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -20,7 +19,6 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;

@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "netherendingenergy:terra_machine_casing"
+          "name": "netherendingenergy:terra_reactor_casing"
         }
       ],
       "conditions": [

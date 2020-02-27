@@ -7,7 +7,7 @@ import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStat
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTileEntityRenderer;
 import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorScreen;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerScreen;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreScreen;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreScreen;
 import com.agrejus.netherendingenergy.blocks.test.TankTESR;
 import com.agrejus.netherendingenergy.blocks.test.TileTank;
 import net.minecraft.client.Minecraft;

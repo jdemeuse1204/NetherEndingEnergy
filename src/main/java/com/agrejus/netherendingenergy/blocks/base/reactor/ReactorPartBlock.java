@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.base.reactor;
 
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
+import com.agrejus.netherendingenergy.common.blocks.RedstoneDetectorBlock;
 import com.agrejus.netherendingenergy.common.interfaces.IMultiBlockType;
 import com.agrejus.netherendingenergy.common.multiblock.MultiBlockTools;
 import net.minecraft.block.Block;
@@ -9,19 +10,24 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.Explosion;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-import static com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock.FORMED;
+import java.util.ArrayList;
+import java.util.List;
 
-public abstract class ReactorPartBlock extends Block {
+import static com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreBlock.FORMED;
+
+public abstract class ReactorPartBlock extends RedstoneDetectorBlock {
 
     protected final IMultiBlockType Type;
 
@@ -33,18 +39,43 @@ public abstract class ReactorPartBlock extends Block {
     }
 
     @Override
-    public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, TileEntity te, ItemStack stack) {
-        if (!world.isRemote) {
-
-            // Reactor not formed, break the block
-            if (state.get(FORMED) == TerraReactorPartIndex.UNFORMED) {
-                super.onBlockHarvested(world, pos, state, player);
-                return;
-            }
-
-            MultiBlockTools.breakMultiblock(this.Type, world, pos, state.get(FORMED));
+    public void onPlayerDestroy(IWorld world, BlockPos pos, BlockState state) {
+        if (!world.isRemote()) {
+            this.tryBreakMultiBlock(world, pos, state);
         }
-        super.onBlockHarvested(world, pos, state, player);
+
+        super.onPlayerDestroy(world, pos, state);
+    }
+
+    @Override
+    public void onExplosionDestroy(World world, BlockPos pos, Explosion explosion) {
+
+        if (!world.isRemote) {
+            BlockState state = world.getBlockState(pos);
+            this.tryBreakMultiBlock(world, pos, state);
+        }
+
+        super.onExplosionDestroy(world, pos, explosion);
+    }
+
+    protected void tryBreakMultiBlock(IWorld world, BlockPos pos, BlockState state) {
+
+        // Reactor not formed, break the block
+        if (state.get(FORMED) == TerraReactorPartIndex.UNFORMED) {
+            return;
+        }
+
+        MultiBlockTools.breakMultiblock(this.Type, world, pos, state.get(FORMED));
+        return;
+    }
+
+    @Override
+    public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, TileEntity te, ItemStack stack) {
+        // error somewhere here, block is not harvesting (item not dropping)
+        if (!world.isRemote) {
+            this.tryBreakMultiBlock(world, pos, state);
+        }
+        super.harvestBlock(world, player, pos, state, te, stack);
     }
 
     @Override
@@ -81,8 +112,12 @@ public abstract class ReactorPartBlock extends Block {
         return super.onBlockActivated(state, world, pos, player, hand, hit);
     }
 
-    protected IProperty<?>[] getFillStateProperties() {
-        return new IProperty<?>[]{FORMED};
+    protected List<IProperty<?>> getFillStateProperties() {
+        return new ArrayList<IProperty<?>>() {
+            {
+                add(FORMED);
+            }
+        };
     }
 
     protected BlockState getDefaultReactorState() {
@@ -91,6 +126,6 @@ public abstract class ReactorPartBlock extends Block {
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(this.getFillStateProperties());
+        builder.add(this.getFillStateProperties().toArray(new IProperty<?>[0]));
     }
 }

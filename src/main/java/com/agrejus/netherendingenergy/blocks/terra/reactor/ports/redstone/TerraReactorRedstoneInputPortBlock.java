@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone;
 
 import com.agrejus.netherendingenergy.RegistryNames;
+import com.agrejus.netherendingenergy.blocks.base.reactor.DirectionalReactorPartBlock;
 import com.agrejus.netherendingenergy.blocks.base.reactor.ReactorRedstoneInputPartBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
 import net.minecraft.block.Block;
@@ -19,10 +20,12 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-import static com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorCoreBlock.FORMED;
+import java.util.List;
+
+import static com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreBlock.FORMED;
 
 // RENAME TO INPUT PORT, WE ARE HAVING AN OUTPUT PORT AS WELL
-public class TerraReactorRedstoneInputPortBlock extends ReactorRedstoneInputPartBlock {
+public class TerraReactorRedstoneInputPortBlock extends DirectionalReactorPartBlock {
 
     public TerraReactorRedstoneInputPortBlock() {
         super(Properties.create(Material.IRON)
@@ -32,8 +35,10 @@ public class TerraReactorRedstoneInputPortBlock extends ReactorRedstoneInputPart
     }
 
     @Override
-    protected IProperty<?>[] getFillStateProperties() {
-        return new IProperty<?>[]{FORMED, BlockStateProperties.FACING, BlockStateProperties.POWERED};
+    protected List<IProperty<?>> getFillStateProperties() {
+        List<IProperty<?>> result = super.getFillStateProperties();
+        result.add(BlockStateProperties.POWERED);
+        return result;
     }
 
     @Override
@@ -62,17 +67,6 @@ public class TerraReactorRedstoneInputPortBlock extends ReactorRedstoneInputPart
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new TerraReactorRedstoneInputPortTile();
-    }
-
-    @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (placer != null) {
-            world.setBlockState(pos, state.with(BlockStateProperties.FACING, getFacingFromEntity(pos, placer)), 2);
-        }
-    }
-
-    public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity placer) {
-        return Direction.getFacingFromVector((float) (placer.posX - clickedBlock.getX()), (float) (placer.posY - clickedBlock.getY()), (float) (placer.posZ - clickedBlock.getZ()));
     }
 
     @Override

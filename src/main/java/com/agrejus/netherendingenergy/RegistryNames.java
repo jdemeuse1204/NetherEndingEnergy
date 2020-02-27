@@ -9,7 +9,7 @@ public class RegistryNames {
     public static final String TERRA_REACTOR_REDSTONE_OUTPUT_PORT = "terra_reactor_redstone_output_port";
     public static final String TERRA_REACTOR_ACID_PORT = "terra_reactor_acid_port";
     public static final String TERRA_REACTOR_ITEM_PORT = "terra_reactor_item_port";
-    public static final String TERRA_MACHINE_CASING = "terra_machine_casing";
+    public static final String TERRA_REACTOR_CASING = "terra_reactor_casing";
     public static final String TERRA_HEAT_SINK = "terra_heat_sink";
     public static final String TERRA_REACTOR_CORE = "terra_reactor_core";
     public static final String TERRA_COLLECTING_STATION = "terra_collecting_station";

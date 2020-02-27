@@ -1,12 +1,12 @@
 {
   "parent": "block/cube",
   "textures": {
-    "particle": "netherendingenergy:block/terra_machine_casing",
-    "north": "netherendingenergy:block/terra_machine_casing_redstone_output_powered",
-    "south": "netherendingenergy:block/terra_machine_casing",
-    "east": "netherendingenergy:block/terra_machine_casing",
-    "west": "netherendingenergy:block/terra_machine_casing",
-    "up": "netherendingenergy:block/terra_machine_casing",
-    "down": "netherendingenergy:block/terra_machine_casing"
+    "particle": "netherendingenergy:block/terra_reactor_casing",
+    "north": "netherendingenergy:block/terra_reactor_casing_redstone_output_powered",
+    "south": "netherendingenergy:block/terra_reactor_casing",
+    "east": "netherendingenergy:block/terra_reactor_casing",
+    "west": "netherendingenergy:block/terra_reactor_casing",
+    "up": "netherendingenergy:block/terra_reactor_casing",
+    "down": "netherendingenergy:block/terra_reactor_casing"
   }
 }

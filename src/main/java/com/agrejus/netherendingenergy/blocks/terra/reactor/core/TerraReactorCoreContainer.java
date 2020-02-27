@@ -1,4 +1,4 @@
-package com.agrejus.netherendingenergy.blocks.terra.reactor;
+package com.agrejus.netherendingenergy.blocks.terra.reactor.core;
 
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;

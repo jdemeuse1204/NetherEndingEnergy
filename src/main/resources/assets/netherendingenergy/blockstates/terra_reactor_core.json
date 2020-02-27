@@ -1,5 +1,18 @@
 {
-  "variants" : {
-    "": { "model": "netherendingenergy:block/terra_reactor_core" }
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_all",
+    "textures": {
+      "all": "netherendingenergy:block/terra_reactor_core"
+    },
+    "transform": "forge:default-block"
+  },
+  "variants": {
+    "formed": {
+      "unformed": {
+        "model": "netherendingenergy:block/terra_reactor_core"
+      },
+      "p_0_0_0": { "model": "minecraft:block/air" }
+    }
   }
 }
