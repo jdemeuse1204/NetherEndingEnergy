@@ -4,6 +4,7 @@ import com.agrejus.netherendingenergy.Config;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
+import com.agrejus.netherendingenergy.common.helpers.RedstoneHelpers;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -42,6 +43,8 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
     BlockPos energyPortPosition;
     private @Nullable
     BlockPos redstoneOutputPortPosition;
+    private @Nullable
+    BlockState redstoneOutputPortState;
     private int counter;
 
     public TerraReactorCoreTile() {
@@ -85,6 +88,14 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
             return;
         }
 
+        if (world.getBlockState(pos).get(TerraReactorCoreBlock.FORMED) == TerraReactorPartIndex.UNFORMED) {
+            this.redstoneInputPortPosition = null;
+            this.energyPortPosition = null;
+            this.redstoneOutputPortPosition = null;
+            this.redstoneOutputPortState = null;
+            return;
+        }
+
         // store block positions in NBT so we dont need to keep looking them up?
         if (this.redstoneInputPortPosition == null) {
             this.redstoneInputPortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK);
@@ -98,26 +109,33 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
             this.redstoneOutputPortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.TERRA_REACTOR_REDSTONE_OUTPUT_PORT_BLOCK);
         }
 
+        if (this.redstoneOutputPortState == null && this.redstoneOutputPortPosition != null) {
+            this.redstoneOutputPortState = world.getBlockState(this.redstoneOutputPortPosition);
+        }
+
         if (this.redstoneInputPortPosition != null) {
             BlockState redstonePortState = world.getBlockState(this.redstoneInputPortPosition);
+
+            // If the block is broken, it wont exist here
+            if (redstonePortState != null && redstonePortState.getBlock() != ModBlocks.REACTOR_REDSTONE_PORT_BLOCK) {
+                this.redstoneInputPortPosition = null;
+                redstonePortState = null;
+            }
 
             if (redstonePortState != null && redstonePortState.get(BlockStateProperties.POWERED) == true) {
                 // Reactor On
                 energy.ifPresent(w -> {
 
-                    ((CustomEnergyStorage) w).addEnergy(Config.FIRSTBLOCK_GENERATE.get());
+                    ((CustomEnergyStorage) w).addEnergy(1);
+                    int energyStored = w.getEnergyStored();
+                    int energyMaxStored = w.getMaxEnergyStored();
+                    int signalStrength = RedstoneHelpers.computeSignalStrength(energyStored, energyMaxStored);
+                    boolean hasEnergyStored = w.getEnergyStored() > 0;
 
-                    // OPTIMIZE THIS!!!!
-                    if (((CustomEnergyStorage) w).getEnergyStored() > 0) {
-                        if (this.redstoneOutputPortPosition != null) {
-                            BlockState redstoneOutputPortState = world.getBlockState(this.redstoneOutputPortPosition);
-                            world.setBlockState(this.redstoneOutputPortPosition, redstoneOutputPortState.with(BlockStateProperties.POWERED, Boolean.valueOf(true)).with(BlockStateProperties.POWER_0_15, 2));
-                        }
-                    } else {
-                        if (this.redstoneOutputPortPosition != null) {
-                            BlockState redstoneOutputPortState = world.getBlockState(this.redstoneOutputPortPosition);
-                            world.setBlockState(this.redstoneOutputPortPosition, redstoneOutputPortState.with(BlockStateProperties.POWERED, Boolean.valueOf(false)).with(BlockStateProperties.POWER_0_15, 0));
-                        }
+                    if (this.redstoneOutputPortState != null && this.redstoneOutputPortPosition != null) {
+                        BlockState newState = this.redstoneOutputPortState.with(BlockStateProperties.POWERED, Boolean.valueOf(hasEnergyStored)).with(BlockStateProperties.POWER_0_15, signalStrength);
+                        world.setBlockState(this.redstoneOutputPortPosition, newState, 3);
+                        world.notifyNeighbors(pos, newState.getBlock());
                     }
                 });
 
@@ -138,12 +156,6 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
         if (this.energyPortPosition != null) {
             this.sendOutPower(this.energyPortPosition);
         }
-
-/*        // Generating Power when counter is greater than 0
-        BlockState blockState = world.getBlockState(pos);
-        if (blockState.get(BlockStateProperties.POWERED) != (counter > 0)) {
-            world.setBlockState(pos, blockState.with(BlockStateProperties.POWERED, counter > 0), 3);
-        }*/
 
         if (counter <= 0) {
             counter = 20; // Every second
@@ -169,6 +181,17 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
 
                             // Extract from our own energy
                             ((CustomEnergyStorage) energy).consumeEnergy(received);
+
+                            int energyMaxStored = handler.getMaxEnergyStored();
+                            int energyStored = capacity.get();
+                            int signalStrength = RedstoneHelpers.computeSignalStrength(energyStored, energyMaxStored);
+                            boolean hasEnergyStored = energyStored > 0;
+
+                            if (this.redstoneOutputPortState != null && this.redstoneOutputPortPosition != null) {
+                                BlockState newState = this.redstoneOutputPortState.with(BlockStateProperties.POWERED, Boolean.valueOf(hasEnergyStored)).with(BlockStateProperties.POWER_0_15, signalStrength);
+                                world.setBlockState(this.redstoneOutputPortPosition, newState, 3);
+                                world.notifyNeighbors(pos, newState.getBlock());
+                            }
 
                             markDirty();
 

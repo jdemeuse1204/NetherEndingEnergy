@@ -23,9 +23,4 @@ public class MultiBlockTools {
 
         return type.tryFormMultiBlock(world, pos);
     }
-
-    public static BlockPos getController(IMultiBlockType type, IWorld world, BlockPos clickedBlockPos, TerraReactorPartIndex part) {
-
-        return type.getControllerPosition(clickedBlockPos, part);
-    }
 }

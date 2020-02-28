@@ -20,7 +20,7 @@ public interface IMultiBlockType {
     BlockPos getRedstonePortPosition(IWorld world, BlockPos clickedBlockPos, TerraReactorPartIndex part);
     void toggleMultiBlock(IWorld world, BlockPos pos, BlockState state, PlayerEntity player);
     void unformBlock(IWorld world, BlockPos pos);
-    void formBlock(IWorld world, BlockPos pos, TerraReactorPartIndex part);
+    void formBlock(IWorld world, BlockPos pos, BlockState state, TerraReactorPartIndex part, BlockPos core);
     boolean isValidUnformedMultiBlock(IWorld world, BlockPos pos, IReactorConfig config);
     boolean isValidFormedMultiBlock(IWorld world, BlockPos pos, IReactorConfig config);
     boolean tryFormMultiBlock(IWorld world, BlockPos pos);

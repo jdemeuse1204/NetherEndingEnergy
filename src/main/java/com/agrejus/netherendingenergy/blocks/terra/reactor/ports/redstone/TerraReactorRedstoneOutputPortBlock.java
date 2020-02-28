@@ -4,8 +4,7 @@ import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.base.reactor.DirectionalReactorPartBlock;
 import com.agrejus.netherendingenergy.blocks.base.reactor.ReactorPartBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -15,6 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -55,11 +55,6 @@ public class TerraReactorRedstoneOutputPortBlock extends DirectionalReactorPartB
         return super.getDefaultReactorState().with(BlockStateProperties.POWERED, Boolean.valueOf(false)).with(BlockStateProperties.POWER_0_15, 0);
     }
 
-    // Change to signal strength
-    protected int getActiveSignal(IBlockReader worldIn, BlockPos pos, BlockState state) {
-        return state.get(BlockStateProperties.POWER_0_15);
-    }
-
     @Override
     public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side) {
         return side != null && side == state.get(BlockStateProperties.FACING);
@@ -71,15 +66,14 @@ public class TerraReactorRedstoneOutputPortBlock extends DirectionalReactorPartB
     }
 
     public int getStrongPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        return blockState.getWeakPower(blockAccess, pos, side);
+        return this.getWeakPower(blockState,blockAccess, pos, side);
     }
 
     public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        if (!blockState.get(BlockStateProperties.POWERED)) {
-            return 0;
-        } else {
-            return blockState.get(BlockStateProperties.FACING) == side ? this.getActiveSignal(blockAccess, pos, blockState) : 0;
+        if (side == blockState.get(BlockStateProperties.FACING).getOpposite()) {
+            return blockState.get(BlockStateProperties.POWER_0_15);
         }
+        return 0;
     }
 
     // call when power changes
