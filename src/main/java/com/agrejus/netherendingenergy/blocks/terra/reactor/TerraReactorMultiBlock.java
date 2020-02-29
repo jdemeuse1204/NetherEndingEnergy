@@ -42,7 +42,7 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
 
     public static TerraReactorMultiBlock INSTANCE = new TerraReactorMultiBlock();
     private @Nullable
-    List<Class> menuAccessibleClasses;
+    List<Block> menuAccessibleClasses;
 
     @Override
     public BlockPos getControllerPosition(BlockPos clickedBlockPos, TerraReactorPartIndex part) {
@@ -59,9 +59,9 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
     }
 
     @Override
-    public BlockPos getRedstonePortPosition(IWorld world, BlockPos clickedBlockPos, TerraReactorPartIndex part) {
+    public BlockPos getRedstonePortPosition(IWorld world, BlockPos clickedBlockPos, TerraReactorPartIndex part, IReactorConfig config) {
         BlockPos controllerPosition = this.getControllerPosition(clickedBlockPos, part);
-        return this.getBlockFromControllerPosition(world, controllerPosition, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK);
+        return this.getBlockFromControllerPosition(world, controllerPosition, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK, config);
     }
 
     @Override
@@ -108,17 +108,13 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
     }
 
     @Nullable
-    public BlockPos getBlockFromControllerPosition(IWorld world, BlockPos controllerPosition, Block findBlock) {
+    public BlockPos getBlockFromControllerPosition(IWorld world, BlockPos controllerPosition, Block findBlock, IReactorConfig config) {
         int startX = controllerPosition.getX();
         int startY = controllerPosition.getY();
         int startZ = controllerPosition.getZ();
         BlockPos start = new BlockPos(startX, startY, startZ);
 
-        for (TerraReactorPartIndex part : TerraReactorPartIndex.VALUES) {
-
-            if (part.getAllowedBlockTypes() == null || part == TerraReactorPartIndex.UNFORMED) {
-                continue;// Dont care whats here
-            }
+        for (TerraReactorPartIndex part : config.getParts().keySet()) {
 
             BlockPos position = start.add(part.getDx(), part.getDy(), part.getDz());
             BlockState state = world.getBlockState(position);
@@ -133,32 +129,31 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
     }
 
     @Override
-    public boolean isValidUnformedMultiBlock(IWorld world, BlockPos pos, IReactorConfig config) {
+    public boolean isValidUnformedMultiBlock(IWorld world, BlockPos pos, PlayerEntity player, IReactorConfig config) {
         int startX = pos.getX();
         int startY = pos.getY();
         int startZ = pos.getZ();
         BlockPos start = new BlockPos(startX, startY, startZ);
-        Map<Class, Integer> counts = new HashMap<Class, Integer>();
+        Map<Block, Integer> counts = new HashMap<Block, Integer>();
+        HashMap<TerraReactorPartIndex, List<Block>> parts = config.getParts();
 
-        for (TerraReactorPartIndex part : TerraReactorPartIndex.VALUES) {
-
-            if (part.getAllowedBlockTypes() == null || part == TerraReactorPartIndex.UNFORMED) {
-                continue;// Dont care whats here
-            }
+        for (TerraReactorPartIndex part : parts.keySet()) {
 
             BlockPos position = start.add(part.getDx(), part.getDy(), part.getDz());
             BlockState state = world.getBlockState(position);
             Block block = state.getBlock();
-            Class blockClass = block.getClass();
 
-            if (counts.containsKey(blockClass) == false) {
-                counts.put(blockClass, 0);
+            if (counts.containsKey(block) == false) {
+                counts.put(block, 0);
             }
 
-            int currentCount = counts.get(blockClass);
-            counts.replace(blockClass, ++currentCount);
+            int currentCount = counts.get(block);
+            counts.replace(block, ++currentCount);
 
-            if (part.getAllowedBlockTypes().contains(blockClass) == false) {
+            List<Block> allowedBlocks = parts.get(part);
+
+            if (allowedBlocks.contains(block) == false) {
+                player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + String.format("Invalid Block at: %s, %s, %s", position.getX(), position.getY(), position.getZ())), false);
                 return false;
             }
 
@@ -168,13 +163,14 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
         }
 
         // check our block counts for required blocks
-        Map<Class, Integer> requiredBlocks = config.getBlockCounts();
-        for (Class cls : requiredBlocks.keySet()) {
+        Map<Block, Integer> requiredBlocks = config.getBlockCounts();
+        for (Block block : requiredBlocks.keySet()) {
 
-            int required = requiredBlocks.get(cls);
-            int count = counts.getOrDefault(cls, 0);
+            int required = requiredBlocks.get(block);
+            int count = counts.getOrDefault(block, 0);
 
             if (required != count) {
+                player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + String.format("%s Count Incorrect - Expected: %s, Actual: %s", block.getRegistryName(), required, count)), false);
                 return false;
             }
         }
@@ -184,33 +180,29 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
 
     @Override
     public boolean isValidFormedMultiBlock(IWorld world, BlockPos pos, IReactorConfig config) {
-        // error here somewhere, energy port is missing and I can form the block
-        Map<Class, Integer> counts = new HashMap<Class, Integer>();
+        Map<Block, Integer> counts = new HashMap<Block, Integer>();
         int startX = pos.getX();
         int startY = pos.getY();
         int startZ = pos.getZ();
         BlockPos start = new BlockPos(startX, startY, startZ);
+        HashMap<TerraReactorPartIndex, List<Block>> parts = config.getParts();
 
-        for (TerraReactorPartIndex part : TerraReactorPartIndex.VALUES) {
-
-            if (part.getAllowedBlockTypes() == null || part == TerraReactorPartIndex.UNFORMED) {
-                continue;// Dont care whats here
-            }
-
+        for (TerraReactorPartIndex part : parts.keySet()) {
 
             BlockPos position = start.add(part.getDx(), part.getDy(), part.getDz());
             BlockState state = world.getBlockState(position);
             Block block = state.getBlock();
-            Class blockClass = block.getClass();
 
-            if (counts.containsKey(blockClass)) {
-                counts.put(blockClass, 0);
+            if (counts.containsKey(block)) {
+                counts.put(block, 0);
             }
 
-            int currentCount = counts.get(blockClass);
-            counts.replace(blockClass, currentCount++);
+            int currentCount = counts.get(block);
+            counts.replace(block, currentCount++);
 
-            if (part.getAllowedBlockTypes().contains(blockClass) == false) {
+            List<Block> allowedBlocks = parts.get(part);
+
+            if (allowedBlocks.contains(block) == false) {
                 return false;
             }
 
@@ -220,11 +212,11 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
         }
 
         // check our block counts for required blocks
-        Map<Class, Integer> requiredBlocks = config.getBlockCounts();
-        for (Class cls : requiredBlocks.keySet()) {
+        Map<Block, Integer> requiredBlocks = config.getBlockCounts();
+        for (Block block : requiredBlocks.keySet()) {
 
-            int required = requiredBlocks.get(cls);
-            int count = counts.getOrDefault(cls, 0);
+            int required = requiredBlocks.get(block);
+            int count = counts.getOrDefault(block, 0);
 
             if (required != count) {
                 return false;
@@ -235,17 +227,18 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
     }
 
     @Override
-    public boolean tryFormMultiBlock(IWorld world, BlockPos pos) {
+    public boolean tryFormMultiBlock(IWorld world, BlockPos pos, IReactorConfig config) {
         int startX = pos.getX();
         int startY = pos.getY();
         int startZ = pos.getZ();
         BlockPos core = new BlockPos(startX, startY, startZ); // core is always the starting position
+        HashMap<TerraReactorPartIndex, List<Block>> parts = config.getParts();
 
-        for (TerraReactorPartIndex part : TerraReactorPartIndex.VALUES) {
+        for (TerraReactorPartIndex part : parts.keySet()) {
 
-            List<Class> allowedTypes = part.getAllowedBlockTypes();
-            if (allowedTypes == null || allowedTypes.contains(AirBlock.class) || part == TerraReactorPartIndex.UNFORMED) {
-                continue;// Dont care whats here
+            List<Block> allowedBlocks = parts.get(part);
+            if (allowedBlocks.contains(Blocks.AIR)) {
+                continue;
             }
 
             BlockPos position = core.add(part.getDx(), part.getDy(), part.getDz());
@@ -253,22 +246,21 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
             this.formBlock(world, position, state, part, core);
         }
 
-        // need to see if there is any energy in the
-
         return true;
     }
 
     @Override
-    public boolean tryUnFormMultiBlock(IWorld world, BlockPos pos) {
+    public boolean tryUnFormMultiBlock(IWorld world, BlockPos pos, IReactorConfig config) {
         int startX = pos.getX();
         int startY = pos.getY();
         int startZ = pos.getZ();
         BlockPos start = new BlockPos(startX, startY, startZ);
+        HashMap<TerraReactorPartIndex, List<Block>> parts = config.getParts();
 
-        for (TerraReactorPartIndex part : TerraReactorPartIndex.VALUES) {
+        for (TerraReactorPartIndex part : parts.keySet()) {
 
-            List<Class> allowedTypes = part.getAllowedBlockTypes();
-            if (allowedTypes == null || allowedTypes.contains(AirBlock.class) || part == TerraReactorPartIndex.UNFORMED) {
+            List<Block> allowedBlocks = parts.get(part);
+            if (allowedBlocks.contains(Blocks.AIR) || part == TerraReactorPartIndex.UNFORMED) {
                 continue;// Dont care whats here
             }
 
@@ -281,26 +273,26 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
     }
 
     @Override
-    public List<Class> getMenuAccessibleBlockClasses() {
+    public List<Block> getMenuAccessibleBlockClasses() {
 
         if (this.menuAccessibleClasses != null) {
             return this.menuAccessibleClasses;
         }
 
-        this.menuAccessibleClasses = new ArrayList<Class>();
+        this.menuAccessibleClasses = new ArrayList<Block>();
 
-        this.menuAccessibleClasses.add(TerraReactorCasingBlock.class);
-        this.menuAccessibleClasses.add(TerraReactorCoreBlock.class);
-        this.menuAccessibleClasses.add(TerraReactorEnergyPortBlock.class);
-        this.menuAccessibleClasses.add(TerraReactorRedstoneInputPortBlock.class);
-        this.menuAccessibleClasses.add(TerraHeatSinkBlock.class);
+        this.menuAccessibleClasses.add(ModBlocks.TERRA_REACTOR_CASING_BLOCK);
+        this.menuAccessibleClasses.add(ModBlocks.TERRA_REACTOR_CORE_BLOCK);
+        this.menuAccessibleClasses.add(ModBlocks.TERRA_REACTOR_ENERGY_PORT_BLOCK);
+        this.menuAccessibleClasses.add(ModBlocks.REACTOR_REDSTONE_PORT_BLOCK);
+        this.menuAccessibleClasses.add(ModBlocks.TERRA_HEAT_SINK_BLOCK);
 
         return this.menuAccessibleClasses;
     }
 
     @Override
-    public boolean isController(Class cls) {
-        return cls == TerraReactorCoreBlock.class;
+    public boolean isController(Block block) {
+        return block == ModBlocks.TERRA_REACTOR_CORE_BLOCK;
     }
 
     @Override
@@ -313,13 +305,13 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
         if (!world.isRemote()) {
             TerraReactorPartIndex formed = state.get(FORMED);
             if (formed == TerraReactorPartIndex.UNFORMED) {
-                if (MultiBlockTools.formMultiblock(TerraReactorMultiBlock.INSTANCE, world, pos, TerraReactorConfig.INSTANCE)) {
+                if (MultiBlockTools.formMultiblock(TerraReactorMultiBlock.INSTANCE, world, pos, player, TerraReactorConfig.INSTANCE)) {
                     player.sendStatusMessage(new StringTextComponent(TextFormatting.GREEN + "Terra Reactor Successfully Formed"), false);
                 }
                 return;
             }
 
-            MultiBlockTools.breakMultiblock(TerraReactorMultiBlock.INSTANCE, world, pos, state.get(FORMED));
+            MultiBlockTools.breakMultiblock(TerraReactorMultiBlock.INSTANCE, world, pos, state.get(FORMED), TerraReactorConfig.INSTANCE);
             player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "Terra Reactor Unformed"), false);
         }
     }

@@ -4,8 +4,11 @@ import com.agrejus.netherendingenergy.Capabilities;
 import com.agrejus.netherendingenergy.Config;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorConfig;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
 import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
 import com.agrejus.netherendingenergy.common.Ratio;
+import com.agrejus.netherendingenergy.common.helpers.RedstoneHelpers;
 import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import net.minecraft.block.Block;
@@ -21,6 +24,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -257,10 +261,47 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             shouldMarkDirtyAndUpdateBlock.set(true);
         }
 
+
+        BlockPos acidPortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.TERRA_REACTOR_ACID_PORT_BLOCK, TerraReactorConfig.INSTANCE);
+
+        if (acidPortPosition != null) {
+            this.sendOutLiquid();
+        }
+
         if (shouldMarkDirtyAndUpdateBlock.get() == true) {
             BlockState state = world.getBlockState(pos);
             world.notifyBlockUpdate(pos, state, state, 3);
             markDirty();
+        }
+    }
+
+    private void sendOutLiquid() {
+        if (outputTank.getFluidAmount() > 0) {
+
+            for(Direction direction: Direction.values()) {
+                TileEntity te = world.getTileEntity(pos.offset(direction));
+
+                if (te != null) {
+                    boolean doContinue = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction).map(handler -> {
+                        NEEFluidTank tank = (NEEFluidTank)handler;
+                        if (tank.canFill() && outputTank.getFluidAmount() > 1) {
+                            tank.fill(new FluidStack(Fluids.LAVA.getStillFluid(), 1), IFluidHandler.FluidAction.EXECUTE);
+                            outputTank.drain(new FluidStack(Fluids.LAVA.getStillFluid(), 1), IFluidHandler.FluidAction.EXECUTE);
+
+
+                            markDirty();
+
+                            return outputTank.getFluidAmount() > 0;
+                        } else {
+                            return true;
+                        }
+                    }).orElse(true);
+
+                    if (!doContinue) {
+                        return;
+                    }
+                }
+            }
         }
     }
 

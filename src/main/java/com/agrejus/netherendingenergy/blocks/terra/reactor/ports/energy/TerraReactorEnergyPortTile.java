@@ -3,22 +3,15 @@ package com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy;
 import com.agrejus.netherendingenergy.Config;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class TerraReactorEnergyPortTile extends TileEntity {
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
@@ -26,7 +19,7 @@ public class TerraReactorEnergyPortTile extends TileEntity {
 
     public TerraReactorEnergyPortTile() {
 
-        super(ModBlocks.REACTOR_ENERGY_PORT_TILE);
+        super(ModBlocks.TERRA_REACTOR_ENERGY_PORT_TILE);
     }
 
     // On block break save energy amount to core

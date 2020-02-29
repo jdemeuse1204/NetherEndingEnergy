@@ -2,6 +2,7 @@ package com.agrejus.netherendingenergy.blocks;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.soil.CausticFarmlandBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneInputPortBlock;
@@ -49,10 +50,13 @@ public class ModBlocks {
 
     /* General */
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_CASING)
-    public static TerraReactorCasingBlock TERRA_MACHINE_CASING_BLOCK;
+    public static TerraReactorCasingBlock TERRA_REACTOR_CASING_BLOCK;
 
     @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_IMBUED_SOIL)
     public static CausticImbuedSoil CAUSTIC_IMBUED_SOIL_BLOCK;
+
+    @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_FARMLAND)
+    public static CausticFarmlandBlock CAUSTIC_FARMLAND_BLOCK;
 
     /* Heat Sink */
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_HEAT_SINK)
@@ -124,9 +128,9 @@ public class ModBlocks {
     public static TileEntityType<TerraReactorRedstoneInputPortTile> REACTOR_REDSTONE_PORT_TILE;
 
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ENERGY_PORT)
-    public static TerraReactorEnergyPortBlock REACTOR_ENERGY_PORT_BLOCK;
+    public static TerraReactorEnergyPortBlock TERRA_REACTOR_ENERGY_PORT_BLOCK;
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ENERGY_PORT)
-    public static TileEntityType<TerraReactorEnergyPortTile> REACTOR_ENERGY_PORT_TILE;
+    public static TileEntityType<TerraReactorEnergyPortTile> TERRA_REACTOR_ENERGY_PORT_TILE;
 
     public static class Test {
         /* Tutorial */

@@ -22,6 +22,11 @@
                   "op": "replace"
                 },
                 {
+                  "source": "acid",
+                  "target": "BlockEntityTag.acid",
+                  "op": "replace"
+                },
+                {
                   "source": "energy",
                   "target": "BlockEntityTag.energy",
                   "op": "replace"

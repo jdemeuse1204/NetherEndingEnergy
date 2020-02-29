@@ -2,19 +2,23 @@ package com.agrejus.netherendingenergy.blocks.terra.reactor.core;
 
 import com.agrejus.netherendingenergy.Config;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorConfig;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
 import com.agrejus.netherendingenergy.common.helpers.RedstoneHelpers;
+import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -26,17 +30,32 @@ import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TerraReactorCoreTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+
+    // Internal Storage
     private LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
+    private NEEFluidTank acidTank = new NEEFluidTank("ACID", 5000) {
+        @Override
+        protected void onContentsChanged() {
+            BlockState state = world.getBlockState(pos);
+            world.notifyBlockUpdate(pos, state, state, 3);
+            markDirty();
+        }
+    };
+
+    // Properties
     private @Nullable
     BlockPos redstoneInputPortPosition;
     private @Nullable
@@ -46,6 +65,7 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
     private @Nullable
     BlockState redstoneOutputPortState;
     private int counter;
+    private static Map<Item, Integer> burnTimes = AbstractFurnaceTileEntity.getBurnTimes();
 
     public TerraReactorCoreTile() {
         super(ModBlocks.TERRA_REACTOR_CORE_TILE);
@@ -60,20 +80,22 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
 
             @Override
             protected void onContentsChanged(int slot) {
-                // Marks the tile entity as changed so the system knows it needs to be saved
+                BlockState state = world.getBlockState(pos);
+                world.notifyBlockUpdate(pos, state, state, 3);
                 markDirty();
             }
 
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                return stack.getItem() == Items.DIAMOND;
+                return burnTimes.containsKey(stack.getItem());
             }
 
             @Nonnull
             @Override
             public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
 
-                if (stack.getItem() != Items.DIAMOND) {
+                // Burnable Items Only
+                if (isItemValid(slot, stack) == false) {
                     return stack;
                 }
 
@@ -98,15 +120,15 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
 
         // store block positions in NBT so we dont need to keep looking them up?
         if (this.redstoneInputPortPosition == null) {
-            this.redstoneInputPortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK);
+            this.redstoneInputPortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK, TerraReactorConfig.INSTANCE);
         }
 
         if (this.energyPortPosition == null) {
-            this.energyPortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.REACTOR_ENERGY_PORT_BLOCK);
+            this.energyPortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.TERRA_REACTOR_ENERGY_PORT_BLOCK, TerraReactorConfig.INSTANCE);
         }
 
         if (this.redstoneOutputPortPosition == null) {
-            this.redstoneOutputPortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.TERRA_REACTOR_REDSTONE_OUTPUT_PORT_BLOCK);
+            this.redstoneOutputPortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.TERRA_REACTOR_REDSTONE_OUTPUT_PORT_BLOCK, TerraReactorConfig.INSTANCE);
         }
 
         if (this.redstoneOutputPortState == null && this.redstoneOutputPortPosition != null) {
@@ -126,7 +148,7 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
                 // Reactor On
                 energy.ifPresent(w -> {
 
-                    ((CustomEnergyStorage) w).addEnergy(1);
+                    ((CustomEnergyStorage) w).addEnergy(100);
                     int energyStored = w.getEnergyStored();
                     int energyMaxStored = w.getMaxEnergyStored();
                     int signalStrength = RedstoneHelpers.computeSignalStrength(energyStored, energyMaxStored);
@@ -163,7 +185,7 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
     }
 
     private void sendOutPower(BlockPos energyPortPosition) {
-        //Config.FIRSTBLOCK_SEND.get()
+        // THIS IS NOT ACCURATE, CLIENT IS OUT OF SYNC!!!!
         energy.ifPresent(energy -> {
             // Atomic Integer is a value that you can change inside of a lambda
             AtomicInteger capacity = new AtomicInteger(energy.getEnergyStored());
@@ -211,9 +233,9 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
 
     @Override
     public void read(CompoundNBT tag) {
-        // When block is broken?
 
-        // TAGS MUST BE IN LOOT TABLE AS WELL!!!
+        acidTank.readFromNBT(tag.getCompound("acid"));
+
         CompoundNBT invTag = tag.getCompound("inv");
 
         handler.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(invTag));
@@ -237,6 +259,10 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
             CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
             tag.put("energy", compound);
         });
+
+        CompoundNBT acidTankNBT = new CompoundNBT();
+        tag.put("acid", acidTank.writeToNBT(acidTankNBT));
+
         return super.write(tag);
     }
 
@@ -244,18 +270,16 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 
-        BlockState state = world.getBlockState(pos);
-        // Not formed
-        if (state.getBlock() != ModBlocks.TERRA_REACTOR_CORE_BLOCK || state.get(TerraReactorCoreBlock.FORMED) == TerraReactorPartIndex.UNFORMED) {
-            return null;
-        }
-
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return handler.cast();
         }
 
         if (cap == CapabilityEnergy.ENERGY) {
             return energy.cast();
+        }
+
+        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+            return LazyOptional.of(() -> (T) acidTank);
         }
 
         return super.getCapability(cap, side);

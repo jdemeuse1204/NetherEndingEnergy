@@ -1,6 +1,7 @@
 {
   "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
   "textures": {
+    "particle": "netherendingenergy:block/terra_heat_sink_2",
     "terra heatsink 1_6": "netherendingenergy:block/terra_heat_sink_1_6",
     "terra heatsink 3_4": "netherendingenergy:block/terra_heat_sink_3_4",
     "terra heatsink 5": "netherendingenergy:block/terra_heat_sink_5",

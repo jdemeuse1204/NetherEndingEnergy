@@ -15,17 +15,17 @@ import java.util.List;
 
 public interface IMultiBlockType {
 
-    BlockPos getBlockFromControllerPosition(IWorld world, BlockPos controllerPosition, Block findBlock);
+    BlockPos getBlockFromControllerPosition(IWorld world, BlockPos controllerPosition, Block findBlock, IReactorConfig config);
     BlockPos getControllerPosition(BlockPos clickedBlockPos, TerraReactorPartIndex part);
-    BlockPos getRedstonePortPosition(IWorld world, BlockPos clickedBlockPos, TerraReactorPartIndex part);
+    BlockPos getRedstonePortPosition(IWorld world, BlockPos clickedBlockPos, TerraReactorPartIndex part, IReactorConfig config);
     void toggleMultiBlock(IWorld world, BlockPos pos, BlockState state, PlayerEntity player);
     void unformBlock(IWorld world, BlockPos pos);
     void formBlock(IWorld world, BlockPos pos, BlockState state, TerraReactorPartIndex part, BlockPos core);
-    boolean isValidUnformedMultiBlock(IWorld world, BlockPos pos, IReactorConfig config);
+    boolean isValidUnformedMultiBlock(IWorld world, BlockPos pos, PlayerEntity player, IReactorConfig config);
     boolean isValidFormedMultiBlock(IWorld world, BlockPos pos, IReactorConfig config);
-    boolean tryFormMultiBlock(IWorld world, BlockPos pos);
-    boolean tryUnFormMultiBlock(IWorld world, BlockPos pos);
-    List<Class> getMenuAccessibleBlockClasses();
-    boolean isController(Class cls);
+    boolean tryFormMultiBlock(IWorld world, BlockPos pos, IReactorConfig config);
+    boolean tryUnFormMultiBlock(IWorld world, BlockPos pos, IReactorConfig config);
+    List<Block> getMenuAccessibleBlockClasses();
+    boolean isController(Block block);
     Item getFormationItem();
 }

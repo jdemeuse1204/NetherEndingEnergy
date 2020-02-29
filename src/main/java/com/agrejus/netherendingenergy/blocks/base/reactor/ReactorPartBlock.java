@@ -1,5 +1,6 @@
 package com.agrejus.netherendingenergy.blocks.base.reactor;
 
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorConfig;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
 import com.agrejus.netherendingenergy.common.blocks.RedstoneDetectorBlock;
 import com.agrejus.netherendingenergy.common.interfaces.IMultiBlockType;
@@ -65,7 +66,7 @@ public abstract class ReactorPartBlock extends RedstoneDetectorBlock {
             return;
         }
 
-        MultiBlockTools.breakMultiblock(this.Type, world, pos, state.get(FORMED));
+        MultiBlockTools.breakMultiblock(this.Type, world, pos, state.get(FORMED), TerraReactorConfig.INSTANCE);
         return;
     }
 
@@ -87,10 +88,10 @@ public abstract class ReactorPartBlock extends RedstoneDetectorBlock {
                 return true;
             }
             // Only work if the block is formed
-            Class blockClass = state.getBlock().getClass();
-            if (this.Type.getMenuAccessibleBlockClasses().contains(blockClass) && state.get(FORMED) != TerraReactorPartIndex.UNFORMED) {
+            Block block = state.getBlock();
+            if (this.Type.getMenuAccessibleBlockClasses().contains(block) && state.get(FORMED) != TerraReactorPartIndex.UNFORMED) {
 
-                if (this.Type.isController(blockClass)) {
+                if (this.Type.isController(block)) {
                     TileEntity tileEntity = world.getTileEntity(pos);
 
                     if (tileEntity instanceof INamedContainerProvider) {

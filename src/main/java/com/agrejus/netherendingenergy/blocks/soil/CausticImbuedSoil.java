@@ -18,7 +18,7 @@ public class CausticImbuedSoil extends Block {
                 .sound(SoundType.GROUND)
                 .hardnessAndResistance(1.0f)
                 .lightValue(0));
-        setRegistryName(RegistryNames.CAUSTIC_IMBUED_SOIL);
+        setRegistryName(RegistryNames.CAUSTIC_FARMLAND);
         setDefaultState(getStateContainer().getBaseState().with(IMBUED_MATERIAL, ImbueMaterial.LAPIS));
     }
 

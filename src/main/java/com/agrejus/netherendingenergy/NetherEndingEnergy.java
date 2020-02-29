@@ -2,6 +2,7 @@ package com.agrejus.netherendingenergy;
 
 import com.agrejus.netherendingenergy.blocks.*;
 import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.soil.CausticFarmlandBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneInputPortBlock;
@@ -183,7 +184,7 @@ public class NetherEndingEnergy {
 
             /* General */
             event.getRegistry().register(new CausticBellBlock());
-            event.getRegistry().register(new CausticImbuedSoil());
+            event.getRegistry().register(new CausticFarmlandBlock());
             event.getRegistry().register(new ImbuingMachineBlock());
 
             // Terra
@@ -222,11 +223,11 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new FirstItem());
 
             // New Stuff
-            event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_IMBUED_SOIL_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_IMBUED_SOIL));
+            event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_FARMLAND_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_FARMLAND));
             event.getRegistry().register(new BlockItem(ModBlocks.IMBUING_MACHINE_BLOCK, properties).setRegistryName(RegistryNames.IMBUING_MACHINE));
 
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_BELL_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_BELL));
-            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_MACHINE_CASING_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_CASING));
+            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_CASING_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_CASING));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_HEAT_SINK_BLOCK, properties).setRegistryName(RegistryNames.TERRA_HEAT_SINK));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_CORE_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_COLLECTING_STATION_BLOCK, properties).setRegistryName(RegistryNames.TERRA_COLLECTING_STATION));
@@ -240,7 +241,7 @@ public class NetherEndingEnergy {
 
             /* Reactor General */
             event.getRegistry().register(new BlockItem(ModBlocks.REACTOR_REDSTONE_PORT_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_REDSTONE_INPUT_PORT));
-            event.getRegistry().register(new BlockItem(ModBlocks.REACTOR_ENERGY_PORT_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_ENERGY_PORT));
+            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_ENERGY_PORT_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_ENERGY_PORT));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_ITEM_PORT_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_ITEM_PORT));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_ACID_PORT_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_ACID_PORT));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_REDSTONE_OUTPUT_PORT_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_REDSTONE_OUTPUT_PORT));
@@ -263,7 +264,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(TileEntityType.Builder.create(TerraMixerTile::new, ModBlocks.TERRA_MIXER_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_MIXER));
 
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorRedstoneInputPortTile::new, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_REDSTONE_INPUT_PORT));
-            event.getRegistry().register(TileEntityType.Builder.create(TerraReactorEnergyPortTile::new, ModBlocks.REACTOR_ENERGY_PORT_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_ENERGY_PORT));
+            event.getRegistry().register(TileEntityType.Builder.create(TerraReactorEnergyPortTile::new, ModBlocks.TERRA_REACTOR_ENERGY_PORT_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_ENERGY_PORT));
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorItemPortTile::new, ModBlocks.TERRA_REACTOR_ITEM_PORT_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_ITEM_PORT));
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorAcidPortTile::new, ModBlocks.TERRA_REACTOR_ACID_PORT_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_ACID_PORT));
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorRedstoneOutputPortTile::new, ModBlocks.TERRA_REACTOR_REDSTONE_OUTPUT_PORT_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_REDSTONE_OUTPUT_PORT));
