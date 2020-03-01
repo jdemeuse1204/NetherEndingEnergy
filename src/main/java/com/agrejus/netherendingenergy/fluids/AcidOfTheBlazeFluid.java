@@ -24,65 +24,15 @@ import net.minecraftforge.fml.RegistryObject;
 
 import java.util.function.Supplier;
 
-public class AcidOfTheBlazeFluid {
-    protected static RegistryObject<FlowingFluid> stillFluid;
-    protected static RegistryObject<FlowingFluid> flowingFluid;
+public class AcidOfTheBlazeFluid extends AcidFluid {
 
-    protected static RegistryObject<FlowingFluidBlock> block;
-    protected static RegistryObject<Item> bucket;
-
-    protected static ForgeFlowingFluid.Properties properties;
-
-    private static ResourceLocation stillTextureResourceLocation;
-    private static ResourceLocation flowingTextureResourceLocation;
-
-    public static FlowingFluid getStill() {
-        return stillFluid.get();
+    public AcidOfTheBlazeFluid() {
+        super("blaze");
     }
 
-    public static FlowingFluid getFlowing() {
-        return flowingFluid.get();
-    }
-
-    public static Item getItem() {
-        return bucket.get();
-    }
-
-    public static ResourceLocation getStillTexture() {
-        return stillTextureResourceLocation;
-    }
-
-    public static ResourceLocation getFlowingTexture() {
-        return flowingTextureResourceLocation;
-    }
-
-    protected AcidOfTheBlazeFluid(String key, String stillTexture, String flowTexture) {
-        stillTextureResourceLocation = new ResourceLocation(stillTexture);
-        flowingTextureResourceLocation = new ResourceLocation(flowTexture);
-        stillFluid = NetherEndingEnergy.FLUIDS.register(key, () -> new ForgeFlowingFluid.Source(properties));
-        flowingFluid = NetherEndingEnergy.FLUIDS.register(flowing(key), () -> new ForgeFlowingFluid.Flowing(properties));
-
-        block = NetherEndingEnergy.BLOCKS.register(key, () -> new AcidOfTheBlazeBlock(stillFluid, Block.Properties.create(Material.WATER)));
-        bucket = NetherEndingEnergy.ITEMS.register(bucket(key), () -> new BucketItem(stillFluid, new Item.Properties().containerItem(Items.BUCKET).maxStackSize(1).group(ModSetup.itemGroup).rarity(Rarity.UNCOMMON)));
-
-        properties = new ForgeFlowingFluid.Properties(stillFluid, flowingFluid, FluidAttributes.builder(stillTextureResourceLocation, flowingTextureResourceLocation).rarity(Rarity.UNCOMMON)).bucket(bucket).block(block).levelDecreasePerBlock(2);
-    }
-
-    public static AcidOfTheBlazeFluid create(String acidName) {
-        String key = String.format("acid_of_the_%s_fluid", acidName);
-        String stillTexture = String.format("%s:block/fluids/acid_of_the_%s_still", NetherEndingEnergy.MODID, acidName);
-        String flowTexture = String.format("%s:block/fluids/acid_of_the_%s_flow", NetherEndingEnergy.MODID, acidName);
-        return new AcidOfTheBlazeFluid(key, stillTexture, flowTexture);
-    }
-
-    public static String flowing(String fluid) {
-
-        return fluid + "_flowing";
-    }
-
-    public static String bucket(String fluid) {
-
-        return fluid + "_bucket";
+    @Override
+    protected FlowingFluidBlock createBlock(RegistryObject<FlowingFluid> stillFluid) {
+        return new AcidOfTheBlazeBlock(stillFluid, Block.Properties.create(Material.WATER));
     }
 
     public static class AcidOfTheBlazeBlock extends AcidFluid.AcidBlock {

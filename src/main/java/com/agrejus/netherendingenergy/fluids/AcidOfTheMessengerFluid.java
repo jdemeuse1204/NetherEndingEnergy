@@ -1,4 +1,4 @@
 package com.agrejus.netherendingenergy.fluids;
 
-public class AcidOfTheFortunate {
+public class AcidOfTheMessengerFluid {
 }

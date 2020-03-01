@@ -8,12 +8,15 @@ import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
 import com.agrejus.netherendingenergy.common.Ratio;
 import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
 import com.agrejus.netherendingenergy.fluids.AcidOfTheOrdinaryFluid;
+import com.agrejus.netherendingenergy.fluids.ModFluids;
 import com.agrejus.netherendingenergy.fluids.RawAcidFluid;
+import com.agrejus.netherendingenergy.items.ModItems;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
@@ -34,6 +37,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -250,7 +254,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             this.isProcessing = false;
 
             inputTank.drain(this.resovledCycleProcessAmount, IFluidHandler.FluidAction.EXECUTE);
-            outputTank.fill(new FluidStack(AcidOfTheOrdinaryFluid.getStill(), this.resovledCycleProcessAmount), IFluidHandler.FluidAction.EXECUTE);
+            outputTank.fill(new FluidStack(ModFluids.ACID_OF_THE_ORDINARY, this.resovledCycleProcessAmount), IFluidHandler.FluidAction.EXECUTE);
 
             this.tickProcessCount = 0;
             this.isProcessing = false;
@@ -281,8 +285,8 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                     boolean doContinue = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction).map(handler -> {
                         NEEFluidTank tank = (NEEFluidTank)handler;
                         if (tank.canFill() && outputTank.getFluidAmount() > 1) {
-                            tank.fill(new FluidStack(AcidOfTheOrdinaryFluid.getStill(), 1), IFluidHandler.FluidAction.EXECUTE);
-                            outputTank.drain(new FluidStack(AcidOfTheOrdinaryFluid.getStill(), 1), IFluidHandler.FluidAction.EXECUTE);
+                            tank.fill(new FluidStack(ModFluids.ACID_OF_THE_ORDINARY, 1), IFluidHandler.FluidAction.EXECUTE);
+                            outputTank.drain(new FluidStack(ModFluids.ACID_OF_THE_ORDINARY, 1), IFluidHandler.FluidAction.EXECUTE);
 
 
                             markDirty();

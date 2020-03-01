@@ -27,22 +27,10 @@ public class AcidOfTheOrdinaryFluid extends AcidFluid {
         return new AcidOfTheOrdinaryBlock(stillFluid, Block.Properties.create(Material.WATER));
     }
 
-    public static class AcidOfTheOrdinaryBlock extends FlowingFluidBlock {
+    public static class AcidOfTheOrdinaryBlock extends AcidFluid.AcidBlock {
 
         public AcidOfTheOrdinaryBlock(Supplier<? extends FlowingFluid> supplier, Properties properties) {
             super(supplier, properties);
-        }
-
-        @Override
-        public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
-            if (!worldIn.isRemote && worldIn.getDifficulty() != Difficulty.PEACEFUL) {
-                if (entityIn instanceof LivingEntity) {
-                    LivingEntity livingentity = (LivingEntity) entityIn;
-                    if (!livingentity.isInvulnerableTo(DamageSource.WITHER)) {
-                        livingentity.addPotionEffect(new EffectInstance(Effects.POISON, 40));
-                    }
-                }
-            }
         }
     }
 }

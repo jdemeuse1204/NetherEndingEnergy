@@ -37,6 +37,7 @@ import com.agrejus.netherendingenergy.blocks.test.BlockTank;
 import com.agrejus.netherendingenergy.blocks.test.TileTank;
 import com.agrejus.netherendingenergy.fluids.AcidOfTheBlazeFluid;
 import com.agrejus.netherendingenergy.fluids.AcidOfTheOrdinaryFluid;
+import com.agrejus.netherendingenergy.fluids.ModFluids;
 import com.agrejus.netherendingenergy.fluids.RawAcidFluid;
 import com.agrejus.netherendingenergy.items.FirstItem;
 import com.agrejus.netherendingenergy.setup.ClientProxy;
@@ -98,9 +99,8 @@ public class NetherEndingEnergy {
 
     static {
         RawAcidFluid.create("raw_acid_fluid");
-        new AcidOfTheOrdinaryFluid();
-        AcidOfTheBlazeFluid.create("blaze");
-        //AcidOfTheBlazeFluid.create("acid_of_the_blaze_fluid", "acid_of_the_blaze");
+        ModFluids.AcidOfTheOrdinary = new AcidOfTheOrdinaryFluid();
+        ModFluids.AcidOfTheBlaze = new AcidOfTheBlazeFluid();
     }
 
     public NetherEndingEnergy() {
