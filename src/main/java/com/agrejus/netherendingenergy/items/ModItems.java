@@ -10,6 +10,6 @@ public class ModItems {
     @ObjectHolder("netherendingenergy:firstitem")
     public  static FirstItem FIRSTITEM;
 
-    @ObjectHolder("netherendingenergy:raw_acid_fluid_bucket")
-    public static BucketItem RAW_ACID_FLUID_BUCKET;
+/*    @ObjectHolder("netherendingenergy:raw_acid_fluid_bucket")
+    public static BucketItem RAW_ACID_FLUID_BUCKET;*/
 }

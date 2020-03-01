@@ -13,7 +13,6 @@ import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineBlock;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineContainer;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineTile;
-import com.agrejus.netherendingenergy.blocks.soil.CausticImbuedSoil;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationBlock;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationContainer;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
@@ -36,6 +35,8 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCore
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTile;
 import com.agrejus.netherendingenergy.blocks.test.BlockTank;
 import com.agrejus.netherendingenergy.blocks.test.TileTank;
+import com.agrejus.netherendingenergy.fluids.AcidOfTheBlazeFluid;
+import com.agrejus.netherendingenergy.fluids.AcidOfTheOrdinaryFluid;
 import com.agrejus.netherendingenergy.fluids.RawAcidFluid;
 import com.agrejus.netherendingenergy.items.FirstItem;
 import com.agrejus.netherendingenergy.setup.ClientProxy;
@@ -72,7 +73,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -98,6 +98,9 @@ public class NetherEndingEnergy {
 
     static {
         RawAcidFluid.create("raw_acid_fluid");
+        new AcidOfTheOrdinaryFluid();
+        AcidOfTheBlazeFluid.create("blaze");
+        //AcidOfTheBlazeFluid.create("acid_of_the_blaze_fluid", "acid_of_the_blaze");
     }
 
     public NetherEndingEnergy() {
@@ -163,15 +166,6 @@ public class NetherEndingEnergy {
     public static class RegistryEvents {
 
         @SubscribeEvent
-        public static void onRegisterFeatures(RegistryEvent.Register<Feature<?>> event) {
-            IForgeRegistry<Feature<?>> r = event.getRegistry();
-
-/*            register(r, MYSTICAL_FLOWERS, "mystical_flowers");
-            register(r, MYSTICAL_MUSHROOMS, "mystical_mushrooms");*/
-            //r.register(new CausticBellFeature(new ));
-        }
-
-        @SubscribeEvent
         public static void onBlocksRegistry(final RegistryEvent.Register<Block> event) {
 
             // register a new block here
@@ -219,7 +213,6 @@ public class NetherEndingEnergy {
             // Tutorial
             event.getRegistry().register(new BlockItem(ModBlocks.Test.FIRSTBLOCK, properties).setRegistryName("firstblock"));
             event.getRegistry().register(new BlockItem(ModBlocks.Test.FIRSTTILE, properties).setRegistryName("firsttile"));
-            event.getRegistry().register(new BlockItem(ModBlocks.Test.TANK_BLOCK, properties).setRegistryName("tank"));
             event.getRegistry().register(new FirstItem());
 
             // New Stuff
@@ -253,7 +246,6 @@ public class NetherEndingEnergy {
         @SubscribeEvent
         public static void onTileEntityRegistry(final RegistryEvent.Register<TileEntityType<?>> event) {
             event.getRegistry().register(TileEntityType.Builder.create(FirstBlockTile::new, ModBlocks.Test.FIRSTTILE).build(null).setRegistryName("firsttile"));
-            event.getRegistry().register(TileEntityType.Builder.create(TileTank::new, ModBlocks.Test.TANK_BLOCK).build(null).setRegistryName("tank"));
 
             // New Stuff
             event.getRegistry().register(TileEntityType.Builder.create(ImbuingMachineTile::new, ModBlocks.IMBUING_MACHINE_BLOCK).build(null).setRegistryName(RegistryNames.IMBUING_MACHINE));

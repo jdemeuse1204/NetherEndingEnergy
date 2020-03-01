@@ -189,4 +189,16 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
         return super.write(tag);
     }
+
+    @Nullable
+    @Override
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+        CompoundNBT tag = pkt.getNbtCompound();
+        read(tag);
+    }
 }

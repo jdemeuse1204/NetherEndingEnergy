@@ -89,11 +89,6 @@ public class CausticBellBlock extends FlowerBlock {
     }
 
     @Override
-    public boolean canHarvestBlock(BlockState state, IBlockReader world, BlockPos pos, PlayerEntity player) {
-        return false;
-    }
-
-    @Override
     public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
 
         // Must harvest with sheers otherwise there is a chance we can break traits and make them dormant

@@ -2,7 +2,6 @@ package com.agrejus.netherendingenergy;
 
 public class RegistryNames {
     public static final String CAUSTIC_BELL = "caustic_bell";
-    public static final String CAUSTIC_IMBUED_SOIL = "caustic_imbued_soil";
     public static final String CAUSTIC_FARMLAND = "caustic_farmland";
 
     /* Terra */

@@ -1,21 +1,19 @@
 package com.agrejus.netherendingenergy.blocks.terra.collector;
 
-import com.agrejus.netherendingenergy.Capabilities;
-import com.agrejus.netherendingenergy.Config;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorConfig;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
 import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
 import com.agrejus.netherendingenergy.common.Ratio;
-import com.agrejus.netherendingenergy.common.helpers.RedstoneHelpers;
 import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
+import com.agrejus.netherendingenergy.fluids.AcidOfTheOrdinaryFluid;
+import com.agrejus.netherendingenergy.fluids.RawAcidFluid;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
@@ -24,7 +22,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -46,7 +43,6 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class TerraCollectingStationTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
 
@@ -222,7 +218,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                 int fillAmount = Math.round(yield * amount.asPercent());
                 int resolvedAmount = inputTank.resolveFillAmount(fillAmount);
 
-                inputTank.fill(new FluidStack(Fluids.LAVA.getStillFluid(), resolvedAmount), IFluidHandler.FluidAction.EXECUTE);
+                inputTank.fill(new FluidStack(RawAcidFluid.getStill(), resolvedAmount), IFluidHandler.FluidAction.EXECUTE);
                 shouldMarkDirtyAndUpdateBlock.set(true);
             }
         }
@@ -254,7 +250,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             this.isProcessing = false;
 
             inputTank.drain(this.resovledCycleProcessAmount, IFluidHandler.FluidAction.EXECUTE);
-            outputTank.fill(new FluidStack(Fluids.LAVA.getStillFluid(), this.resovledCycleProcessAmount), IFluidHandler.FluidAction.EXECUTE);
+            outputTank.fill(new FluidStack(AcidOfTheOrdinaryFluid.getStill(), this.resovledCycleProcessAmount), IFluidHandler.FluidAction.EXECUTE);
 
             this.tickProcessCount = 0;
             this.isProcessing = false;
@@ -285,8 +281,8 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                     boolean doContinue = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction).map(handler -> {
                         NEEFluidTank tank = (NEEFluidTank)handler;
                         if (tank.canFill() && outputTank.getFluidAmount() > 1) {
-                            tank.fill(new FluidStack(Fluids.LAVA.getStillFluid(), 1), IFluidHandler.FluidAction.EXECUTE);
-                            outputTank.drain(new FluidStack(Fluids.LAVA.getStillFluid(), 1), IFluidHandler.FluidAction.EXECUTE);
+                            tank.fill(new FluidStack(AcidOfTheOrdinaryFluid.getStill(), 1), IFluidHandler.FluidAction.EXECUTE);
+                            outputTank.drain(new FluidStack(AcidOfTheOrdinaryFluid.getStill(), 1), IFluidHandler.FluidAction.EXECUTE);
 
 
                             markDirty();

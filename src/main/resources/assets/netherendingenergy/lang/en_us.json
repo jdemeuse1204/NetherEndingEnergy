@@ -29,6 +29,8 @@
   "block.netherendingenergy.imbuing_machine": "Imbuing Machine",
 
   "item.netherendingenergy.raw_acid_fluid_bucket": "Raw Acid Bucket",
+  "item.netherendingenergy.acid_of_the_ordinary_fluid_bucket": "Acid of the Ordinary Bucket",
+  "item.netherendingenergy.acid_of_the_blaze_fluid_bucket": "Acid of the Blaze Bucket",
 
   "_comment": "Creative Tabs",
   "itemGroup.netherendingenergy": "Nether Ending Energy"

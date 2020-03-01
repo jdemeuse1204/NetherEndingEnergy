@@ -52,9 +52,6 @@ public class ModBlocks {
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_CASING)
     public static TerraReactorCasingBlock TERRA_REACTOR_CASING_BLOCK;
 
-    @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_IMBUED_SOIL)
-    public static CausticImbuedSoil CAUSTIC_IMBUED_SOIL_BLOCK;
-
     @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_FARMLAND)
     public static CausticFarmlandBlock CAUSTIC_FARMLAND_BLOCK;
 
@@ -146,9 +143,6 @@ public class ModBlocks {
         @ObjectHolder("netherendingenergy:firsttile")
         public static ContainerType<FirstTileContainer> FIRSTTILE_CONTAINER;
 
-
-        @ObjectHolder("netherendingenergy:tank")
-        public static BlockTank TANK_BLOCK;
         @ObjectHolder("netherendingenergy:tank")
         public static TileEntityType<TileTank> TANK_TILE;
     }
