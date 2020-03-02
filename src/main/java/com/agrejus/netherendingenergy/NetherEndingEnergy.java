@@ -34,11 +34,7 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCore
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreContainer;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTile;
 import com.agrejus.netherendingenergy.blocks.test.BlockTank;
-import com.agrejus.netherendingenergy.blocks.test.TileTank;
-import com.agrejus.netherendingenergy.fluids.AcidOfTheBlazeFluid;
-import com.agrejus.netherendingenergy.fluids.AcidOfTheOrdinaryFluid;
-import com.agrejus.netherendingenergy.fluids.ModFluids;
-import com.agrejus.netherendingenergy.fluids.RawAcidFluid;
+import com.agrejus.netherendingenergy.fluids.*;
 import com.agrejus.netherendingenergy.items.FirstItem;
 import com.agrejus.netherendingenergy.setup.ClientProxy;
 import com.agrejus.netherendingenergy.setup.IProxy;
@@ -98,9 +94,24 @@ public class NetherEndingEnergy {
     public static final NetherEndingEnergyBlockStateProperties BLOCK_STATE_PROPERTIES = new NetherEndingEnergyBlockStateProperties();
 
     static {
-        RawAcidFluid.create("raw_acid_fluid");
+        ModFluids.RawAcidFluid = new RawAcidFluid();
         ModFluids.AcidOfTheOrdinary = new AcidOfTheOrdinaryFluid();
         ModFluids.AcidOfTheBlaze = new AcidOfTheBlazeFluid();
+        ModFluids.AcidOfTheChorus = new AcidOfTheChorusFluid();
+        ModFluids.AcidOfTheDead = new AcidOfTheDeadFluid();
+        ModFluids.AcidOfTheElsewhere = new AcidOfTheElsewhereFluid();
+        ModFluids.AcidOfTheWise = new AcidOfTheWiseFluid();
+        ModFluids.AcidOfTheWither = new AcidOfTheWitherFluid();
+        ModFluids.AcidOfTheForrest = new AcidOfTheForrestFluid();
+        ModFluids.AcidOfTheFortunate = new AcidOfTheFortunateFluid();
+        ModFluids.AcidOfTheLiving = new AcidOfTheLivingFluid();
+        ModFluids.AcidOfTheMessenger = new AcidOfTheMessengerFluid();
+        ModFluids.AcidOfTheMolten = new AcidOfTheMoltenFluid();
+        ModFluids.AcidOfTheNether = new AcidOfTheNetherFluid();
+        ModFluids.AcidOfTheTearful = new AcidOfTheTearfulFluid();
+        ModFluids.AcidOfTheTireless = new AcidOfTheTirelessFluid();
+        ModFluids.AcidOfTheUnstable = new AcidOfTheUnstableFluid();
+        ModFluids.AcidOfTheWinter = new AcidOfTheWinterFluid();
     }
 
     public NetherEndingEnergy() {

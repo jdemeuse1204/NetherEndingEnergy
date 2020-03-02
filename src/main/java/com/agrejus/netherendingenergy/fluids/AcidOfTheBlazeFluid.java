@@ -24,6 +24,7 @@ import net.minecraftforge.fml.RegistryObject;
 
 import java.util.function.Supplier;
 
+// COLOR: FFD528, OPACITY: 140
 public class AcidOfTheBlazeFluid extends AcidFluid {
 
     public AcidOfTheBlazeFluid() {

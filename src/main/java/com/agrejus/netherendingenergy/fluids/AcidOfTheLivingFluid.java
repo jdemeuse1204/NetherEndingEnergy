@@ -1,4 +1,27 @@
 package com.agrejus.netherendingenergy.fluids;
 
-public class AcidOfTheLivingFluid {
+import net.minecraft.block.Block;
+import net.minecraft.block.FlowingFluidBlock;
+import net.minecraft.block.material.Material;
+import net.minecraft.fluid.FlowingFluid;
+import net.minecraftforge.fml.RegistryObject;
+
+import java.util.function.Supplier;
+
+public class AcidOfTheLivingFluid extends AcidFluid {
+    public AcidOfTheLivingFluid() {
+        super("living");
+    }
+
+    @Override
+    protected FlowingFluidBlock createBlock(RegistryObject<FlowingFluid> stillFluid) {
+        return new AcidOfTheLivingFluid.AcidOfTheLivingBlock(stillFluid, Block.Properties.create(Material.WATER));
+    }
+
+    public static class AcidOfTheLivingBlock extends AcidFluid.AcidBlock {
+
+        public AcidOfTheLivingBlock(Supplier<? extends FlowingFluid> supplier, Properties properties) {
+            super(supplier, properties);
+        }
+    }
 }

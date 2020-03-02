@@ -52,12 +52,9 @@ public abstract class AcidFluid {
         return new ForgeFlowingFluid.Properties(stillFlowingFluid, flowingFlowingFluid, FluidAttributes.builder(getStillTexture(), getFlowingTexture()).rarity(Rarity.UNCOMMON)).bucket(bucket).block(block).levelDecreasePerBlock(2);
     }
 
-    protected AcidFluid(String acidName) {
-        String key = String.format("acid_of_the_%s_fluid", acidName);
-        String stillTexture = String.format("%s:block/fluids/acid_of_the_%s_still", NetherEndingEnergy.MODID, acidName);
-        String flowTexture = String.format("%s:block/fluids/acid_of_the_%s_flow", NetherEndingEnergy.MODID, acidName);
+    protected AcidFluid(String key, String stillTexture, String flowingTexture) {
         stillTextureResourceLocation = new ResourceLocation(stillTexture);
-        flowingTextureResourceLocation = new ResourceLocation(flowTexture);
+        flowingTextureResourceLocation = new ResourceLocation(flowingTexture);
         stillFluid = NetherEndingEnergy.FLUIDS.register(key, () -> new ForgeFlowingFluid.Source(properties));
         flowingFluid = NetherEndingEnergy.FLUIDS.register(flowing(key), () -> new ForgeFlowingFluid.Flowing(properties));
 
@@ -65,6 +62,10 @@ public abstract class AcidFluid {
         bucket = NetherEndingEnergy.ITEMS.register(bucket(key), () -> createBucketItem(stillFluid));
 
         properties = createProperties(stillFluid, flowingFluid);
+    }
+
+    protected AcidFluid(String acidName) {
+        this(String.format("acid_of_the_%s_fluid", acidName), String.format("%s:block/fluids/acid_of_the_%s_still", NetherEndingEnergy.MODID, acidName), String.format("%s:block/fluids/acid_of_the_%s_flow", NetherEndingEnergy.MODID, acidName));
     }
 
     public String flowing(String fluid) {

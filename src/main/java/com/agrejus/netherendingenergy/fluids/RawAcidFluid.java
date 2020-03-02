@@ -1,4 +1,3 @@
-
 package com.agrejus.netherendingenergy.fluids;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
@@ -36,82 +35,20 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class RawAcidFluid {
-    protected static RegistryObject<FlowingFluid> stillFluid;
-    protected static RegistryObject<FlowingFluid> flowingFluid;
+public class RawAcidFluid extends AcidFluid {
 
-    protected static RegistryObject<FlowingFluidBlock> block;
-    protected static RegistryObject<Item> bucket;
-
-    protected static ForgeFlowingFluid.Properties properties;
-
-    private static ResourceLocation stillTextureResourceLocation;
-    private static ResourceLocation flowingTextureResourceLocation;
-
-    public static FlowingFluid getStill() {
-        return stillFluid.get();
+    public RawAcidFluid() {
+        super("raw_acid_fluid", NetherEndingEnergy.MODID + ":block/fluids/raw_acid_still", NetherEndingEnergy.MODID + ":block/fluids/raw_acid_flow");
     }
 
-    public static FlowingFluid getFlowing() {
-        return flowingFluid.get();
+    @Override
+    protected FlowingFluidBlock createBlock(RegistryObject<FlowingFluid> stillFluid) {
+        return new RawAcidBlock(stillFluid, Block.Properties.create(Material.WATER));
     }
 
-    public static Item getItem() {
-        return bucket.get();
-    }
-
-    public static ResourceLocation getStillTexture() {
-        return stillTextureResourceLocation;
-    }
-
-    public static ResourceLocation getFlowingTexture() {
-        return flowingTextureResourceLocation;
-    }
-
-    protected RawAcidFluid(String key, String stillTexture, String flowTexture) {
-        stillTextureResourceLocation = new ResourceLocation(stillTexture);
-        flowingTextureResourceLocation = new ResourceLocation(flowTexture);
-        stillFluid = NetherEndingEnergy.FLUIDS.register(key, () -> new ForgeFlowingFluid.Source(properties));
-        flowingFluid = NetherEndingEnergy.FLUIDS.register(flowing(key), () -> new ForgeFlowingFluid.Flowing(properties));
-
-        block = NetherEndingEnergy.BLOCKS.register(key, () -> new RawAcidBlock(stillFluid, Block.Properties.create(Material.WATER)));
-        bucket = NetherEndingEnergy.ITEMS.register(bucket(key), () -> new BucketItem(stillFluid, new Item.Properties().containerItem(Items.BUCKET).maxStackSize(1).group(ModSetup.itemGroup).rarity(Rarity.UNCOMMON)));
-
-        properties = new ForgeFlowingFluid.Properties(stillFluid, flowingFluid, FluidAttributes.builder(stillTextureResourceLocation, flowingTextureResourceLocation).rarity(Rarity.UNCOMMON)).bucket(bucket).block(block).levelDecreasePerBlock(2);
-    }
-
-    public static RawAcidFluid create(String key) {
-
-        return new RawAcidFluid(key, NetherEndingEnergy.MODID + ":block/fluids/raw_acid_still", NetherEndingEnergy.MODID + ":block/fluids/raw_acid_flow");
-    }
-
-    public static String flowing(String fluid) {
-
-        return fluid + "_flowing";
-    }
-
-    public static String bucket(String fluid) {
-
-        return fluid + "_bucket";
-    }
-
-    public static class RawAcidBlock extends FlowingFluidBlock {
-
+    public static class RawAcidBlock extends AcidFluid.AcidBlock {
         public RawAcidBlock(Supplier<? extends FlowingFluid> supplier, Properties properties) {
-
             super(supplier, properties);
-        }
-
-        @Override
-        public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
-            if (!worldIn.isRemote && worldIn.getDifficulty() != Difficulty.PEACEFUL) {
-                if (entityIn instanceof LivingEntity) {
-                    LivingEntity livingentity = (LivingEntity) entityIn;
-                    if (!livingentity.isInvulnerableTo(DamageSource.WITHER)) {
-                        livingentity.addPotionEffect(new EffectInstance(Effects.POISON, 40));
-                    }
-                }
-            }
         }
     }
 }

@@ -7,16 +7,12 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBloc
 import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
 import com.agrejus.netherendingenergy.common.Ratio;
 import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
-import com.agrejus.netherendingenergy.fluids.AcidOfTheOrdinaryFluid;
 import com.agrejus.netherendingenergy.fluids.ModFluids;
-import com.agrejus.netherendingenergy.fluids.RawAcidFluid;
-import com.agrejus.netherendingenergy.items.ModItems;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
@@ -37,7 +33,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -222,7 +217,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                 int fillAmount = Math.round(yield * amount.asPercent());
                 int resolvedAmount = inputTank.resolveFillAmount(fillAmount);
 
-                inputTank.fill(new FluidStack(RawAcidFluid.getStill(), resolvedAmount), IFluidHandler.FluidAction.EXECUTE);
+                inputTank.fill(new FluidStack(ModFluids.RAW_ACID_FLUID, resolvedAmount), IFluidHandler.FluidAction.EXECUTE);
                 shouldMarkDirtyAndUpdateBlock.set(true);
             }
         }
