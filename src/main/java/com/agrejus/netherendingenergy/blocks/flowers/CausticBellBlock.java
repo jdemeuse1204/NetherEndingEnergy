@@ -11,6 +11,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
 import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
@@ -89,11 +90,21 @@ public class CausticBellBlock extends FlowerBlock {
     }
 
     @Override
-    public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
+    public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 
-        // Must harvest with sheers otherwise there is a chance we can break traits and make them dormant
-        // player.itemStackMainHand is whats in the players hand
-        super.onBlockHarvested(worldIn, pos, state, player);
+
+        if (!world.isRemote) {
+            if (player.getHeldItemMainhand().getItem() == Items.SHEARS) {
+                // Must harvest with sheers otherwise there is a chance we can break traits and make them dormant
+                // player.itemStackMainHand is whats in the players hand
+                super.onBlockHarvested(world, pos, state, player);
+                return;
+            }
+        }
+
+        // roll to remove traits
+
+        super.onBlockHarvested(world, pos, state, player);
     }
 
     public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {

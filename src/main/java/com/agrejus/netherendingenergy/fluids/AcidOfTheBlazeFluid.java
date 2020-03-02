@@ -1,7 +1,5 @@
 package com.agrejus.netherendingenergy.fluids;
 
-import com.agrejus.netherendingenergy.NetherEndingEnergy;
-import com.agrejus.netherendingenergy.setup.ModSetup;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
@@ -9,22 +7,14 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.FlowingFluid;
-import net.minecraft.item.BucketItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.item.Rarity;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fml.RegistryObject;
 
 import java.util.function.Supplier;
 
-// COLOR: FFD528, OPACITY: 140
 public class AcidOfTheBlazeFluid extends AcidFluid {
 
     public AcidOfTheBlazeFluid() {

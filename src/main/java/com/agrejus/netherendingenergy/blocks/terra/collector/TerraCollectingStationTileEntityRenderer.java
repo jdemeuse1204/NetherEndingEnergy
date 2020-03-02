@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 
@@ -84,8 +85,8 @@ public class TerraCollectingStationTileEntityRenderer extends TileEntityRenderer
             return;
         }
 
-        FluidStack fluid = new FluidStack(Fluids.LAVA.getStillFluid(), collector.getOutputTank().getFluidAmount());
-        if (fluid == null) {
+        FluidStack fluid = collector.getOutputTank().getFluid();
+        if (fluid == null || fluid.getAmount() == 0) {
             return;
         }
 
@@ -101,7 +102,7 @@ public class TerraCollectingStationTileEntityRenderer extends TileEntityRenderer
         if (scale > 0.0f) {
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder renderer = tessellator.getBuffer();
-            ResourceLocation still = new ResourceLocation("netherendingenergy:block/firsttile");
+            ResourceLocation still = getResourceLocation(fluid);
             TextureAtlasSprite sprite = Minecraft.getInstance().getTextureMap().getAtlasSprite(still.toString());
 
             net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
@@ -198,12 +199,18 @@ public class TerraCollectingStationTileEntityRenderer extends TileEntityRenderer
         }
     }
 
+    private ResourceLocation getResourceLocation(FluidStack fluidStack) {
+        Fluid fluid = fluidStack.getFluid();
+        FluidAttributes attributes = fluid.getAttributes();
+        return attributes.getStillTexture();
+    }
+
     private void renderIntakeFluid(TerraCollectingStationTile collector) {
         if (collector == null) {
             return;
         }
 
-        FluidStack fluid = new FluidStack(Fluids.LAVA.getStillFluid(), collector.getInputTank().getFluidAmount());
+        FluidStack fluid = collector.getInputTank().getFluid();
         if (fluid == null) {
             return;
         }
@@ -220,7 +227,7 @@ public class TerraCollectingStationTileEntityRenderer extends TileEntityRenderer
         if (scale > 0.0f) {
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder renderer = tessellator.getBuffer();
-            ResourceLocation still = new ResourceLocation("netherendingenergy:block/firstblock");
+            ResourceLocation still = getResourceLocation(fluid);
             TextureAtlasSprite sprite = Minecraft.getInstance().getTextureMap().getAtlasSprite(still.toString());
 
             net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();

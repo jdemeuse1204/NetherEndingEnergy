@@ -15,7 +15,7 @@ public class AcidOfTheWinterFluid extends AcidFluid {
 
     @Override
     protected FlowingFluidBlock createBlock(RegistryObject<FlowingFluid> stillFluid) {
-        return new AcidOfTheWinterFluid.AcidOfTheWinterBlock(stillFluid, Block.Properties.create(Material.WATER));
+        return new AcidOfTheWinterBlock(stillFluid, Block.Properties.create(Material.WATER));
     }
 
     public static class AcidOfTheWinterBlock extends AcidFluid.AcidBlock {

@@ -34,9 +34,9 @@ public class ModFluids {
     @ObjectHolder("netherendingenergy:acid_of_the_blaze_flowing")
     public static FlowingFluid ACID_OF_THE_BLAZE_FLOWING;
 
-    @ObjectHolder("netherendingenergy:acid_of_the_ordinary")
+    @ObjectHolder("netherendingenergy:acid_of_the_ordinary_fluid")
     public static FlowingFluid ACID_OF_THE_ORDINARY;
-    @ObjectHolder("netherendingenergy:acid_of_the_ordinary_flowing")
+    @ObjectHolder("netherendingenergy:acid_of_the_ordinary_fluid_flowing")
     public static FlowingFluid ACID_OF_THE_ORDINARY_FLOWING;
 
     @ObjectHolder("netherendingenergy:acid_of_the_chorus")
