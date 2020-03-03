@@ -3,6 +3,8 @@ package com.agrejus.netherendingenergy.blocks;
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.soil.CausticFarmlandBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneInputPortBlock;
@@ -64,6 +66,11 @@ public class ModBlocks {
     public static AbyssHeatSinkBlock ABYSS_HEAT_SINK_BLOCK;
 
     /* Reactor */
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_INJECTOR)
+    public static TerraReactorInjectorBlock TERRA_REACTOR_INJECTOR_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_INJECTOR)
+    public static TileEntityType<TerraReactorInjectorTile> TERRA_REACTOR_INJECTOR_TILE;
+
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ITEM_PORT)
     public static TerraReactorItemPortBlock TERRA_REACTOR_ITEM_PORT_BLOCK;
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ITEM_PORT)

@@ -3,6 +3,7 @@ package com.agrejus.netherendingenergy.blocks.terra.mixer;
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.common.blocks.PartialModelFillBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -25,9 +26,9 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-public class TerraMixerBlock extends Block {
+import static net.minecraftforge.common.property.Properties.StaticProperty;
 
-    private int y;
+public class TerraMixerBlock extends Block {
 
     public TerraMixerBlock() {
         super(Properties.create(Material.IRON)
@@ -35,12 +36,6 @@ public class TerraMixerBlock extends Block {
                 .hardnessAndResistance(.01f)
                 .lightValue(0));
         setRegistryName(RegistryNames.TERRA_MIXER);
-
-        this.y = 0;
-    }
-
-    public int getY() {
-        return this.y;
     }
 
     public BlockRenderLayer getRenderLayer() {
@@ -55,18 +50,11 @@ public class TerraMixerBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new TerraMixerTile(this);
-    }
-
-    @Override
-    public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
-        this.y = 0;
-        super.onBlockHarvested(worldIn, pos, state, player);
+        return new TerraMixerTile();
     }
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        this.y = pos.getY();
         if (placer != null) {
             worldIn.setBlockState(pos, state.with(BlockStateProperties.FACING, getFacingFromEntity(pos, placer)), 2);
         }
@@ -78,6 +66,11 @@ public class TerraMixerBlock extends Block {
     public int getLightValue(BlockState state) {
         return state.get(BlockStateProperties.POWERED) ? super.getLightValue(state) : 0;
     }
+
+/*    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.ENTITYBLOCK_ANIMATED;
+    }*/
 
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
@@ -102,6 +95,6 @@ public class TerraMixerBlock extends Block {
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(BlockStateProperties.FACING, BlockStateProperties.POWERED);
+        builder.add(BlockStateProperties.FACING, BlockStateProperties.POWERED, StaticProperty);
     }
 }

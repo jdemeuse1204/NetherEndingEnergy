@@ -1,0 +1,46 @@
+{
+  "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+  "textures": {
+    "mixerblades": "netherendingenergy:block/terra_mixer_blades"
+  },
+  "elements": [
+    {
+      "name": "CentralBladesV",
+      "from": [ 3, 6, 8 ],
+      "to": [ 13, 16, 8 ],
+      "faces": {
+        "north": { "texture": "#mixerblades", "uv": [ 4, 3, 14, 13 ] },
+        "south": { "texture": "#mixerblades", "uv": [ 3, 3, 13, 13 ] }
+      }
+    },
+    {
+      "name": "CentralBladesX1",
+      "from": [ 3, 6, 8 ],
+      "to": [ 13, 16, 8 ],
+      "rotation": { "origin": [ 8, 11, 8 ], "axis": "x", "angle": 45.0 },
+      "faces": {
+        "north": { "texture": "#mixerblades", "uv": [ 3, 3, 13, 13 ] },
+        "south": { "texture": "#mixerblades", "uv": [ 2, 3, 12, 13 ] }
+      }
+    },
+    {
+      "name": "CentralBladesX2",
+      "from": [ 3, 6, 8 ],
+      "to": [ 13, 16, 8 ],
+      "rotation": { "origin": [ 8, 11, 8 ], "axis": "x", "angle": -45.0 },
+      "faces": {
+        "north": { "texture": "#mixerblades", "uv": [ 3, 3, 13, 13 ] },
+        "south": { "texture": "#mixerblades", "uv": [ 2, 3, 12, 13 ] }
+      }
+    },
+    {
+      "name": "CentralBladesH",
+      "from": [ 3, 11, 3 ],
+      "to": [ 13, 11, 13 ],
+      "faces": {
+        "up": { "texture": "#mixerblades", "uv": [ 3, 3, 13, 13 ] },
+        "down": { "texture": "#mixerblades", "uv": [ 5, 3, 15, 13 ] }
+      }
+    }
+  ]
+}

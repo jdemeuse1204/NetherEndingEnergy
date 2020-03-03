@@ -14,6 +14,7 @@ public class RegistryNames {
     public static final String TERRA_REACTOR_CORE = "terra_reactor_core";
     public static final String TERRA_COLLECTING_STATION = "terra_collecting_station";
     public static final String TERRA_MIXER = "terra_mixer";
+    public static final String TERRA_REACTOR_INJECTOR = "terra_reactor_injector";
 
     /* Abyssal */
     public static final String ABYSS_HEAT_SINK = "abyssal_heat_sink";

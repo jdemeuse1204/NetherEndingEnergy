@@ -1,0 +1,5 @@
+{
+  "variants" : {
+    "": { "model": "netherendingenergy:block/terra_reactor_injector" }
+  }
+}

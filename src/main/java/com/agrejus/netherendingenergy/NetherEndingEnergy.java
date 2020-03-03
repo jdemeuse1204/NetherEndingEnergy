@@ -3,6 +3,8 @@ package com.agrejus.netherendingenergy;
 import com.agrejus.netherendingenergy.blocks.*;
 import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.soil.CausticFarmlandBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneInputPortBlock;
@@ -58,6 +60,7 @@ import net.minecraft.world.gen.placement.IPlacementConfig;
 import net.minecraft.world.gen.placement.Placement;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.extensions.IForgeContainerType;
+import net.minecraftforge.common.model.animation.AnimationStateMachine;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -130,7 +133,6 @@ public class NetherEndingEnergy {
 
         Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve("netherendingenergy-client.toml"));
         Config.loadConfig(Config.COMMON_CONFIG, FMLPaths.CONFIGDIR.get().resolve("netherendingenergy-common.toml"));
-
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -212,6 +214,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new TerraReactorItemPortBlock());
             event.getRegistry().register(new TerraReactorAcidPortBlock());
             event.getRegistry().register(new TerraReactorRedstoneOutputPortBlock());
+            event.getRegistry().register(new TerraReactorInjectorBlock());
 
             event.getRegistry().register(new FurnaceGeneratorBlock());
         }
@@ -249,6 +252,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_ITEM_PORT_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_ITEM_PORT));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_ACID_PORT_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_ACID_PORT));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_REDSTONE_OUTPUT_PORT_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_REDSTONE_OUTPUT_PORT));
+            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_INJECTOR_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_INJECTOR));
 
             // Items
             event.getRegistry().register(new BlockItem(ModBlocks.FURNACE_GENERATOR_BLOCK, properties).setRegistryName(RegistryNames.FURNACE_GENERATOR));
@@ -271,6 +275,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorItemPortTile::new, ModBlocks.TERRA_REACTOR_ITEM_PORT_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_ITEM_PORT));
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorAcidPortTile::new, ModBlocks.TERRA_REACTOR_ACID_PORT_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_ACID_PORT));
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorRedstoneOutputPortTile::new, ModBlocks.TERRA_REACTOR_REDSTONE_OUTPUT_PORT_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_REDSTONE_OUTPUT_PORT));
+            event.getRegistry().register(TileEntityType.Builder.create(TerraReactorInjectorTile::new, ModBlocks.TERRA_REACTOR_INJECTOR_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_INJECTOR));
 
 
             event.getRegistry().register(TileEntityType.Builder.create(FurnaceGeneratorTile::new, ModBlocks.FURNACE_GENERATOR_BLOCK).build(null).setRegistryName(RegistryNames.FURNACE_GENERATOR));

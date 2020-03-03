@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.terra.reactor.ports.item;
 
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
+import com.agrejus.netherendingenergy.blocks.base.reactor.ReactorCapabilityTileEntity;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorConfig;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTile;
@@ -17,7 +18,7 @@ import javax.annotation.Nullable;
 
 import static com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreBlock.FORMED;
 
-public class TerraReactorItemPortTile extends TileEntity {
+public class TerraReactorItemPortTile extends ReactorCapabilityTileEntity {
     public TerraReactorItemPortTile() {
         super(ModBlocks.TERRA_REACTOR_ITEM_PORT_TILE);
     }
@@ -25,17 +26,10 @@ public class TerraReactorItemPortTile extends TileEntity {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-
-        BlockPos controllerPosition = TerraReactorMultiBlock.INSTANCE.getControllerPosition(pos, getBlockState().get(FORMED));
-        if (controllerPosition != null) {
-            TerraReactorCoreTile coreTile = (TerraReactorCoreTile) world.getTileEntity(controllerPosition);
-            if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && coreTile != null) {
-                return coreTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side).cast();
-            }
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            // flow through to the core
+            return getCapabilityFromCore(cap, side);
         }
-
-
         return super.getCapability(cap, side);
     }
-
 }

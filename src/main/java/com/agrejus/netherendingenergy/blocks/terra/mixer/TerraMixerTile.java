@@ -1,9 +1,11 @@
 package com.agrejus.netherendingenergy.blocks.terra.mixer;
 
+import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.common.interfaces.IVaporStorage;
 import com.agrejus.netherendingenergy.tools.CapabilityVapor;
 import com.agrejus.netherendingenergy.tools.CustomVaporStorage;
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -12,12 +14,19 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.common.animation.TimeValues;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.model.animation.CapabilityAnimation;
+import net.minecraftforge.common.model.animation.IAnimationStateMachine;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,8 +35,6 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
 
     private final int spatialModifier = 2;// change by 2 every 16 blocks above sea level
     private final int blockRatio = 16;
-
-    private final TerraMixerBlock block;
     private LazyOptional<IVaporStorage> vaporStorage = LazyOptional.of(this::createVapor);
     private int counter;
 
@@ -35,14 +42,19 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
     private final int maxVaporTransfer = 100;
     private final int efficency = 65;
 
+    private final IAnimationStateMachine asm;
+    private final LazyOptional<IAnimationStateMachine> asmCap;
+
     public TerraMixerTile() {
         super(ModBlocks.TERRA_MIXER_TILE);
-        this.block = null;
-    }
 
-    public TerraMixerTile(TerraMixerBlock block) {
-        super(ModBlocks.TERRA_COLLECTING_STATION_TILE);
-        this.block = block;
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            asm = ModelLoaderRegistry.loadASM(new ResourceLocation(NetherEndingEnergy.MODID,"asms/block/terra_mixer.json"), ImmutableMap.of());
+            asmCap = LazyOptional.of(() -> asm);
+        } else {
+            asm = null;
+            asmCap = LazyOptional.empty();
+        }
     }
 
     private IVaporStorage createVapor() {
@@ -52,10 +64,11 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
     @Override
     public void tick() {
 
-        // Block only works in the overworld
+/*        // Block only works in the overworld
         if (world.isRemote || world.dimension.getType() != DimensionType.OVERWORLD) {
             return;
         }
+
 
         // (Dimension Height - Block Height) / 16) * spatial modifier
         int modifier = ((world.dimension.getActualHeight() - block.getY()) / blockRatio) * spatialModifier;
@@ -79,7 +92,7 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
             // Start of the operation
 
             counter = 20;
-        }
+        }*/
     }
 
     @Override
@@ -110,6 +123,10 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
 
         if (cap == CapabilityVapor.VAPOR) {
             return vaporStorage.cast();
+        }
+
+        if (cap == CapabilityAnimation.ANIMATION_CAPABILITY) {
+            return CapabilityAnimation.ANIMATION_CAPABILITY.orEmpty(cap, asmCap);
         }
 
         return super.getCapability(cap, side);

@@ -12,9 +12,12 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.items.CapabilityItemHandler;
 import org.lwjgl.opengl.GL11;
 
 public class TerraCollectingStationTileEntityRenderer extends TileEntityRenderer<TerraCollectingStationTile> {
@@ -22,6 +25,11 @@ public class TerraCollectingStationTileEntityRenderer extends TileEntityRenderer
     private static final float TANK_MAX_HEIGHT = .58f;
 
     public TerraCollectingStationTileEntityRenderer() {
+    }
+
+    @Override
+    public void renderTileEntityFast(TerraCollectingStationTile te, double x, double y, double z, float partialTicks, int destroyStage, BufferBuilder buffer) {
+        super.renderTileEntityFast(te, x, y, z, partialTicks, destroyStage, buffer);
     }
 
     @Override
@@ -48,36 +56,37 @@ public class TerraCollectingStationTileEntityRenderer extends TileEntityRenderer
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder renderer = tessellator.getBuffer();
 
-        Block growthMedium = collector.getGrowthMediumBlock();
+        collector.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(w -> {
+            ItemStack stack = w.getStackInSlot(0);
+            if (stack == null || stack.getItem() == Items.AIR) {
+                return;
+            }
 
-        if (growthMedium == null) {
-            return;
-        }
+            String resourceLocation = ResourceHelpers.resolveItemPath(stack.getItem());
+            TextureAtlasSprite sprite = Minecraft.getInstance().getTextureMap().getAtlasSprite(resourceLocation);
 
-        String iconLocation = ResourceHelpers.resolveBlockPath(growthMedium);
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureMap().getAtlasSprite(iconLocation);
+            net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
 
-        net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
+            GlStateManager.color4f(1, 1, 1, .5f);
+            renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 
-        GlStateManager.color4f(1, 1, 1, .5f);
-        renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+            float u1 = sprite.getMinU();
+            float v1 = sprite.getMinV();
+            float u2 = sprite.getMaxU();
+            float v2 = sprite.getMaxV();
 
-        float u1 = sprite.getMinU();
-        float v1 = sprite.getMinV();
-        float u2 = sprite.getMaxU();
-        float v2 = sprite.getMaxV();
+            float value = .375f;
 
-        float value = .375f;
+            // Top - x,y,z
+            renderer.pos(value, .99, value).tex(u1, v1).color(255, 255, 255, 128).endVertex();
+            renderer.pos(value, .99, 1 - value).tex(u1, v2).color(255, 255, 255, 128).endVertex();
+            renderer.pos(1 - value, .99, 1 - value).tex(u2, v2).color(255, 255, 255, 128).endVertex();
+            renderer.pos(1 - value, .99, value).tex(u2, v1).color(255, 255, 255, 128).endVertex();
 
-        // Top - x,y,z
-        renderer.pos(value, .99, value).tex(u1, v1).color(255, 255, 255, 128).endVertex();
-        renderer.pos(value, .99, 1 - value).tex(u1, v2).color(255, 255, 255, 128).endVertex();
-        renderer.pos(1 - value, .99, 1 - value).tex(u2, v2).color(255, 255, 255, 128).endVertex();
-        renderer.pos(1 - value, .99, value).tex(u2, v1).color(255, 255, 255, 128).endVertex();
+            tessellator.draw();
 
-        tessellator.draw();
-
-        net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
+            net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
+        });
     }
 
     private void renderOutputFluid(TerraCollectingStationTile collector) {
