@@ -15,7 +15,6 @@ import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineBlock;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineContainer;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineTile;
-import com.agrejus.netherendingenergy.blocks.soil.CausticImbuedSoil;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationBlock;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationContainer;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
@@ -36,7 +35,7 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraR
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreContainer;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTile;
-import com.agrejus.netherendingenergy.blocks.test.BlockTank;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.stabilizer.TerraReactorItemStabilizerBlock;
 import com.agrejus.netherendingenergy.blocks.test.TileTank;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.tileentity.TileEntityType;
@@ -70,6 +69,9 @@ public class ModBlocks {
     public static TerraReactorInjectorBlock TERRA_REACTOR_INJECTOR_BLOCK;
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_INJECTOR)
     public static TileEntityType<TerraReactorInjectorTile> TERRA_REACTOR_INJECTOR_TILE;
+
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ITEM_STABILIZER)
+    public static TerraReactorItemStabilizerBlock TERRA_REACTOR_ITEM_STABILIZER_BLOCK;
 
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ITEM_PORT)
     public static TerraReactorItemPortBlock TERRA_REACTOR_ITEM_PORT_BLOCK;

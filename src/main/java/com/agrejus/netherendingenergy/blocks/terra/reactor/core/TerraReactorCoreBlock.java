@@ -11,6 +11,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -27,6 +28,15 @@ public class TerraReactorCoreBlock extends ReactorPartBlock {
                 .sound(SoundType.WOOD)
                 .hardnessAndResistance(.01f)
                 .lightValue(0), RegistryNames.TERRA_REACTOR_CORE, TerraReactorMultiBlock.INSTANCE);
+    }
+
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.TRANSLUCENT;
+    }
+
+    @Override
+    public int getLightValue(BlockState state) {
+        return state.get(FORMED) == TerraReactorPartIndex.UNFORMED ? 0 : 16;
     }
 
     // When formed, make block invisible/not clickable

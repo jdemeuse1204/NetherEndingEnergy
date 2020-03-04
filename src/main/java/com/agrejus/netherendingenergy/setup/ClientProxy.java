@@ -10,6 +10,8 @@ import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorS
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerScreen;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreScreen;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTile;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTileEntityRenderer;
 import com.agrejus.netherendingenergy.blocks.test.TankTESR;
 import com.agrejus.netherendingenergy.blocks.test.TileTank;
 import com.google.common.collect.ImmutableMap;
@@ -35,9 +37,9 @@ public class ClientProxy implements IProxy {
         ScreenManager.registerFactory(ModBlocks.Test.FIRSTTILE_CONTAINER, FirstTileScreen::new);
         ScreenManager.registerFactory(ModBlocks.IMBUING_MACHINE_CONTAINER, ImbuingMachineScreen::new);
 
-
         ClientRegistry.bindTileEntitySpecialRenderer(TileTank.class, new TankTESR());
         ClientRegistry.bindTileEntitySpecialRenderer(TerraCollectingStationTile.class, new TerraCollectingStationTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TerraReactorCoreTile.class, new TerraReactorCoreTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TerraMixerTile.class, new TileEntityRendererAnimation<>());
     }
 

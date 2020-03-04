@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.terra.mixer;
 
 import com.agrejus.netherendingenergy.RegistryNames;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
 import com.agrejus.netherendingenergy.common.blocks.PartialModelFillBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -14,6 +15,7 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.stats.Stat;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
@@ -26,6 +28,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
+import static com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreBlock.FORMED;
 import static net.minecraftforge.common.property.Properties.StaticProperty;
 
 public class TerraMixerBlock extends Block {

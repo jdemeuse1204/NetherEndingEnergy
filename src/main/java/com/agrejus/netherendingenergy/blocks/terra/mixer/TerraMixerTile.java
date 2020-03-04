@@ -49,7 +49,7 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
         super(ModBlocks.TERRA_MIXER_TILE);
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            asm = ModelLoaderRegistry.loadASM(new ResourceLocation(NetherEndingEnergy.MODID,"asms/block/terra_mixer.json"), ImmutableMap.of());
+            asm = ModelLoaderRegistry.loadASM(new ResourceLocation(NetherEndingEnergy.MODID, "asms/block/terra_mixer.json"), ImmutableMap.of());
             asmCap = LazyOptional.of(() -> asm);
         } else {
             asm = null;
@@ -59,6 +59,11 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
 
     private IVaporStorage createVapor() {
         return new CustomVaporStorage(maxVaporCapacity, maxVaporTransfer);
+    }
+
+    @Override
+    public boolean hasFastRenderer() {
+        return true;
     }
 
     @Override
@@ -126,7 +131,8 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
         }
 
         if (cap == CapabilityAnimation.ANIMATION_CAPABILITY) {
-            return CapabilityAnimation.ANIMATION_CAPABILITY.orEmpty(cap, asmCap);
+            return asmCap.cast();
+            //return CapabilityAnimation.ANIMATION_CAPABILITY.orEmpty(cap, asmCap);
         }
 
         return super.getCapability(cap, side);

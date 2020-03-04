@@ -1,11 +1,8 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "netherendingenergy:block/terra_mixer",
-    "textures": {
-      "particle": "netherendingenergy:block/terra_reactor_casing"
-    },
-    "transform": "forge:default-block"
+    "transform": "forge:default-block",
+    "model": "netherendingenergy:block/terra_mixer"
   },
   "variants": {
     "facing": {
@@ -16,17 +13,22 @@
     },
     "static": {
       "true": {
-        "model": "netherendingenergy:block/terra_mixer"
+        "submodel": "netherendingenergy:block/terra_mixer"
       },
       "false": {
-        "model": "netherendingenergy:block/terra_mixer"
+        "model": "netherendingenergy:block/terra_mixer_blades",
+        "submodel": {
+          "blades": {
+            "model": "netherendingenergy:block/terra_mixer"
+          }
+        }
       }
     },
     "inventory": [{
       "model": "netherendingenergy:block/terra_mixer",
       "submodel": {
-        "head": {
-          "model": "netherendingenergy:block/terra_mixer"
+        "blades": {
+          "model": "netherendingenergy:block/terra_mixer_blades"
         }
       }
     }]

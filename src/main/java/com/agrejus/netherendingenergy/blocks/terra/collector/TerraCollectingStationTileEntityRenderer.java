@@ -28,11 +28,6 @@ public class TerraCollectingStationTileEntityRenderer extends TileEntityRenderer
     }
 
     @Override
-    public void renderTileEntityFast(TerraCollectingStationTile te, double x, double y, double z, float partialTicks, int destroyStage, BufferBuilder buffer) {
-        super.renderTileEntityFast(te, x, y, z, partialTicks, destroyStage, buffer);
-    }
-
-    @Override
     public void render(TerraCollectingStationTile tileEntity, double x, double y, double z, float partialTicks, int destroyStage) {
         GlStateManager.pushMatrix();
         GlStateManager.disableRescaleNormal();

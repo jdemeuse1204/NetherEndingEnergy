@@ -172,10 +172,6 @@ public class TerraCollectingStationBlock extends Block {
         return false;
     }
 
-    public boolean isFullCube(BlockState state) {
-        return false;
-    }
-
     @Override
     public boolean isSolid(BlockState state) {
         return false;

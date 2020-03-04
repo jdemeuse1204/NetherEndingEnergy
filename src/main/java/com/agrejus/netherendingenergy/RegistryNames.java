@@ -15,6 +15,7 @@ public class RegistryNames {
     public static final String TERRA_COLLECTING_STATION = "terra_collecting_station";
     public static final String TERRA_MIXER = "terra_mixer";
     public static final String TERRA_REACTOR_INJECTOR = "terra_reactor_injector";
+    public static final String TERRA_REACTOR_ITEM_STABILIZER = "terra_reactor_item_stabilizer";
 
     /* Abyssal */
     public static final String ABYSS_HEAT_SINK = "abyssal_heat_sink";
@@ -24,7 +25,6 @@ public class RegistryNames {
 
     /* General */
     public static final String TERRA_REACTOR_ENERGY_PORT = "terra_reactor_energy_port";
-    public static final String REACTOR_ITEM_STABILIZER = "reactor_item_stabilizer";
 
     public static final String IMBUING_MACHINE = "imbuing_machine";
     public static final String FURNACE_GENERATOR = "furnace_generator";

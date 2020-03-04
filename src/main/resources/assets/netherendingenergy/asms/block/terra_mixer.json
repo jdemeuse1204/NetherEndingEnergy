@@ -3,7 +3,7 @@
     "cycle": ["/", 2.0]
   },
   "clips": {
-    "default": ["apply","netherendingenergy:block/terra_mixer@default", "#cycle"]
+    "default": ["apply","netherendingenergy:block/terra_mixer_blades@default", "#cycle"]
   },
   "states": [ "default" ],
   "transitions": {

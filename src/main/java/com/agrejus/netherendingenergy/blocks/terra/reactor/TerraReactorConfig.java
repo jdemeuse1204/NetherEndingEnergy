@@ -23,6 +23,7 @@ public class TerraReactorConfig implements IReactorConfig {
         result.put(ModBlocks.TERRA_REACTOR_ENERGY_PORT_BLOCK, 1);
         result.put(ModBlocks.TERRA_REACTOR_ITEM_PORT_BLOCK, 1);
         result.put(ModBlocks.TERRA_REACTOR_ACID_PORT_BLOCK, 1);
+        result.put(ModBlocks.TERRA_REACTOR_ITEM_STABILIZER_BLOCK, 2);
 
         return result;
     }
@@ -33,6 +34,12 @@ public class TerraReactorConfig implements IReactorConfig {
             List<Block> airOnly = new ArrayList<Block>() {
                 {
                     add(Blocks.AIR);
+                }
+            };
+
+            List<Block> stabilizer = new ArrayList<Block>() {
+                {
+                    add(ModBlocks.TERRA_REACTOR_ITEM_STABILIZER_BLOCK);
                 }
             };
 
@@ -81,9 +88,9 @@ public class TerraReactorConfig implements IReactorConfig {
                     put(TerraReactorPartIndex.P_n1_2_0, heatSinkOnly);
 
                     put(TerraReactorPartIndex.P_0_n2_0, heatSinkOnly);
-                    put(TerraReactorPartIndex.P_0_n1_0, airOnly);
+                    put(TerraReactorPartIndex.P_0_n1_0, stabilizer);
                     put(TerraReactorPartIndex.P_0_0_0, core);
-                    put(TerraReactorPartIndex.P_0_1_0, airOnly);
+                    put(TerraReactorPartIndex.P_0_1_0, stabilizer);
                     put(TerraReactorPartIndex.P_0_2_0, heatSinkOnly);
 
                     put(TerraReactorPartIndex.P_1_n2_0, heatSinkOnly);

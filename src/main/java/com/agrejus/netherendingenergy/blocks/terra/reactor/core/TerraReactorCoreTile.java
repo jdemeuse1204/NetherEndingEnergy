@@ -17,6 +17,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -66,6 +68,10 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
     private int counter;
     private static Map<Item, Integer> burnTimes = AbstractFurnaceTileEntity.getBurnTimes();
 
+    public static Map<Item, Integer> getBurnTimes() {
+        return burnTimes;
+    }
+
     public TerraReactorCoreTile() {
         super(ModBlocks.TERRA_REACTOR_CORE_TILE);
     }
@@ -93,8 +99,9 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
             @Override
             public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
 
-                // Burnable Items Only
-                if (isItemValid(slot, stack) == false) {
+                // Burnable Items Only when reactor is formed
+                BlockState state = world.getBlockState(pos);
+                if (isItemValid(slot, stack) == false || state.get(TerraReactorCoreBlock.FORMED) == TerraReactorPartIndex.UNFORMED) {
                     return stack;
                 }
 
@@ -263,6 +270,46 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
         tag.put("acid", acidTank.writeToNBT(acidTankNBT));
 
         return super.write(tag);
+    }
+
+    @Override
+    public CompoundNBT getUpdateTag() {
+        CompoundNBT tag = super.getUpdateTag();
+        CompoundNBT acidTankNBT = new CompoundNBT();
+
+        acidTank.writeToNBT(acidTankNBT);
+
+        handler.ifPresent(w -> {
+            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
+            tag.put("inv", compound);
+        });
+
+        energy.ifPresent(w -> {
+            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
+            tag.put("energy", compound);
+        });
+
+        tag.put("acid", acidTankNBT);
+
+        return tag;
+    }
+
+    @Nullable
+    @Override
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
+        CompoundNBT nbt = packet.getNbtCompound();
+
+        acidTank.readFromNBT(nbt.getCompound("acid"));
+        CompoundNBT invTag = nbt.getCompound("inv");
+        CompoundNBT energyTag = nbt.getCompound("energy");
+
+        handler.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(invTag));
+        energy.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(energyTag));
     }
 
     @Nonnull

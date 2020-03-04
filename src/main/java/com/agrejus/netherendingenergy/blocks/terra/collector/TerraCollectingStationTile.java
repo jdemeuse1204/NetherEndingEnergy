@@ -151,19 +151,6 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         return outputTank;
     }
 
-    public boolean hasGrowthMedium() {
-        return this.growthMedium != null;
-    }
-
-    public Block getGrowthMediumBlock() {
-
-        if (this.growthMedium == null) {
-            return null;
-        }
-
-        return Block.getBlockFromItem(this.growthMedium);
-    }
-
     public void setGrowthMedium(Item item) {
         this.growthMedium = item;
     }
@@ -431,17 +418,5 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                 () -> this.energy.map(w -> w.getMaxEnergyStored()).orElse(0));
 
         return new TerraCollectingStationContainer(worldId, world, pos, playerInventory, playerEntity, referenceHolder);
-    }
-
-    /**
-     * Don't rename this method to canInteractWith due to conflicts with Container
-     * FROM FURNACE
-     */
-    public boolean isUsableByPlayer(PlayerEntity player) {
-        if (this.world.getTileEntity(this.pos) != this) {
-            return false;
-        } else {
-            return player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D, (double) this.pos.getZ() + 0.5D) <= 64.0D;
-        }
     }
 }

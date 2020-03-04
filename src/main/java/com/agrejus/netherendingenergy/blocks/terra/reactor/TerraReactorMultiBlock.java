@@ -33,6 +33,7 @@ import net.minecraftforge.energy.CapabilityEnergy;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreBlock.FORMED;
 import static net.minecraft.state.properties.BlockStateProperties.POWERED;
@@ -153,7 +154,10 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
             List<Block> allowedBlocks = parts.get(part);
 
             if (allowedBlocks.contains(block) == false) {
+
                 player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + String.format("Invalid Block at: %s, %s, %s", position.getX(), position.getY(), position.getZ())), false);
+                player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + String.format("Expected: %s", getBlockNames(allowedBlocks))), false);
+                player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + String.format("Actual: %s", block.getRegistryName().toString())), false);
                 return false;
             }
 
@@ -176,6 +180,11 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
         }
 
         return true;
+    }
+
+    private String getBlockNames(List<Block> blocks) {
+        List<String> names =  blocks.stream().map(w -> w.getRegistryName().toString()).collect(Collectors.toList());
+        return String.join(", ", names);
     }
 
     @Override
