@@ -10,7 +10,37 @@ import java.util.function.Supplier;
 
 public class AcidOfTheWiseFluid extends AcidFluid {
     public AcidOfTheWiseFluid() {
-        super("wise");
+        super("wise", 0xffB9E45A);
+    }
+
+    @Override
+    protected int getUses() {
+        return 9;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 3.14f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 3.14f;
+    }
+
+    @Override
+    protected float getStability() {
+        return 3.14f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return 3.14f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .0314f;
     }
 
     @Override

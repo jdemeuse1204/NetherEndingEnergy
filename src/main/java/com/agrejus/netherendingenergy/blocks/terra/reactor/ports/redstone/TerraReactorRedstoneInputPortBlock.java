@@ -2,14 +2,11 @@ package com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.base.reactor.DirectionalReactorPartBlock;
-import com.agrejus.netherendingenergy.blocks.base.reactor.ReactorRedstoneInputPartBlock;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorReactorMultiBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
@@ -22,8 +19,6 @@ import javax.annotation.Nullable;
 
 import java.util.List;
 
-import static com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreBlock.FORMED;
-
 // RENAME TO INPUT PORT, WE ARE HAVING AN OUTPUT PORT AS WELL
 public class TerraReactorRedstoneInputPortBlock extends DirectionalReactorPartBlock {
 
@@ -31,7 +26,7 @@ public class TerraReactorRedstoneInputPortBlock extends DirectionalReactorPartBl
         super(Properties.create(Material.IRON)
                 .sound(SoundType.WOOD)
                 .hardnessAndResistance(.01f)
-                .lightValue(0), RegistryNames.TERRA_REACTOR_REDSTONE_INPUT_PORT, TerraReactorMultiBlock.INSTANCE);
+                .lightValue(0), RegistryNames.TERRA_REACTOR_REDSTONE_INPUT_PORT, TerraReactorReactorMultiBlock.INSTANCE);
     }
 
     @Override

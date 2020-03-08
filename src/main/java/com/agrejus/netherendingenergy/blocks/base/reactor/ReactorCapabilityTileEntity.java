@@ -1,6 +1,6 @@
 package com.agrejus.netherendingenergy.blocks.base.reactor;
 
-import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorReactorMultiBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTile;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -21,7 +21,7 @@ public abstract class ReactorCapabilityTileEntity extends TileEntity {
     }
 
     protected <T> LazyOptional<T> getCapabilityFromCore(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        BlockPos controllerPosition = TerraReactorMultiBlock.INSTANCE.getControllerPosition(pos, getBlockState().get(FORMED));
+        BlockPos controllerPosition = TerraReactorReactorMultiBlock.INSTANCE.getControllerPosition(pos, getBlockState().get(FORMED));
         if (controllerPosition != null) {
             TerraReactorCoreTile coreTile = (TerraReactorCoreTile) world.getTileEntity(controllerPosition);
 

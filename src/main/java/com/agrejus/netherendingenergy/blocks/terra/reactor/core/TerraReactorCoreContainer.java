@@ -1,143 +1,110 @@
 package com.agrejus.netherendingenergy.blocks.terra.reactor.core;
 
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorReactorMultiBlock;
+import com.agrejus.netherendingenergy.common.container.InventoryContainerBase;
+import com.agrejus.netherendingenergy.common.handlers.ReadOnlySlotItemHandler;
+import com.agrejus.netherendingenergy.common.models.BlockInformation;
+import com.agrejus.netherendingenergy.common.models.TopLeftPos;
+import com.agrejus.netherendingenergy.common.reactor.ReactorSlotType;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIntArray;
 import net.minecraft.util.IWorldPosCallable;
+import net.minecraft.util.IntArray;
 import net.minecraft.util.IntReferenceHolder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-public class TerraReactorCoreContainer extends Container {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
-    private TileEntity tileEntity;
-    private PlayerEntity playerEntity;
-    private IItemHandler playerInventory;
+public class TerraReactorCoreContainer extends InventoryContainerBase<TerraReactorCoreTile> {
+
+    private IIntArray tracking;
 
     // Exists on both server and client
     // Has slots of inventory and their links
     public TerraReactorCoreContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        super(ModBlocks.TERRA_REACTOR_CORE_CONTAINER, id);
-        tileEntity = world.getTileEntity(pos);
-        tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-        this.playerEntity = playerEntity;
-        this.playerInventory = new InvWrapper(playerInventory);
+        this(id, world, pos, playerInventory, playerEntity, new IntArray(5));
+    }
 
-        // This is the inventory of the tile entity (your inventory displayed when tile entity GUI is opened)
+    public TerraReactorCoreContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity, IIntArray intArray) {
+        super(ModBlocks.TERRA_REACTOR_CORE_CONTAINER, id, world, pos, playerInventory, playerEntity);
+
+        Map<ReactorSlotType, TopLeftPos> slotLocations = TerraReactorReactorMultiBlock.INSTANCE.getSlotLocations();
+
+        // Add the burn slot
         tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(w -> {
-            addSlot(new SlotItemHandler(w, 0, 16, 34));
+            TopLeftPos slotPosition = slotLocations.get(ReactorSlotType.Main);
+            addSlot(new SlotItemHandler(w, 0, slotPosition.getLeft(), slotPosition.getTop()));
         });
+
+        List<TerraReactorPartIndex> possibleInjectorLocations = new ArrayList<TerraReactorPartIndex>(){
+            { add(TerraReactorPartIndex.P_n2_0_0); }
+            { add(TerraReactorPartIndex.P_2_0_0); }
+            { add(TerraReactorPartIndex.P_0_0_2); }
+            { add(TerraReactorPartIndex.P_0_0_n2); }
+        };
+
+
+        for(int i = 0; i < possibleInjectorLocations.size(); i++) {
+
+            TerraReactorPartIndex part = possibleInjectorLocations.get(i);
+            BlockInformation blockInformation = TerraReactorReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, part);
+
+            if (blockInformation.getBlock() != ModBlocks.TERRA_REACTOR_INJECTOR_BLOCK) {
+                continue;
+            }
+
+            TileEntity injectorTile = world.getTileEntity(blockInformation.getPos());
+
+            AtomicInteger index = new AtomicInteger(i + 1);
+            injectorTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(w -> {
+                ReactorSlotType slotType = ReactorSlotType.VALUES[index.get()];
+                TopLeftPos slotPosition = slotLocations.get(slotType);
+                addSlot(new ReadOnlySlotItemHandler(w, 0, slotPosition.getLeft(), slotPosition.getTop()));
+            });
+        }
 
         // where is the top left slot? This is the player inventory
-        layoutPlayerInventorySlots(9, 84);
+        layoutPlayerInventorySlots(8, 102);
 
-        trackInt(new IntReferenceHolder() {
-            @Override
-            public int get() {
-                return getEnergy();
-            }
+        tracking = intArray;
 
-            @Override
-            public void set(int value) {
-                tileEntity.getCapability(CapabilityEnergy.ENERGY).ifPresent(w -> ((CustomEnergyStorage)w).setEnergy(value));
-            }
-        });
-    }
-
-    private void addSlot(IItemHandler hander, int index, int x, int y) {
-        addSlot(new SlotItemHandler(hander, index, x, y));
-    }
-
-    private int addSlotRange(IItemHandler hander, int index, int x, int y, int amount, int dx) {
-        for(int i = 0; i < amount; i++) {
-            addSlot(hander, index, x, y);
-            x += dx;
-            index++;
-        }
-        return index;
-    }
-
-    private int addSlotBox(IItemHandler hander, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
-        for(int j = 0; j < verAmount; j++) {
-            index = addSlotRange(hander, index, x, y, horAmount, dx);
-            y += dy;
-        }
-        return  index;
-    }
-
-    private void layoutPlayerInventorySlots(int leftCol, int topRow) {
-        // Player Inventory
-        addSlotBox(this.playerInventory, 9, leftCol, topRow, 9, 18, 3, 18);
-
-        // Hotbar
-        topRow += 58;
-        addSlotRange(this.playerInventory, 0, leftCol, topRow, 9, 18);
-    }
-
-    public int getEnergy() {
-        return tileEntity.getCapability(CapabilityEnergy.ENERGY).map(w -> w.getEnergyStored()).orElse(0);
+        trackIntArray(intArray);
     }
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
-        return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerEntity, ModBlocks.TERRA_REACTOR_CORE_BLOCK);
+        return canInteractWith(ModBlocks.TERRA_REACTOR_CORE_BLOCK);
     }
 
-    @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
-        //  This is for when a player shift clicks on a certain index
-        ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = this.inventorySlots.get(index);
-        if (slot != null && slot.getHasStack()) {
-            ItemStack stack = slot.getStack();
-            itemStack= stack.copy();
+    public int getAcidStored() { return this.tracking.get(1); }
+    public int getMaxAcidStored() { return this.tracking.get(0); }
 
-            // index of 0 = diamond slot in the tile entity
-            if (index == 0) {
-                // Indicies 1-37 are player inventory indicies (all of them)
-                if(!this.mergeItemStack(stack, 1, 37, true)) {
-                    return ItemStack.EMPTY;
-                }
-            } else {
-                if (stack.getItem() == Items.DIAMOND) {
-                    // Try and merge diamond into burning slot
-                    if (!this.mergeItemStack(stack, 0, 1, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else if (index < 28) {
-                    // Merge into player inventory
-                    if (!this.mergeItemStack(stack, 28, 37, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else if (index < 37 && !this.mergeItemStack(stack, 1, 28, false)) {
-                    // Merge into Hotbar
-                    return ItemStack.EMPTY;
-                }
-            }
-
-            if (stack.isEmpty()) {
-                slot.putStack(ItemStack.EMPTY);
-            } else {
-                slot.onSlotChanged();
-            }
-
-            if (stack.getCount() == itemStack.getCount()) {
-                return ItemStack.EMPTY;
-            }
-
-            slot.onTake(playerIn, stack);
-        }
-        return itemStack;
-    }
+    public int getEnergyStored() { return this.tracking.get(2); }
+    public int getMaxEnergyStored() { return this.tracking.get(3); }
+    public int getGeneratedEnergyPerTick() { return this.tracking.get(4); }
+    public FluidStack getFluid() { return this.tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).map(w -> w.getFluidInTank(0)).orElse(null); }
 }

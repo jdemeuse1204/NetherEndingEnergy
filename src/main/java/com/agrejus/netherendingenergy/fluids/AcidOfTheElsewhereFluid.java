@@ -10,7 +10,37 @@ import java.util.function.Supplier;
 
 public class AcidOfTheElsewhereFluid extends AcidFluid {
     public AcidOfTheElsewhereFluid() {
-        super("elsewhere");
+        super("elsewhere", 0xff063931);
+    }
+
+    @Override
+    protected int getUses() {
+        return 15;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 4.5f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 4.5f;
+    }
+
+    @Override
+    protected float getStability() {
+        return .5f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return .8f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .05f;
     }
 
     @Override

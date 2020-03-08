@@ -3,13 +3,14 @@ package com.agrejus.netherendingenergy.blocks.terra.collector;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorConfig;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorReactorMultiBlock;
 import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
 import com.agrejus.netherendingenergy.common.Ratio;
+import com.agrejus.netherendingenergy.common.fluids.CustomFluidAttributes;
+import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
 import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
 import com.agrejus.netherendingenergy.fluids.ModFluids;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -54,8 +55,8 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
 
     private IntArraySupplierReferenceHolder referenceHolder;
 
-    private final int cycleProcessAmount = 10; // need at least 10 in the tank to start processing
-    private final int ticksToProcess = 200;
+    private final int cycleProcessAmount = 100; // need at least 10 in the tank to start processing
+    private final int ticksToProcess = 40;
     private final int energyUsePerTick = 25;
     private int resovledCycleProcessAmount = 0;
     private int tickProcessCount = 0;
@@ -236,7 +237,9 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             this.isProcessing = false;
 
             inputTank.drain(this.resovledCycleProcessAmount, IFluidHandler.FluidAction.EXECUTE);
-            outputTank.fill(new FluidStack(ModFluids.ACID_OF_THE_ORDINARY, this.resovledCycleProcessAmount), IFluidHandler.FluidAction.EXECUTE);
+
+            FluidStack stackToFill = getFillStack(this.resovledCycleProcessAmount);
+            outputTank.fill(stackToFill, IFluidHandler.FluidAction.EXECUTE);
 
             this.tickProcessCount = 0;
             this.isProcessing = false;
@@ -244,7 +247,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         }
 
 
-        BlockPos acidPortPosition = TerraReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.TERRA_REACTOR_ACID_PORT_BLOCK, TerraReactorConfig.INSTANCE);
+        BlockPos acidPortPosition = TerraReactorReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.TERRA_REACTOR_ACID_PORT_BLOCK, TerraReactorConfig.INSTANCE);
 
         if (acidPortPosition != null) {
             this.sendOutLiquid();
@@ -255,6 +258,20 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             world.notifyBlockUpdate(pos, state, state, 3);
             markDirty();
         }
+    }
+
+    private FluidStack getFillStack(int amount) {
+
+        FluidStack stackToFill = new FluidStack(ModFluids.ACID_OF_THE_ORDINARY, amount);
+        CustomFluidAttributes attributes = (CustomFluidAttributes)stackToFill.getFluid().getAttributes();
+
+        CompoundNBT fluidTag = new CompoundNBT();
+
+        FluidHelpers.serializeCustomFluidAttributes(fluidTag, attributes);
+
+        stackToFill.setTag(fluidTag);
+
+        return stackToFill;
     }
 
     private void sendOutLiquid() {
@@ -360,6 +377,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
+
         return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
     }
 

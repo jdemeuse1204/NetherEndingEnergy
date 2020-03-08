@@ -2,33 +2,27 @@ package com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.base.reactor.DirectionalReactorPartBlock;
-import com.agrejus.netherendingenergy.blocks.base.reactor.ReactorPartBlock;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorReactorMultiBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
 import java.util.List;
 
-import static com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreBlock.FORMED;
-
 public class TerraReactorRedstoneOutputPortBlock extends DirectionalReactorPartBlock {
     public TerraReactorRedstoneOutputPortBlock() {
         super(Properties.create(Material.IRON)
                 .sound(SoundType.WOOD)
                 .hardnessAndResistance(2.0f)
-                .lightValue(0), RegistryNames.TERRA_REACTOR_REDSTONE_OUTPUT_PORT, TerraReactorMultiBlock.INSTANCE);
+                .lightValue(0), RegistryNames.TERRA_REACTOR_REDSTONE_OUTPUT_PORT, TerraReactorReactorMultiBlock.INSTANCE);
     }
 
     @Override

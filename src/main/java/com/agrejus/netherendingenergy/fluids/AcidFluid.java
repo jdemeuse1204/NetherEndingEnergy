@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.fluids;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
+import com.agrejus.netherendingenergy.common.fluids.CustomFluidAttributes;
 import com.agrejus.netherendingenergy.setup.ModSetup;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
@@ -30,6 +31,7 @@ public abstract class AcidFluid {
     protected RegistryObject<FlowingFluidBlock> block;
     protected RegistryObject<Item> bucket;
     protected ForgeFlowingFluid.Properties properties;
+    protected final int color;
 
     private ResourceLocation stillTextureResourceLocation;
     private ResourceLocation flowingTextureResourceLocation;
@@ -49,10 +51,30 @@ public abstract class AcidFluid {
     }
 
     protected ForgeFlowingFluid.Properties createProperties(RegistryObject<FlowingFluid> stillFlowingFluid, RegistryObject<FlowingFluid> flowingFlowingFluid) {
-        return new ForgeFlowingFluid.Properties(stillFlowingFluid, flowingFlowingFluid, FluidAttributes.builder(getStillTexture(), getFlowingTexture()).rarity(Rarity.UNCOMMON)).bucket(bucket).block(block).levelDecreasePerBlock(2);
+        return new ForgeFlowingFluid.Properties(stillFlowingFluid, flowingFlowingFluid, CustomFluidAttributes.builder(getStillTexture(), getFlowingTexture())
+                .strength(this.getStrength())
+                .uses(this.getUses())
+                .efficiency(this.getEfficiency())
+                .stability(this.getStability())
+                .response(this.getResponse())
+                .spatial(this.getSpatial())
+                .spatialAmount(1) // default to 1, mixer/collector will set this value
+                .rarity(Rarity.UNCOMMON)
+                .color(this.color))
+                .bucket(bucket)
+                .block(block)
+                .levelDecreasePerBlock(2);
     }
 
-    protected AcidFluid(String key, String stillTexture, String flowingTexture) {
+    protected abstract float getSpatial();
+    protected abstract int getUses();
+    protected abstract float getStrength();
+    protected abstract float getEfficiency();
+    protected abstract float getStability();
+    protected abstract float getResponse();
+
+    protected AcidFluid(String key, String stillTexture, String flowingTexture, int color) {
+        this.color = color;
         stillTextureResourceLocation = new ResourceLocation(stillTexture);
         flowingTextureResourceLocation = new ResourceLocation(flowingTexture);
         stillFluid = NetherEndingEnergy.FLUIDS.register(key, () -> new ForgeFlowingFluid.Source(properties));
@@ -64,8 +86,8 @@ public abstract class AcidFluid {
         properties = createProperties(stillFluid, flowingFluid);
     }
 
-    protected AcidFluid(String acidName) {
-        this(String.format("acid_of_the_%s_fluid", acidName), String.format("%s:block/fluids/acid_of_the_%s_still", NetherEndingEnergy.MODID, acidName), String.format("%s:block/fluids/acid_of_the_%s_flow", NetherEndingEnergy.MODID, acidName));
+    protected AcidFluid(String acidName, int color) {
+        this(String.format("acid_of_the_%s_fluid", acidName), String.format("%s:block/fluids/acid_of_the_%s_still", NetherEndingEnergy.MODID, acidName), String.format("%s:block/fluids/acid_of_the_%s_flow", NetherEndingEnergy.MODID, acidName), color);
     }
 
     public String flowing(String fluid) {

@@ -9,6 +9,10 @@ public class ResourceHelpers {
         return resolveTranslationKey(block.getTranslationKey());
     }
 
+    public static String resolveFluidPath(Block block) {
+        return resolveTranslationKey(block.getTranslationKey());
+    }
+
     public static String resolveItemPath(Item item) {
         return resolveTranslationKey(item.getTranslationKey());
     }

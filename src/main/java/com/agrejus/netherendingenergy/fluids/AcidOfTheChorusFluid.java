@@ -10,7 +10,37 @@ import java.util.function.Supplier;
 
 public class AcidOfTheChorusFluid extends AcidFluid {
     public AcidOfTheChorusFluid() {
-        super("chorus");
+        super("chorus", 0xff8E678D);
+    }
+
+    @Override
+    protected int getUses() {
+        return 20;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 5f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 6;
+    }
+
+    @Override
+    protected float getStability() {
+        return 1f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return 5f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .075f;
     }
 
     @Override

@@ -10,7 +10,37 @@ import java.util.function.Supplier;
 
 public class AcidOfTheFortunateFluid extends AcidFluid {
     public AcidOfTheFortunateFluid() {
-        super("fortunate");
+        super("fortunate", 0xff063931);
+    }
+
+    @Override
+    protected int getUses() {
+        return 6;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 3f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 3f;
+    }
+
+    @Override
+    protected float getStability() {
+        return 5f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return 2f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .03f;
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.agrejus.netherendingenergy.blocks.base.reactor;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorConfig;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
 import com.agrejus.netherendingenergy.common.blocks.RedstoneDetectorBlock;
-import com.agrejus.netherendingenergy.common.interfaces.IMultiBlockType;
+import com.agrejus.netherendingenergy.common.interfaces.IReactorMultiBlockType;
 import com.agrejus.netherendingenergy.common.multiblock.MultiBlockTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -19,7 +19,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
@@ -30,9 +29,9 @@ import static com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReac
 
 public abstract class ReactorPartBlock extends RedstoneDetectorBlock {
 
-    protected final IMultiBlockType Type;
+    protected final IReactorMultiBlockType Type;
 
-    public ReactorPartBlock(Block.Properties properties, String registryName, IMultiBlockType type) {
+    public ReactorPartBlock(Block.Properties properties, String registryName, IReactorMultiBlockType type) {
         super(properties);
         setRegistryName(registryName);
         setDefaultState(this.getDefaultReactorState());

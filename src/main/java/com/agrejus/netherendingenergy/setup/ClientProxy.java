@@ -12,6 +12,8 @@ import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreScreen;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTileEntityRenderer;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorTile;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorTileEntityRenderer;
 import com.agrejus.netherendingenergy.blocks.test.TankTESR;
 import com.agrejus.netherendingenergy.blocks.test.TileTank;
 import com.google.common.collect.ImmutableMap;
@@ -40,6 +42,7 @@ public class ClientProxy implements IProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileTank.class, new TankTESR());
         ClientRegistry.bindTileEntitySpecialRenderer(TerraCollectingStationTile.class, new TerraCollectingStationTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TerraReactorCoreTile.class, new TerraReactorCoreTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TerraReactorInjectorTile.class, new TerraReactorInjectorTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TerraMixerTile.class, new TileEntityRendererAnimation<>());
     }
 

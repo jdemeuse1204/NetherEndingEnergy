@@ -38,7 +38,37 @@ import java.util.function.Supplier;
 public class RawAcidFluid extends AcidFluid {
 
     public RawAcidFluid() {
-        super("raw_acid_fluid", NetherEndingEnergy.MODID + ":block/fluids/raw_acid_still", NetherEndingEnergy.MODID + ":block/fluids/raw_acid_flow");
+        super("raw_acid_fluid", NetherEndingEnergy.MODID + ":block/fluids/raw_acid_still", NetherEndingEnergy.MODID + ":block/fluids/raw_acid_flow", 0xffB200DE);
+    }
+
+    @Override
+    protected int getUses() {
+        return 0;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return 0;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 0;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 0;
+    }
+
+    @Override
+    protected float getStability() {
+        return 0;
+    }
+
+    @Override
+    protected float getResponse() {
+        return 0;
     }
 
     @Override

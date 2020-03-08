@@ -19,7 +19,37 @@ import java.util.function.Supplier;
 
 public class AcidOfTheWitherFluid  extends AcidFluid {
     public AcidOfTheWitherFluid() {
-        super("wither");
+        super("wither", 0xff343434);
+    }
+
+    @Override
+    protected int getUses() {
+        return 25;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 8f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 7f;
+    }
+
+    @Override
+    protected float getStability() {
+        return .1f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return 3f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .1f;
     }
 
     @Override

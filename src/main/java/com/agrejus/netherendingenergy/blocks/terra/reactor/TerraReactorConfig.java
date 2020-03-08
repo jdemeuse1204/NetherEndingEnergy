@@ -49,6 +49,13 @@ public class TerraReactorConfig implements IReactorConfig {
                 }
             };
 
+            List<Block> casingOrInjector = new ArrayList<Block>() {
+                {
+                    add(ModBlocks.TERRA_REACTOR_CASING_BLOCK);
+                    add(ModBlocks.TERRA_REACTOR_INJECTOR_BLOCK);
+                }
+            };
+
             List<Block> casingOnly = new ArrayList<Block>() {
                 {
                     add(ModBlocks.TERRA_REACTOR_CASING_BLOCK);
@@ -77,7 +84,7 @@ public class TerraReactorConfig implements IReactorConfig {
                 {
                     put(TerraReactorPartIndex.P_n2_n2_0, edges);
                     put(TerraReactorPartIndex.P_n2_n1_0, casingOnly);
-                    put(TerraReactorPartIndex.P_n2_0_0, casingOnly);
+                    put(TerraReactorPartIndex.P_n2_0_0, casingOrInjector);
                     put(TerraReactorPartIndex.P_n2_1_0, casingOnly);
                     put(TerraReactorPartIndex.P_n2_2_0, edges);
 
@@ -101,7 +108,7 @@ public class TerraReactorConfig implements IReactorConfig {
 
                     put(TerraReactorPartIndex.P_2_n2_0, edges);
                     put(TerraReactorPartIndex.P_2_n1_0, casingOnly);
-                    put(TerraReactorPartIndex.P_2_0_0, casingOnly);
+                    put(TerraReactorPartIndex.P_2_0_0, casingOrInjector);
                     put(TerraReactorPartIndex.P_2_1_0, casingOnly);
                     put(TerraReactorPartIndex.P_2_2_0, edges);
 
@@ -143,7 +150,7 @@ public class TerraReactorConfig implements IReactorConfig {
 
                     put(TerraReactorPartIndex.P_0_n2_2, edges);
                     put(TerraReactorPartIndex.P_0_n1_2, casingOnly);
-                    put(TerraReactorPartIndex.P_0_0_2, casingOnly);
+                    put(TerraReactorPartIndex.P_0_0_2, casingOrInjector);
                     put(TerraReactorPartIndex.P_0_1_2, casingOnly);
                     put(TerraReactorPartIndex.P_0_2_2, edges);
 
@@ -191,7 +198,7 @@ public class TerraReactorConfig implements IReactorConfig {
 
                     put(TerraReactorPartIndex.P_0_n2_n2, edges);
                     put(TerraReactorPartIndex.P_0_n1_n2, casingOnly);
-                    put(TerraReactorPartIndex.P_0_0_n2, casingOnly);
+                    put(TerraReactorPartIndex.P_0_0_n2, casingOrInjector);
                     put(TerraReactorPartIndex.P_0_1_n2, casingOnly);
                     put(TerraReactorPartIndex.P_0_2_n2, edges);
 

@@ -1,34 +1,25 @@
 package com.agrejus.netherendingenergy.blocks.terra.reactor;
 
-import com.agrejus.netherendingenergy.Capabilities;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTile;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortBlock;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneInputPortBlock;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.heatsink.TerraHeatSinkBlock;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.casing.TerraReactorCasingBlock;
 import com.agrejus.netherendingenergy.common.helpers.RedstoneHelpers;
-import com.agrejus.netherendingenergy.common.interfaces.IMultiBlockType;
+import com.agrejus.netherendingenergy.common.interfaces.IReactorMultiBlockType;
+import com.agrejus.netherendingenergy.common.models.BlockInformation;
+import com.agrejus.netherendingenergy.common.models.TopLeftPos;
 import com.agrejus.netherendingenergy.common.multiblock.MultiBlockTools;
 import com.agrejus.netherendingenergy.common.reactor.IReactorConfig;
-import net.minecraft.block.AirBlock;
+import com.agrejus.netherendingenergy.common.reactor.ReactorSlotType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.energy.CapabilityEnergy;
 
 import javax.annotation.Nullable;
@@ -39,11 +30,11 @@ import static com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReac
 import static net.minecraft.state.properties.BlockStateProperties.POWERED;
 import static net.minecraft.state.properties.BlockStateProperties.POWER_0_15;
 
-public class TerraReactorMultiBlock implements IMultiBlockType {
+public class TerraReactorReactorMultiBlock implements IReactorMultiBlockType {
 
-    public static TerraReactorMultiBlock INSTANCE = new TerraReactorMultiBlock();
-    private @Nullable
-    List<Block> menuAccessibleClasses;
+    public static TerraReactorReactorMultiBlock INSTANCE = new TerraReactorReactorMultiBlock();
+    private static List<Block> menuAccessibleClasses;
+    private static Map<ReactorSlotType, TopLeftPos> slotLocations;
 
     @Override
     public BlockPos getControllerPosition(BlockPos clickedBlockPos, TerraReactorPartIndex part) {
@@ -106,6 +97,33 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
         }
 
         world.setBlockState(pos, state.with(FORMED, part), 3);
+    }
+
+    @Override
+    public Map<ReactorSlotType, TopLeftPos> getSlotLocations() {
+        if (slotLocations == null) {
+            slotLocations = new HashMap<>();
+            slotLocations.put(ReactorSlotType.Main, new TopLeftPos(46, 78));
+            slotLocations.put(ReactorSlotType.Injector1, new TopLeftPos(46, 48));
+            slotLocations.put(ReactorSlotType.Injector2, new TopLeftPos(16, 78));
+            slotLocations.put(ReactorSlotType.Injector3, new TopLeftPos(46, 108));
+            slotLocations.put(ReactorSlotType.Injector4, new TopLeftPos(77, 78));
+        }
+
+        return slotLocations;
+    }
+
+    @Nullable
+    public BlockInformation getBlockFromControllerPosition(IWorld world, BlockPos controllerPosition, TerraReactorPartIndex part) {
+        int startX = controllerPosition.getX();
+        int startY = controllerPosition.getY();
+        int startZ = controllerPosition.getZ();
+        BlockPos start = new BlockPos(startX, startY, startZ);
+
+        BlockPos position = start.add(part.getDx(), part.getDy(), part.getDz());
+        BlockState state = world.getBlockState(position);
+
+        return new BlockInformation(position, state.getBlock(), state);
     }
 
     @Nullable
@@ -183,7 +201,7 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
     }
 
     private String getBlockNames(List<Block> blocks) {
-        List<String> names =  blocks.stream().map(w -> w.getRegistryName().toString()).collect(Collectors.toList());
+        List<String> names = blocks.stream().map(w -> w.getRegistryName().toString()).collect(Collectors.toList());
         return String.join(", ", names);
     }
 
@@ -314,13 +332,13 @@ public class TerraReactorMultiBlock implements IMultiBlockType {
         if (!world.isRemote()) {
             TerraReactorPartIndex formed = state.get(FORMED);
             if (formed == TerraReactorPartIndex.UNFORMED) {
-                if (MultiBlockTools.formMultiblock(TerraReactorMultiBlock.INSTANCE, world, pos, player, TerraReactorConfig.INSTANCE)) {
+                if (MultiBlockTools.formMultiblock(TerraReactorReactorMultiBlock.INSTANCE, world, pos, player, TerraReactorConfig.INSTANCE)) {
                     player.sendStatusMessage(new StringTextComponent(TextFormatting.GREEN + "Terra Reactor Successfully Formed"), false);
                 }
                 return;
             }
 
-            MultiBlockTools.breakMultiblock(TerraReactorMultiBlock.INSTANCE, world, pos, state.get(FORMED), TerraReactorConfig.INSTANCE);
+            MultiBlockTools.breakMultiblock(TerraReactorReactorMultiBlock.INSTANCE, world, pos, state.get(FORMED), TerraReactorConfig.INSTANCE);
             player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "Terra Reactor Unformed"), false);
         }
     }

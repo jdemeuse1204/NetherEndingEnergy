@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.terra.reactor.injector;
 
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
+import com.agrejus.netherendingenergy.common.handlers.NonExtractingItemUsageStackHandler;
 import com.agrejus.netherendingenergy.common.helpers.PotionsHelper;
 import com.google.common.collect.Maps;
 import net.minecraft.block.BlockState;
@@ -9,6 +10,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.tags.ItemTags;
@@ -24,10 +27,8 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class TerraReactorInjectorTile extends TileEntity {
 
@@ -41,13 +42,26 @@ public class TerraReactorInjectorTile extends TileEntity {
     }
 
     private IItemHandler createHandler() {
-        return new ItemStackHandler(1) {
+        return new NonExtractingItemUsageStackHandler() {
 
             @Override
             protected void onContentsChanged(int slot) {
                 BlockState state = world.getBlockState(pos);
                 world.notifyBlockUpdate(pos, state, state, 3);
                 markDirty();
+            }
+
+            @Override
+            public int onGetUsagesForSlotWhenSet(int slot, @Nonnull ItemStack stack) {
+                Stream<Map.Entry<Potion, Integer>> found =  TerraReactorInjectorTile.getPotionUsages().entrySet().stream().filter(w -> PotionsHelper.equals(w.getKey(), stack));
+
+                int usages = 0;
+                Optional<Map.Entry<Potion, Integer>> foundEntry = found.findFirst();
+                if (foundEntry != null) {
+                    usages = foundEntry.get().getValue();
+                }
+
+                return usages;
             }
 
             @Override
@@ -132,6 +146,33 @@ public class TerraReactorInjectorTile extends TileEntity {
         });
 
         return super.write(tag);
+    }
+
+    @Override
+    public CompoundNBT getUpdateTag() {
+        CompoundNBT tag = super.getUpdateTag();
+
+        handler.ifPresent(w -> {
+            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
+            tag.put("inv", compound);
+        });
+
+        return tag;
+    }
+
+    @Nullable
+    @Override
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
+        CompoundNBT nbt = packet.getNbtCompound();
+
+        CompoundNBT invTag = nbt.getCompound("inv");
+
+        handler.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(invTag));
     }
 
     @Nonnull

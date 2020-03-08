@@ -10,7 +10,37 @@ import java.util.function.Supplier;
 
 public class AcidOfTheTearfulFluid extends AcidFluid {
     public AcidOfTheTearfulFluid() {
-        super("tearful");
+        super("tearful", 0xffCFF1F1);
+    }
+
+    @Override
+    protected int getUses() {
+        return 20;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 3f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 3f;
+    }
+
+    @Override
+    protected float getStability() {
+        return 1f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return 3.5f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .0675f;
     }
 
     @Override

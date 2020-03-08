@@ -10,7 +10,37 @@ import java.util.function.Supplier;
 
 public class AcidOfTheWinterFluid extends AcidFluid {
     public AcidOfTheWinterFluid() {
-        super("winter");
+        super("winter", 0xff86AEFD);
+    }
+
+    @Override
+    protected int getUses() {
+        return 15;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 1.7f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 1.3f;
+    }
+
+    @Override
+    protected float getStability() {
+        return .95f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return 2f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .0175f;
     }
 
     @Override

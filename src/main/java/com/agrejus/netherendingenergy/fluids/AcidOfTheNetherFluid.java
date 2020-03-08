@@ -10,7 +10,37 @@ import java.util.function.Supplier;
 
 public class AcidOfTheNetherFluid extends AcidFluid {
     public AcidOfTheNetherFluid() {
-        super("nether");
+        super("nether", 0xffD4550E);
+    }
+
+    @Override
+    protected int getUses() {
+        return 5;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 3.4f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 3.8f;
+    }
+
+    @Override
+    protected float getStability() {
+        return .9f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return 4.5f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .025f;
     }
 
     @Override

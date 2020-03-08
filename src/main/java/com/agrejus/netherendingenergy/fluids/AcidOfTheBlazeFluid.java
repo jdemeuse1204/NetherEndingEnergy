@@ -18,7 +18,37 @@ import java.util.function.Supplier;
 public class AcidOfTheBlazeFluid extends AcidFluid {
 
     public AcidOfTheBlazeFluid() {
-        super("blaze");
+        super("blaze", 0xffFFD528);
+    }
+
+    @Override
+    protected int getUses() {
+        return 6;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 3.5f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 4;
+    }
+
+    @Override
+    protected float getStability() {
+        return .2f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return 4f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .035f;
     }
 
     @Override

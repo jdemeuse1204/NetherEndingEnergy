@@ -2,7 +2,10 @@ package com.agrejus.netherendingenergy.blocks.terra.collector;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.common.blocks.PartialModelFillBlock;
+import com.agrejus.netherendingenergy.common.fluids.CustomFluidAttributes;
+import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
 import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
+import com.agrejus.netherendingenergy.fluids.ModFluids;
 import com.agrejus.netherendingenergy.items.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,6 +17,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
@@ -28,8 +32,10 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidActionResult;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -54,8 +60,6 @@ public class TerraCollectingStationBlock extends Block {
                 .lightValue(0));
         setRegistryName(RegistryNames.TERRA_COLLECTING_STATION);
     }
-
-    private static final Pattern COMPILE = Pattern.compile("@", Pattern.LITERAL);
 
     // So the tank glass is translucent
     public BlockRenderLayer getRenderLayer() {
@@ -85,52 +89,53 @@ public class TerraCollectingStationBlock extends Block {
         return state.get(BlockStateProperties.POWERED) ? super.getLightValue(state) : 0;
     }
 
-    private void transferIntoContainer(PlayerEntity player, Hand hand, NEEFluidTank tankHandler) {
-        if (player == null || tankHandler == null) {
-            return;
-        }
-        ItemStack heldItem = player.getHeldItem(hand);
-        if (heldItem.isEmpty() == false) {
-            IItemHandler playerInventory = player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).orElse(EmptyHandler.INSTANCE);
-            if (playerInventory != null) {
-                FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(heldItem, 1)).ifPresent(w-> {
-                    int drainAmount = tankHandler.resolveDrainAmount(1000);
-
-                    if (drainAmount == 1000) {
-                        FluidActionResult result = FluidUtil.tryEmptyContainerAndStow(heldItem, tankHandler, playerInventory, Integer.MAX_VALUE, player, true);
-
-                        if (result.isSuccess()) {
-                            player.setHeldItem(hand, result.getResult());
-                        }
-                    }
-                });
-            }
-        }
+    private ItemStack getAcidOfTheOrdinaryItemStack() {
+        CompoundNBT tag = new CompoundNBT();
+        BucketItem bucket = ModItems.ACID_OF_THE_ORDINARY_BUCKET;
+        ItemStack itemStack = new ItemStack(bucket);
+        CustomFluidAttributes attributes = (CustomFluidAttributes)bucket.getFluid().getAttributes();
+        FluidHelpers.serializeCustomFluidAttributes(tag, attributes);
+        itemStack.setTag(tag);
+        return itemStack;
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
 
-        if (!worldIn.isRemote) {
-
-            if (player.getHeldItem(handIn).getItem() == Items.BUCKET) {
-                // Give player 1 bucket of refined acid
-                TerraCollectingStationTile collectingStation = (TerraCollectingStationTile)worldIn.getTileEntity(pos);
-                transferIntoContainer(player, handIn, collectingStation.getInputTank());
-                return true;
-            }
-
-            TileEntity tileEntity = worldIn.getTileEntity(pos);
-
-            if (tileEntity instanceof INamedContainerProvider) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tileEntity, tileEntity.getPos());
-            } else {
-                throw new IllegalStateException("Our named container provider is missing!");
-            }
+        if (worldIn.isRemote) {
             return true;
         }
 
-        return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        ItemStack itemstack = player.getHeldItem(hand);
+        if (itemstack.getItem() == Items.BUCKET) {
+
+            tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(w -> {
+
+                // we lose our tags here
+                NEEFluidTank tank = (NEEFluidTank) w;
+                if (tank.resolveDrainAmount(1000) == 1000) {
+                    tank.drain(1000, IFluidHandler.FluidAction.EXECUTE);
+                    itemstack.shrink(1);
+
+                    ItemStack itemStack = this.getAcidOfTheOrdinaryItemStack();
+
+                    if (itemstack.isEmpty()) {
+                        player.setHeldItem(Hand.MAIN_HAND, itemStack);
+                    } else if (!player.inventory.addItemStackToInventory(itemStack)) {
+                        player.dropItem(itemStack, false);
+                    }
+                }
+            });
+            return true;
+        }
+
+        if (tileEntity instanceof INamedContainerProvider) {
+            NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tileEntity, tileEntity.getPos());
+        } else {
+            throw new IllegalStateException("Our named container provider is missing!");
+        }
+        return true;
     }
 
     public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity placer) {
@@ -140,31 +145,6 @@ public class TerraCollectingStationBlock extends Block {
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(BlockStateProperties.FACING, BlockStateProperties.POWERED);
-    }
-
-    @Override
-    public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        CompoundNBT tagCompound = stack.getTag();
-        if (tagCompound != null) {
-            CompoundNBT nbt = tagCompound.getCompound("output_tank");
-            FluidStack fluidStack = null;
-            if (!nbt.contains("Empty")) {
-                fluidStack = FluidStack.loadFluidStackFromNBT(nbt);
-            }
-            if (fluidStack == null) {
-                addInformationLocalized(tooltip, "message.netherendingenergy.tank", "empty");
-            } else {
-                String name = fluidStack.getTranslationKey();
-                addInformationLocalized(tooltip, "message.netherendingenergy.tank", name + " (" + fluidStack.getAmount() + ")");
-            }
-        }
-    }
-
-    protected void addInformationLocalized(List<ITextComponent> tooltip, String key, Object... parameters) {
-        String translated = I18n.format(key, parameters);
-        translated = COMPILE.matcher(translated).replaceAll("\u00a7");
-
-        Collections.addAll(tooltip.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList()), StringUtils.split(translated, "\n"));
     }
 
     @Override

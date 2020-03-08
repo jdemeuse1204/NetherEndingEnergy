@@ -30,6 +30,11 @@
                   "source": "energy",
                   "target": "BlockEntityTag.energy",
                   "op": "replace"
+                },
+                {
+                  "source": "burntime",
+                  "target": "BlockEntityTag.burntime",
+                  "op": "replace"
                 }
               ]
             },

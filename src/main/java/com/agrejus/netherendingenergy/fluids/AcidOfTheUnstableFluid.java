@@ -10,7 +10,37 @@ import java.util.function.Supplier;
 
 public class AcidOfTheUnstableFluid extends AcidFluid {
     public AcidOfTheUnstableFluid() {
-        super("unstable");
+        super("unstable", 0xff727272);
+    }
+
+    @Override
+    protected int getUses() {
+        return 8;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 2.1f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 1.2f;
+    }
+
+    @Override
+    protected float getStability() {
+        return .5f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return 1.25f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .03f;
     }
 
     @Override

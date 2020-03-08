@@ -1,20 +1,24 @@
 package com.agrejus.netherendingenergy.common.interfaces;
 
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
+import com.agrejus.netherendingenergy.common.models.BlockInformation;
+import com.agrejus.netherendingenergy.common.models.TopLeftPos;
 import com.agrejus.netherendingenergy.common.reactor.IReactorConfig;
+import com.agrejus.netherendingenergy.common.reactor.ReactorSlotType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
-public interface IMultiBlockType {
+public interface IReactorMultiBlockType {
 
+    Map<ReactorSlotType, TopLeftPos> getSlotLocations();
+    BlockInformation getBlockFromControllerPosition(IWorld world, BlockPos controllerPosition, TerraReactorPartIndex part);
     BlockPos getBlockFromControllerPosition(IWorld world, BlockPos controllerPosition, Block findBlock, IReactorConfig config);
     BlockPos getControllerPosition(BlockPos clickedBlockPos, TerraReactorPartIndex part);
     BlockPos getRedstonePortPosition(IWorld world, BlockPos clickedBlockPos, TerraReactorPartIndex part, IReactorConfig config);

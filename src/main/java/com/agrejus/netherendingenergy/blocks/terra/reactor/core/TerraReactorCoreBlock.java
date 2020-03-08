@@ -2,14 +2,13 @@ package com.agrejus.netherendingenergy.blocks.terra.reactor.core;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.base.reactor.ReactorPartBlock;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorMultiBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorReactorMultiBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.state.EnumProperty;
-import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +26,7 @@ public class TerraReactorCoreBlock extends ReactorPartBlock {
         super(Properties.create(Material.IRON)
                 .sound(SoundType.WOOD)
                 .hardnessAndResistance(.01f)
-                .lightValue(0), RegistryNames.TERRA_REACTOR_CORE, TerraReactorMultiBlock.INSTANCE);
+                .lightValue(0), RegistryNames.TERRA_REACTOR_CORE, TerraReactorReactorMultiBlock.INSTANCE);
     }
 
     public BlockRenderLayer getRenderLayer() {

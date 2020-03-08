@@ -10,7 +10,37 @@ import java.util.function.Supplier;
 
 public class AcidOfTheDeadFluid extends AcidFluid {
     public AcidOfTheDeadFluid() {
-        super("dead");
+        super("dead", 0xffB44420);
+    }
+
+    @Override
+    protected int getUses() {
+        return 8;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 1.5f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 1.35f;
+    }
+
+    @Override
+    protected float getStability() {
+        return .9f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return .8f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .02f;
     }
 
     @Override

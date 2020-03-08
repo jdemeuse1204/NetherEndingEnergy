@@ -49,6 +49,24 @@
   "item.netherendingenergy.acid_of_the_unstable_fluid_bucket": "Acid of the Unstable Bucket",
   "item.netherendingenergy.acid_of_the_winter_fluid_bucket": "Acid of the Winter Bucket",
 
+  "fluid.netherendingenergy.acid_of_the_blaze_fluid" : "Acid of the Blaze",
+  "fluid.netherendingenergy.acid_of_the_chorus_fluid" : "Acid of the Chorus",
+  "fluid.netherendingenergy.acid_of_the_dead_fluid" : "Acid of the Dead",
+  "fluid.netherendingenergy.acid_of_the_elsewhere_fluid" : "Acid of the Elsewhere",
+  "fluid.netherendingenergy.acid_of_the_forrest_fluid" : "Acid of the Forrest",
+  "fluid.netherendingenergy.acid_of_the_fortunate_fluid" : "Acid of the Fortunate",
+  "fluid.netherendingenergy.acid_of_the_living_fluid" : "Acid of the Living",
+  "fluid.netherendingenergy.acid_of_the_messenger_fluid" : "Acid of the Messenger",
+  "fluid.netherendingenergy.acid_of_the_molten_fluid" : "Acid of the Molten",
+  "fluid.netherendingenergy.acid_of_the_nether_fluid" : "Acid of the Nether",
+  "fluid.netherendingenergy.acid_of_the_ordinary_fluid" : "Acid of the Ordinary",
+  "fluid.netherendingenergy.acid_of_the_tearful_fluid" : "Acid of the Tearful",
+  "fluid.netherendingenergy.acid_of_the_tireless_fluid" : "Acid of the Tireless",
+  "fluid.netherendingenergy.acid_of_the_unstable_fluid" : "Acid of the Unstable",
+  "fluid.netherendingenergy.acid_of_the_winter_fluid" : "Acid of the Winter",
+  "fluid.netherendingenergy.acid_of_the_wise_fluid" : "Acid of the Wise",
+  "fluid.netherendingenergy.acid_of_the_wither_fluid" : "Acid of the Wither",
+
   "_comment": "Creative Tabs",
   "itemGroup.netherendingenergy": "Nether Ending Energy"
 }

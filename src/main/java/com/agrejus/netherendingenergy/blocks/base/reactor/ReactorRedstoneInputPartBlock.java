@@ -1,6 +1,6 @@
 package com.agrejus.netherendingenergy.blocks.base.reactor;
 
-import com.agrejus.netherendingenergy.common.interfaces.IMultiBlockType;
+import com.agrejus.netherendingenergy.common.interfaces.IReactorMultiBlockType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Direction;
@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 
 public class ReactorRedstoneInputPartBlock extends ReactorPartBlock {
-    public ReactorRedstoneInputPartBlock(Properties properties, String registryName, IMultiBlockType type) {
+    public ReactorRedstoneInputPartBlock(Properties properties, String registryName, IReactorMultiBlockType type) {
         super(properties, registryName, type);
     }
 

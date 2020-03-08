@@ -10,7 +10,37 @@ import java.util.function.Supplier;
 
 public class AcidOfTheMessengerFluid extends AcidFluid {
     public AcidOfTheMessengerFluid() {
-        super("messenger");
+        super("messenger",0xffAA0F01);
+    }
+
+    @Override
+    protected int getUses() {
+        return 10;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 2.7f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 3.8f;
+    }
+
+    @Override
+    protected float getStability() {
+        return 2f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return 4f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .02333f;
     }
 
     @Override

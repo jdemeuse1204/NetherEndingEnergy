@@ -10,7 +10,37 @@ import java.util.function.Supplier;
 
 public class AcidOfTheLivingFluid extends AcidFluid {
     public AcidOfTheLivingFluid() {
-        super("living");
+        super("living", 0xffEFBCAC);
+    }
+
+    @Override
+    protected int getUses() {
+        return 10;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 1.3f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 1.25f;
+    }
+
+    @Override
+    protected float getStability() {
+        return 1f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return 1.4f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .015f;
     }
 
     @Override

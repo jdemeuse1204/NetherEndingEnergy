@@ -2,6 +2,7 @@ package com.agrejus.netherendingenergy.blocks.terra.collector;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.common.rendering.Rect;
+import com.agrejus.netherendingenergy.common.screen.ContainerScreenBase;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
-public class TerraCollectingStationScreen extends ContainerScreen<TerraCollectingStationContainer> {
+public class TerraCollectingStationScreen extends ContainerScreenBase<TerraCollectingStationContainer> {
 
     private ResourceLocation GUI = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/terra_collecting_station_gui.png");
 
@@ -26,10 +27,8 @@ public class TerraCollectingStationScreen extends ContainerScreen<TerraCollectin
     private Rect progressSliceLocation;
     private Rect progressDrawLocation;
 
-    private int defaultGuiScreenWidth = 176;
-
     public TerraCollectingStationScreen(TerraCollectingStationContainer container, PlayerInventory inv, ITextComponent name) {
-        super(container, inv, name);
+        super(container, inv, name, 176,176);
     }
 
     @Override
@@ -42,25 +41,6 @@ public class TerraCollectingStationScreen extends ContainerScreen<TerraCollectin
 
         progressSliceLocation = createSliceRect(0, this.defaultGuiScreenWidth, 0, 16);
         progressDrawLocation = createSliceDrawDestination(39, 78);
-    }
-
-    protected Rect createSliceRect(int top, int left, int right, int bottom) {
-        return new Rect(top, left, right, bottom);
-    }
-
-    protected Rect createRectBasedOnGui(int top, int left, int right, int bottom) {
-        return new Rect(guiTop + top, guiLeft + left, guiLeft + right, guiTop + bottom);
-    }
-
-    protected Rect createSliceDrawDestination(int top, int left) {
-        return new Rect(guiTop + top, guiLeft + left, 0, 0);
-    }
-
-    protected boolean isMouseOver(Rect rect, int mouseX, int mouseY) {
-        return mouseX >= (rect.getLeft()) &&
-                mouseX <= (rect.getRight()) &&
-                mouseY >= (rect.getTop()) &&
-                mouseY <= (rect.getBottom());
     }
 
     @Override
@@ -135,13 +115,5 @@ public class TerraCollectingStationScreen extends ContainerScreen<TerraCollectin
         // fill input
         int inputFillHeight = inputFluidLocation.getComputedFillHeight(this.container.getInputTankCapacity(), this.container.getInputFluidAmount());
         fillVertical(inputFluidLocation, inputFillHeight, 0xffb300e6);
-    }
-
-    protected void drawOverlaySlice(Rect origin, Rect destination) {
-        this.blit(destination.getLeft(), destination.getTop(), origin.getLeft(), origin.getTop(), origin.getRight(), origin.getBottom());
-    }
-
-    protected void fillVertical(Rect rect, int top, int color) {
-        fill(rect.getLeft(), top, rect.getRight(), rect.getBottom(), color);
     }
 }

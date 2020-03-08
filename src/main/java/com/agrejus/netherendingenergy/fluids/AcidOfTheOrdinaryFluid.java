@@ -19,7 +19,37 @@ import java.util.function.Supplier;
 
 public class AcidOfTheOrdinaryFluid extends AcidFluid {
     public AcidOfTheOrdinaryFluid() {
-        super("ordinary");
+        super("ordinary", 0xff88EFEC);
+    }
+
+    @Override
+    protected int getUses() {
+        return 20;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 1f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 1f;
+    }
+
+    @Override
+    protected float getStability() {
+        return 1f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return 1f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .01f;
     }
 
     @Override

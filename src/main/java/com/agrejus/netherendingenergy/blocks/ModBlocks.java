@@ -37,11 +37,17 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCore
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.stabilizer.TerraReactorItemStabilizerBlock;
 import com.agrejus.netherendingenergy.blocks.test.TileTank;
+import com.agrejus.netherendingenergy.fluids.AcidOfTheTearfulFluid;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
 public class ModBlocks {
+
+    /* Acids */
+    @ObjectHolder("netherendingenergy:acid_of_the_tearful_fluid")
+    public static AcidOfTheTearfulFluid.AcidOfTheTearfulBlock ACID_OF_THE_TEARFUL_BLOCK;
 
     /* Flowers */
     @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_BELL)

@@ -1,17 +1,10 @@
 {
-  "forge_marker": 1,
   "defaults": {
-    "model": "netherendingenergy:block/terra_collecting_station",
     "particle": {
       "all": "netherendingenergy:block/terra_reactor_casing"
     }
   },
   "variants" : {
-    "facing": {
-      "north": {},
-      "south": { "y": 180 },
-      "west": { "y": 270 },
-      "east": { "y": 90 }
-    }
+    "": { "model": "netherendingenergy:block/terra_collecting_station" }
   }
 }

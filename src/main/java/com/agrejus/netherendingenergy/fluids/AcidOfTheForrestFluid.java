@@ -10,7 +10,37 @@ import java.util.function.Supplier;
 
 public class AcidOfTheForrestFluid extends AcidFluid {
     public AcidOfTheForrestFluid() {
-        super("forrest");
+        super("forrest", 0xff063931);
+    }
+
+    @Override
+    protected int getUses() {
+        return 12;
+    }
+
+    @Override
+    protected float getStrength() {
+        return 1.15f;
+    }
+
+    @Override
+    protected float getEfficiency() {
+        return 1.2f;
+    }
+
+    @Override
+    protected float getStability() {
+        return 1f;
+    }
+
+    @Override
+    protected float getResponse() {
+        return 1.3f;
+    }
+
+    @Override
+    protected float getSpatial() {
+        return .0125f;
     }
 
     @Override

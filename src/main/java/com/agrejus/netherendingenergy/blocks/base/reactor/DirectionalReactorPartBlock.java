@@ -1,6 +1,6 @@
 package com.agrejus.netherendingenergy.blocks.base.reactor;
 
-import com.agrejus.netherendingenergy.common.interfaces.IMultiBlockType;
+import com.agrejus.netherendingenergy.common.interfaces.IReactorMultiBlockType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class DirectionalReactorPartBlock extends ReactorPartBlock {
-    public DirectionalReactorPartBlock(Block.Properties properties, String registryName, IMultiBlockType type) {
+    public DirectionalReactorPartBlock(Block.Properties properties, String registryName, IReactorMultiBlockType type) {
         super(properties, registryName, type);
     }
 
