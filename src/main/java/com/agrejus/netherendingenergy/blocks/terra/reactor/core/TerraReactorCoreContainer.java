@@ -46,7 +46,7 @@ public class TerraReactorCoreContainer extends InventoryContainerBase<TerraReact
     // Exists on both server and client
     // Has slots of inventory and their links
     public TerraReactorCoreContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        this(id, world, pos, playerInventory, playerEntity, new IntArray(5));
+        this(id, world, pos, playerInventory, playerEntity, new IntArray(13));
     }
 
     public TerraReactorCoreContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity, IIntArray intArray) {
@@ -54,10 +54,10 @@ public class TerraReactorCoreContainer extends InventoryContainerBase<TerraReact
 
         Map<ReactorSlotType, TopLeftPos> slotLocations = TerraReactorReactorMultiBlock.INSTANCE.getSlotLocations();
 
-        // Add the burn slot
+        // Add the burn and backlog slot
         tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(w -> {
-            TopLeftPos slotPosition = slotLocations.get(ReactorSlotType.Main);
-            addSlot(new SlotItemHandler(w, 0, slotPosition.getLeft(), slotPosition.getTop()));
+            TopLeftPos backlogSlotPosition = slotLocations.get(ReactorSlotType.MainBacklog);
+            addSlot(new SlotItemHandler(w, 0, backlogSlotPosition.getLeft(), backlogSlotPosition.getTop()));
         });
 
         List<TerraReactorPartIndex> possibleInjectorLocations = new ArrayList<TerraReactorPartIndex>(){
@@ -66,7 +66,6 @@ public class TerraReactorCoreContainer extends InventoryContainerBase<TerraReact
             { add(TerraReactorPartIndex.P_0_0_2); }
             { add(TerraReactorPartIndex.P_0_0_n2); }
         };
-
 
         for(int i = 0; i < possibleInjectorLocations.size(); i++) {
 
@@ -79,7 +78,7 @@ public class TerraReactorCoreContainer extends InventoryContainerBase<TerraReact
 
             TileEntity injectorTile = world.getTileEntity(blockInformation.getPos());
 
-            AtomicInteger index = new AtomicInteger(i + 1);
+            AtomicInteger index = new AtomicInteger(i + 2);
             injectorTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(w -> {
                 ReactorSlotType slotType = ReactorSlotType.VALUES[index.get()];
                 TopLeftPos slotPosition = slotLocations.get(slotType);
@@ -88,7 +87,7 @@ public class TerraReactorCoreContainer extends InventoryContainerBase<TerraReact
         }
 
         // where is the top left slot? This is the player inventory
-        layoutPlayerInventorySlots(8, 102);
+        layoutPlayerInventorySlots(8, 103);
 
         tracking = intArray;
 
@@ -106,5 +105,14 @@ public class TerraReactorCoreContainer extends InventoryContainerBase<TerraReact
     public int getEnergyStored() { return this.tracking.get(2); }
     public int getMaxEnergyStored() { return this.tracking.get(3); }
     public int getGeneratedEnergyPerTick() { return this.tracking.get(4); }
+    public int getBurnItemTicksLeft() { return this.tracking.get(5); }
+    public int getBurnItemTotalTicks() { return this.tracking.get(6); }
+
+    public int getUsesLeftInjectorOne() { return this.tracking.get(7); }
+    public int getUsesLeftInjectorTwo() { return this.tracking.get(8); }
+    public int getUsesLeftInjectorThree() { return this.tracking.get(9); }
+    public int getUsesLeftInjectorFour() { return this.tracking.get(10); }
+    public int getHeat() { return this.tracking.get(11); }
+    public int getMaxHeat() { return this.tracking.get(12); }
     public FluidStack getFluid() { return this.tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).map(w -> w.getFluidInTank(0)).orElse(null); }
 }

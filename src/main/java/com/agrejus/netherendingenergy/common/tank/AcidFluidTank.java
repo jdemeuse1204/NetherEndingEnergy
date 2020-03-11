@@ -3,9 +3,37 @@ package com.agrejus.netherendingenergy.common.tank;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
+import javax.annotation.Nonnull;
+
 public class AcidFluidTank extends FluidTank {
     public AcidFluidTank(int capacity) {
         super(capacity);
+    }
+
+    @Nonnull
+    @Override
+    public FluidStack drain(FluidStack resource, FluidAction action)
+    {
+        FluidStack result = super.drain(resource, action);
+
+        if (this.fluid== FluidStack.EMPTY) {
+            onContentsChanged();
+        }
+
+        return result;
+    }
+
+    @Nonnull
+    @Override
+    public FluidStack drain(int maxDrain, FluidAction action)
+    {
+        FluidStack result = super.drain(maxDrain, action);
+
+        if (this.fluid== FluidStack.EMPTY) {
+            onContentsChanged();
+        }
+
+        return result;
     }
 
     @Override

@@ -3,16 +3,19 @@ package com.agrejus.netherendingenergy.blocks.terra.reactor.injector;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.common.handlers.NonExtractingItemUsageStackHandler;
 import com.agrejus.netherendingenergy.common.helpers.PotionsHelper;
+import com.agrejus.netherendingenergy.common.reactor.ReactorBaseConfig;
 import com.google.common.collect.Maps;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.PotionItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tileentity.TileEntity;
@@ -34,9 +37,6 @@ public class TerraReactorInjectorTile extends TileEntity {
 
     private LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
 
-    private static Map<Potion, Integer> potionUsages;
-    private static List<Potion> allowedPotions;
-
     public TerraReactorInjectorTile() {
         super(ModBlocks.TERRA_REACTOR_INJECTOR_TILE);
     }
@@ -53,12 +53,18 @@ public class TerraReactorInjectorTile extends TileEntity {
 
             @Override
             public int onGetUsagesForSlotWhenSet(int slot, @Nonnull ItemStack stack) {
-                Stream<Map.Entry<Potion, Integer>> found =  TerraReactorInjectorTile.getPotionUsages().entrySet().stream().filter(w -> PotionsHelper.equals(w.getKey(), stack));
 
+                if (stack.isEmpty()) {
+                    return 0;
+                }
+
+                Item item = stack.getItem();
                 int usages = 0;
-                Optional<Map.Entry<Potion, Integer>> foundEntry = found.findFirst();
-                if (foundEntry != null) {
-                    usages = foundEntry.get().getValue();
+
+                if (item instanceof PotionItem) {
+                    usages = ReactorBaseConfig.INSTANCE.getUsagesForPotion(stack);
+                } else {
+                    usages = ReactorBaseConfig.INSTANCE.getUsagesForItem(item);
                 }
 
                 return usages;
@@ -66,7 +72,19 @@ public class TerraReactorInjectorTile extends TileEntity {
 
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                return stack.getItem() == Items.DRAGON_BREATH || PotionsHelper.any(TerraReactorInjectorTile.getAllowedPotions(), stack);
+
+                if (stack.isEmpty()) {
+                    return false;
+                }
+
+                Item item = stack.getItem();
+
+                if (item instanceof PotionItem) {
+                    Potion potion = PotionUtils.getPotionFromItem(stack);
+                    return ReactorBaseConfig.INSTANCE.canUsePotion(potion);
+                }
+
+                return ReactorBaseConfig.INSTANCE.canUseItem(item);
             }
 
             @Nonnull
@@ -81,52 +99,6 @@ public class TerraReactorInjectorTile extends TileEntity {
                 return super.insertItem(slot, stack, simulate);
             }
         };
-    }
-
-    public static List<Potion> getAllowedPotions() {
-        if (allowedPotions == null) {
-            Map<Potion, Integer> usages = getPotionUsages();
-
-            allowedPotions = new ArrayList<>(usages.keySet());
-        }
-        return allowedPotions;
-    }
-
-    public static Map<Potion, Integer> getPotionUsages() {
-        if (potionUsages == null) {
-            potionUsages = new HashMap<>();
-
-            potionUsages.put(Potions.FIRE_RESISTANCE, 100);
-            potionUsages.put(Potions.LONG_FIRE_RESISTANCE, 300);
-
-            potionUsages.put(Potions.HEALING, 100);
-            potionUsages.put(Potions.STRONG_HEALING, 300);
-
-            potionUsages.put(Potions.REGENERATION, 50);
-            potionUsages.put(Potions.LONG_REGENERATION, 100);
-            potionUsages.put(Potions.STRONG_REGENERATION, 300);
-
-            potionUsages.put(Potions.STRENGTH, 50);
-            potionUsages.put(Potions.LONG_STRENGTH, 100);
-            potionUsages.put(Potions.STRONG_STRENGTH, 300);
-
-            potionUsages.put(Potions.SWIFTNESS, 50);
-            potionUsages.put(Potions.LONG_SWIFTNESS, 100);
-            potionUsages.put(Potions.STRONG_SWIFTNESS, 300);
-
-            potionUsages.put(Potions.POISON, 50);
-            potionUsages.put(Potions.LONG_POISON, 100);
-            potionUsages.put(Potions.STRONG_POISON, 300);
-
-            potionUsages.put(Potions.SLOWNESS, 50);
-            potionUsages.put(Potions.LONG_SLOWNESS, 100);
-            potionUsages.put(Potions.STRONG_SLOWNESS, 300);
-
-            potionUsages.put(Potions.WEAKNESS, 100);
-            potionUsages.put(Potions.LONG_WEAKNESS, 300);
-        }
-
-        return potionUsages;
     }
 
     @Override

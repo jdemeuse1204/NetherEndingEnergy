@@ -1,6 +1,5 @@
 package com.agrejus.netherendingenergy.common.handlers;
 
-import javafx.util.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -13,66 +12,59 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 
-public class NonExtractingItemUsageStackHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundNBT> {
+public class ReactorInventoryStackHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundNBT> {
 
-    private NonNullList<Pair<ItemStack, Integer>> stacks;
+    private NonNullList<ItemStack> stacks;
+    private final int burningSlotIndex = 1;  // Treat this like a ghost slot
+    private final int backlogSlotIndex = 0;
 
-    public NonExtractingItemUsageStackHandler() {
-        this(1);
+    public ReactorInventoryStackHandler() {
+        stacks = NonNullList.withSize(2, ItemStack.EMPTY);
     }
 
-    public NonExtractingItemUsageStackHandler(int size) {
-        stacks = NonNullList.withSize(size, new Pair<>(ItemStack.EMPTY, 0));
+    public ItemStack getStackInBacklogSlot() {
+        validateSlotIndex(this.backlogSlotIndex);
+        return this.stacks.get(this.backlogSlotIndex);
+    }
+
+    public ItemStack getStackInBurningSlot() {
+        validateSlotIndex(this.burningSlotIndex);
+        return this.stacks.get(this.burningSlotIndex);
+    }
+
+    public ItemStack extractBurningSlot(int amount, boolean simulate) {
+        return this.extractItem(this.burningSlotIndex, amount, simulate);
+    }
+
+    public ItemStack extractBacklogSlot(int amount, boolean simulate) {
+        return this.extractItem(this.backlogSlotIndex, amount, simulate);
+    }
+
+    public ItemStack insertBurningSlot(@Nonnull ItemStack stack, boolean simulate) {
+        return this.insertItem(this.burningSlotIndex, stack, simulate);
+    }
+
+    private int getStackSize() {
+        return stacks.size() - 1;
     }
 
     @Override
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
         validateSlotIndex(slot);
-        int usages = onGetUsagesForSlotWhenSet(slot, stack);
-        this.stacks.set(slot, new Pair<>(stack, usages));
+        this.stacks.set(slot, stack);
         onContentsChanged(slot);
-    }
-
-    public int onGetUsagesForSlotWhenSet(int slot, @Nonnull ItemStack stack) {
-        return 0;
-    }
-
-    public void useOne(int slot) {
-        validateSlotIndex(slot);
-        Pair<ItemStack, Integer> slotStack = this.stacks.get(slot);
-
-        if (slotStack.getValue() <= 1) {
-            // destroy the stack
-            this.stacks.set(slot, new Pair<>(ItemStack.EMPTY, 0));
-            return;
-        }
-
-        // need to call on contents changed?
-
-        int newUsageAmount = slotStack.getValue() - 1;
-        this.stacks.set(slot, new Pair<>(slotStack.getKey(), newUsageAmount));
     }
 
     @Override
     public int getSlots() {
-        return stacks.size();
+        return this.getStackSize();
     }
 
     @Override
     @Nonnull
     public ItemStack getStackInSlot(int slot) {
         validateSlotIndex(slot);
-        return this.stacks.get(slot).getKey();
-    }
-
-    public Pair<ItemStack, Integer> getSlot(int slot) {
-        validateSlotIndex(slot);
         return this.stacks.get(slot);
-    }
-
-    public int getUsagesLeftForSlot(int slot) {
-        validateSlotIndex(slot);
-        return this.stacks.get(slot).getValue();
     }
 
     @Override
@@ -86,7 +78,7 @@ public class NonExtractingItemUsageStackHandler implements IItemHandler, IItemHa
 
         validateSlotIndex(slot);
 
-        ItemStack existing = this.stacks.get(slot).getKey();
+        ItemStack existing = this.stacks.get(slot);
 
         int limit = getStackLimit(slot, stack);
 
@@ -104,9 +96,7 @@ public class NonExtractingItemUsageStackHandler implements IItemHandler, IItemHa
 
         if (!simulate) {
             if (existing.isEmpty()) {
-                ItemStack setStack = reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack;
-                int usages = onGetUsagesForSlotWhenSet(slot, setStack);
-                this.stacks.set(slot, new Pair<>(setStack, usages));
+                this.stacks.set(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
             } else {
                 existing.grow(reachedLimit ? limit : stack.getCount());
             }
@@ -119,16 +109,37 @@ public class NonExtractingItemUsageStackHandler implements IItemHandler, IItemHa
     @Override
     @Nonnull
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        return ItemStack.EMPTY; // cannot extract
-    }
+        if (amount == 0)
+            return ItemStack.EMPTY;
 
-    protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
-        return Math.min(getSlotLimit(slot), stack.getMaxStackSize());
+        validateSlotIndex(slot);
+
+        ItemStack existing = this.stacks.get(slot);
+
+        if (existing.isEmpty())
+            return ItemStack.EMPTY;
+
+        int toExtract = Math.min(amount, existing.getMaxStackSize());
+
+        if (existing.getCount() <= toExtract) {
+            if (!simulate) {
+                this.stacks.set(slot, ItemStack.EMPTY);
+                onContentsChanged(slot);
+            }
+            return existing;
+        } else {
+            if (!simulate) {
+                this.stacks.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
+                onContentsChanged(slot);
+            }
+
+            return ItemHandlerHelper.copyStackWithSize(existing, toExtract);
+        }
     }
 
     @Override
     public int getSlotLimit(int slot) {
-        return 1;
+        return 64;
     }
 
     @Override
@@ -140,11 +151,10 @@ public class NonExtractingItemUsageStackHandler implements IItemHandler, IItemHa
     public CompoundNBT serializeNBT() {
         ListNBT nbtTagList = new ListNBT();
         for (int i = 0; i < stacks.size(); i++) {
-            if (!stacks.get(i).getKey().isEmpty()) {
+            if (!stacks.get(i).isEmpty()) {
                 CompoundNBT itemTag = new CompoundNBT();
                 itemTag.putInt("Slot", i);
-                itemTag.putInt("Usages", stacks.get(i).getValue());
-                stacks.get(i).getKey().write(itemTag);
+                stacks.get(i).write(itemTag);
                 nbtTagList.add(itemTag);
             }
         }
@@ -161,22 +171,17 @@ public class NonExtractingItemUsageStackHandler implements IItemHandler, IItemHa
         for (int i = 0; i < tagList.size(); i++) {
             CompoundNBT itemTags = tagList.getCompound(i);
             int slot = itemTags.getInt("Slot");
-            int usages = itemTags.getInt("Usages");
 
             if (slot >= 0 && slot < stacks.size()) {
-                stacks.set(slot, new Pair<>(ItemStack.read(itemTags), usages));
+                stacks.set(slot, ItemStack.read(itemTags));
             }
         }
         onLoad();
     }
 
-    public void setSize(int size) {
-        stacks = NonNullList.withSize(size, new Pair<>(ItemStack.EMPTY, 0));
-    }
-
     protected void validateSlotIndex(int slot) {
-        if (slot < 0 || slot >= stacks.size())
-            throw new RuntimeException("Slot " + slot + " not in valid range - [0," + stacks.size() + ")");
+        if (slot < 0 || slot >= this.stacks.size())
+            throw new RuntimeException("Slot " + slot + " not in valid range - [0," + getStackSize() + ")");
     }
 
     protected void onLoad() {
@@ -187,4 +192,11 @@ public class NonExtractingItemUsageStackHandler implements IItemHandler, IItemHa
 
     }
 
+    private void setSize(int size) {
+        stacks = NonNullList.withSize(size, ItemStack.EMPTY);
+    }
+
+    private int getStackLimit(int slot, @Nonnull ItemStack stack) {
+        return Math.min(getSlotLimit(slot), stack.getMaxStackSize());
+    }
 }

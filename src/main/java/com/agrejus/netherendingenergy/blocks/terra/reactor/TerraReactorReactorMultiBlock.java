@@ -2,6 +2,7 @@ package com.agrejus.netherendingenergy.blocks.terra.reactor;
 
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTile;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorTile;
 import com.agrejus.netherendingenergy.common.helpers.RedstoneHelpers;
 import com.agrejus.netherendingenergy.common.interfaces.IReactorMultiBlockType;
 import com.agrejus.netherendingenergy.common.models.BlockInformation;
@@ -16,6 +17,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -103,11 +105,13 @@ public class TerraReactorReactorMultiBlock implements IReactorMultiBlockType {
     public Map<ReactorSlotType, TopLeftPos> getSlotLocations() {
         if (slotLocations == null) {
             slotLocations = new HashMap<>();
-            slotLocations.put(ReactorSlotType.Main, new TopLeftPos(46, 78));
-            slotLocations.put(ReactorSlotType.Injector1, new TopLeftPos(46, 48));
-            slotLocations.put(ReactorSlotType.Injector2, new TopLeftPos(16, 78));
-            slotLocations.put(ReactorSlotType.Injector3, new TopLeftPos(46, 108));
-            slotLocations.put(ReactorSlotType.Injector4, new TopLeftPos(77, 78));
+            slotLocations.put(ReactorSlotType.MainBurning, new TopLeftPos(46, 78));
+
+            slotLocations.put(ReactorSlotType.MainBacklog, new TopLeftPos(65, 90));
+            slotLocations.put(ReactorSlotType.NorthInjector, new TopLeftPos(32, 29));
+            slotLocations.put(ReactorSlotType.WestInjector, new TopLeftPos(52, 9));
+            slotLocations.put(ReactorSlotType.SouthInjector, new TopLeftPos(72, 29));
+            slotLocations.put(ReactorSlotType.EastInjector, new TopLeftPos(52, 49));
         }
 
         return slotLocations;
@@ -124,6 +128,28 @@ public class TerraReactorReactorMultiBlock implements IReactorMultiBlockType {
         BlockState state = world.getBlockState(position);
 
         return new BlockInformation(position, state.getBlock(), state);
+    }
+
+    public List<TerraReactorInjectorTile> getInjectorsFromControllerPosition(IWorld world, BlockPos controllerPosition, IReactorConfig config) {
+
+        List<TerraReactorInjectorTile> result = new ArrayList<>();
+        int startX = controllerPosition.getX();
+        int startY = controllerPosition.getY();
+        int startZ = controllerPosition.getZ();
+        BlockPos start = new BlockPos(startX, startY, startZ);
+
+        for (TerraReactorPartIndex part : config.getInjectorLocations()) {
+
+            BlockPos position = start.add(part.getDx(), part.getDy(), part.getDz());
+            TileEntity entity = world.getTileEntity(position);
+
+            if (entity != null && entity instanceof TerraReactorInjectorTile) {
+                TerraReactorInjectorTile injector = (TerraReactorInjectorTile) entity;
+                result.add(injector);
+            }
+        }
+
+        return result;
     }
 
     @Nullable
@@ -324,7 +350,21 @@ public class TerraReactorReactorMultiBlock implements IReactorMultiBlockType {
 
     @Override
     public Item getFormationItem() {
-        return Items.STICK;
+        return Items.AIR;
+    }
+
+    public void tryFormMultiBlock(IWorld world, BlockPos pos, BlockState state, PlayerEntity player) {
+        if (world.isRemote()) {
+            return;
+        }
+
+        TerraReactorPartIndex formed = state.get(FORMED);
+        if (formed == TerraReactorPartIndex.UNFORMED) {
+            if (MultiBlockTools.formMultiblock(TerraReactorReactorMultiBlock.INSTANCE, world, pos, player, TerraReactorConfig.INSTANCE)) {
+                player.sendStatusMessage(new StringTextComponent(TextFormatting.GREEN + "Terra Reactor Successfully Formed"), false);
+            }
+            return;
+        }
     }
 
     public void toggleMultiBlock(IWorld world, BlockPos pos, BlockState state, PlayerEntity player) {

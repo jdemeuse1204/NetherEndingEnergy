@@ -81,31 +81,33 @@ public abstract class ReactorPartBlock extends RedstoneDetectorBlock {
     @Override
     public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
 
-        if (!world.isRemote) {
-            if (player.getHeldItem(hand).getItem() == this.Type.getFormationItem()) {
-                this.Type.toggleMultiBlock(world, pos, state, player);
-                return true;
+        if (world.isRemote) {
+            return super.onBlockActivated(state, world, pos, player, hand, hit);
+        }
+
+/*        if (player.isSneaking() && player.getHeldItem(hand).getItem() == this.Type.getFormationItem()) {
+            this.Type.toggleMultiBlock(world, pos, state, player);
+            return true;
+        }*/
+        // Only work if the block is formed
+        Block block = state.getBlock();
+        if (this.Type.getMenuAccessibleBlockClasses().contains(block) && state.get(FORMED) != TerraReactorPartIndex.UNFORMED) {
+
+            if (this.Type.isController(block)) {
+                TileEntity tileEntity = world.getTileEntity(pos);
+
+                if (tileEntity instanceof INamedContainerProvider) {
+                    NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tileEntity, tileEntity.getPos());
+                    return true;
+                }
+
+                return super.onBlockActivated(state, world, pos, player, hand, hit);
             }
-            // Only work if the block is formed
-            Block block = state.getBlock();
-            if (this.Type.getMenuAccessibleBlockClasses().contains(block) && state.get(FORMED) != TerraReactorPartIndex.UNFORMED) {
 
-                if (this.Type.isController(block)) {
-                    TileEntity tileEntity = world.getTileEntity(pos);
-
-                    if (tileEntity instanceof INamedContainerProvider) {
-                        NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tileEntity, tileEntity.getPos());
-                        return true;
-                    }
-
-                    return super.onBlockActivated(state, world, pos, player, hand, hit);
-                }
-
-                BlockPos controllerPos = this.Type.getControllerPosition(pos, state.get(FORMED));
-                if (controllerPos != null) {
-                    BlockState controllerState = world.getBlockState(controllerPos);
-                    return controllerState.getBlock().onBlockActivated(controllerState, world, controllerPos, player, hand, hit);
-                }
+            BlockPos controllerPos = this.Type.getControllerPosition(pos, state.get(FORMED));
+            if (controllerPos != null) {
+                BlockState controllerState = world.getBlockState(controllerPos);
+                return controllerState.getBlock().onBlockActivated(controllerState, world, controllerPos, player, hand, hit);
             }
         }
 

@@ -75,6 +75,8 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             markDirty();
         }
     };
+
+    // Change to acid mixing tank
     private NEEFluidTank outputTank = new NEEFluidTank(OUTPUT_TANK_NAME, 4000) {
         @Override
         protected void onContentsChanged() {
@@ -267,7 +269,21 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
 
         CompoundNBT fluidTag = new CompoundNBT();
 
-        FluidHelpers.serializeCustomFluidAttributes(fluidTag, attributes);
+        // need to do sea level minus max divided by 16.  ex: (62-254)/16 = 12 is the max
+        int y = pos.getY();
+        int spatialAmount = 1;
+        if (y > 64) {
+            int stepTotal = TerraReactorConfig.INSTANCE.getSpatialSteps();
+            spatialAmount = y / stepTotal;
+        }
+
+        fluidTag.putFloat("strength", attributes.getStrength());
+        fluidTag.putFloat("efficiency", attributes.getEfficiency());
+        fluidTag.putFloat("stability", attributes.getStability());
+        fluidTag.putFloat("response", attributes.getResponse());
+        fluidTag.putInt("uses", attributes.getUses());
+        fluidTag.putInt("spatialAmount", spatialAmount);
+        fluidTag.putFloat("spatial", attributes.getSpatial());
 
         stackToFill.setTag(fluidTag);
 

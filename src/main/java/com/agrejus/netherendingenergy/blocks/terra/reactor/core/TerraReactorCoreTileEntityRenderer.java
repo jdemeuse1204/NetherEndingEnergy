@@ -2,6 +2,7 @@ package com.agrejus.netherendingenergy.blocks.terra.reactor.core;
 
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
+import com.agrejus.netherendingenergy.common.handlers.ReactorInventoryStackHandler;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -26,7 +27,8 @@ public class TerraReactorCoreTileEntityRenderer extends TileEntityRenderer<Terra
 
         tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(w -> {
 
-            ItemStack stack = w.getStackInSlot(0);
+            ReactorInventoryStackHandler inventory = (ReactorInventoryStackHandler)w;
+            ItemStack stack = inventory.getStackInBurningSlot();
             BlockState state = tileEntity.getWorld().getBlockState(tileEntity.getPos());
             if (stack.getItem() == Items.AIR || stack.getCount() == 0 || state.get(TerraReactorCoreBlock.FORMED) == TerraReactorPartIndex.UNFORMED) {
                 return;

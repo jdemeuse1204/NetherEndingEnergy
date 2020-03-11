@@ -84,17 +84,16 @@ public class TerraCollectingStationBlock extends Block {
         }
     }
 
-    @Override
-    public int getLightValue(BlockState state) {
-        return state.get(BlockStateProperties.POWERED) ? super.getLightValue(state) : 0;
-    }
-
-    private ItemStack getAcidOfTheOrdinaryItemStack() {
+    private ItemStack getAcidOfTheOrdinaryItemStack(FluidStack fluidStack) {
         CompoundNBT tag = new CompoundNBT();
         BucketItem bucket = ModItems.ACID_OF_THE_ORDINARY_BUCKET;
         ItemStack itemStack = new ItemStack(bucket);
         CustomFluidAttributes attributes = (CustomFluidAttributes)bucket.getFluid().getAttributes();
-        FluidHelpers.serializeCustomFluidAttributes(tag, attributes);
+
+        CompoundNBT stackTag = fluidStack.getTag();
+        int spatialAmount = stackTag.getInt("spatialAmount");
+
+        FluidHelpers.serializeCustomFluidAttributes(tag, attributes, spatialAmount);
         itemStack.setTag(tag);
         return itemStack;
     }
@@ -107,23 +106,23 @@ public class TerraCollectingStationBlock extends Block {
         }
 
         TileEntity tileEntity = worldIn.getTileEntity(pos);
-        ItemStack itemstack = player.getHeldItem(hand);
-        if (itemstack.getItem() == Items.BUCKET) {
+        ItemStack heldItemStack = player.getHeldItem(hand);
+        if (heldItemStack.getItem() == Items.BUCKET) {
 
             tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(w -> {
 
                 // we lose our tags here
                 NEEFluidTank tank = (NEEFluidTank) w;
                 if (tank.resolveDrainAmount(1000) == 1000) {
-                    tank.drain(1000, IFluidHandler.FluidAction.EXECUTE);
-                    itemstack.shrink(1);
+                    FluidStack drainedStack = tank.drain(1000, IFluidHandler.FluidAction.EXECUTE);
+                    heldItemStack.shrink(1);
 
-                    ItemStack itemStack = this.getAcidOfTheOrdinaryItemStack();
+                    ItemStack bucketItemStack = this.getAcidOfTheOrdinaryItemStack(drainedStack);
 
-                    if (itemstack.isEmpty()) {
-                        player.setHeldItem(Hand.MAIN_HAND, itemStack);
-                    } else if (!player.inventory.addItemStackToInventory(itemStack)) {
-                        player.dropItem(itemStack, false);
+                    if (heldItemStack.isEmpty()) {
+                        player.setHeldItem(Hand.MAIN_HAND, bucketItemStack);
+                    } else if (!player.inventory.addItemStackToInventory(bucketItemStack)) {
+                        player.dropItem(bucketItemStack, false);
                     }
                 }
             });

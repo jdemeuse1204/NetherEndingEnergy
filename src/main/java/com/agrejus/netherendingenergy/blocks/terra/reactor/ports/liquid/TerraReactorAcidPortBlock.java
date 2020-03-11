@@ -6,9 +6,7 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCore
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorReactorMultiBlock;
 import com.agrejus.netherendingenergy.common.fluids.CustomFluidAttributes;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
-import com.agrejus.netherendingenergy.common.fluids.attributes.AcidAttributes;
-import com.agrejus.netherendingenergy.common.tank.AcidFluidTank;
-import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
+import com.agrejus.netherendingenergy.common.reactor.attributes.AcidAttributes;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -66,7 +64,7 @@ public class TerraReactorAcidPortBlock extends DirectionalReactorPartBlock {
         Item item = itemstack.getItem();
 
         if (item instanceof BucketItem) {
-            BucketItem bucketItem = (BucketItem)item;
+            BucketItem bucketItem = (BucketItem) item;
             Fluid fluid = bucketItem.getFluid();
 
             if (TerraReactorCoreTile.getAllowedFluids().contains(fluid)) {
@@ -98,6 +96,19 @@ public class TerraReactorAcidPortBlock extends DirectionalReactorPartBlock {
         AcidAttributes attributes = this.getAcidAttributes(itemStack);
         FluidStack stackToFill = new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME);
         CompoundNBT tag = new CompoundNBT();
+
+        // in case we put a bucket in from the creative menu
+        if (attributes == null) {
+            CustomFluidAttributes fluidAttributes = (CustomFluidAttributes) stackToFill.getFluid().getAttributes();
+            attributes = new AcidAttributes(fluidAttributes.getStrength(),
+                    fluidAttributes.getEfficiency(),
+                    fluidAttributes.getStability(),
+                    fluidAttributes.getResponse(),
+                    fluidAttributes.getUses(),
+                    fluidAttributes.getSpatial(),
+                    fluidAttributes.getSpatialAmount());
+        }
+
         FluidHelpers.serializeCustomFluidAttributes(tag, attributes);
         stackToFill.setTag(tag);
         return stackToFill;

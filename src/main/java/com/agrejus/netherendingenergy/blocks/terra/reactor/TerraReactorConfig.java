@@ -15,6 +15,7 @@ public class TerraReactorConfig implements IReactorConfig {
     public static TerraReactorConfig INSTANCE = new TerraReactorConfig();
 
     private HashMap<TerraReactorPartIndex, List<Block>> map;
+    private List<TerraReactorPartIndex> injectorLocations;
 
     @Override
     public Map<Block, Integer> getBlockCounts() {
@@ -26,6 +27,29 @@ public class TerraReactorConfig implements IReactorConfig {
         result.put(ModBlocks.TERRA_REACTOR_ITEM_STABILIZER_BLOCK, 2);
 
         return result;
+    }
+
+    public List<TerraReactorPartIndex> getInjectorLocations() {
+        if (injectorLocations == null) {
+            injectorLocations = new ArrayList<TerraReactorPartIndex>() {
+                {
+                    add(TerraReactorPartIndex.P_n2_0_0);
+                }
+
+                {
+                    add(TerraReactorPartIndex.P_2_0_0);
+                }
+
+                {
+                    add(TerraReactorPartIndex.P_0_0_2);
+                }
+
+                {
+                    add(TerraReactorPartIndex.P_0_0_n2);
+                }
+            };
+        }
+        return injectorLocations;
     }
 
     public HashMap<TerraReactorPartIndex, List<Block>> getParts() {
@@ -43,7 +67,7 @@ public class TerraReactorConfig implements IReactorConfig {
                 }
             };
 
-            List<Block> core  = new ArrayList<Block>() {
+            List<Block> core = new ArrayList<Block>() {
                 {
                     add(ModBlocks.TERRA_REACTOR_CORE_BLOCK);
                 }
@@ -211,5 +235,10 @@ public class TerraReactorConfig implements IReactorConfig {
             };
         }
         return this.map;
+    }
+
+    @Override
+    public int getSpatialSteps() {
+        return 16;
     }
 }

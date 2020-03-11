@@ -1,10 +1,7 @@
 package com.agrejus.netherendingenergy.common.fluids;
 
-import com.agrejus.netherendingenergy.common.fluids.attributes.AcidAttributes;
-import net.minecraft.block.Block;
-import net.minecraft.fluid.Fluid;
+import com.agrejus.netherendingenergy.common.reactor.attributes.AcidAttributes;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.registry.Registry;
 
 public final class FluidHelpers {
 /*    public static <T extends Fluid> T registerFluid(String key, T p_215710_1_) {
@@ -36,13 +33,13 @@ public final class FluidHelpers {
         tag.putFloat("spatial", attributes.getSpatial());
     }
 
-    public static void serializeCustomFluidAttributes(CompoundNBT tag, CustomFluidAttributes attributes) {
+    public static void serializeCustomFluidAttributes(CompoundNBT tag, CustomFluidAttributes attributes, int spatialAmount) {
         tag.putFloat("strength", attributes.getStrength());
         tag.putFloat("efficiency", attributes.getEfficiency());
         tag.putFloat("stability", attributes.getStability());
         tag.putFloat("response", attributes.getResponse());
         tag.putInt("uses", attributes.getUses());
-        tag.putInt("spatialAmount", attributes.getSpatialAmount());
+        tag.putInt("spatialAmount", spatialAmount);
         tag.putFloat("spatial", attributes.getSpatial());
     }
 }

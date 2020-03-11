@@ -10,4 +10,6 @@ import java.util.Map;
 public interface IReactorConfig {
     Map<Block, Integer> getBlockCounts();
     HashMap<TerraReactorPartIndex, List<Block>> getParts();
+    int getSpatialSteps();
+    List<TerraReactorPartIndex> getInjectorLocations();
 }
