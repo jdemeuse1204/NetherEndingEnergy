@@ -33,13 +33,8 @@ import javax.annotation.Nullable;
 
 public class TerraMixerTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
 
-    private final int spatialModifier = 2;// change by 2 every 16 blocks above sea level
-    private final int blockRatio = 16;
-    private LazyOptional<IVaporStorage> vaporStorage = LazyOptional.of(this::createVapor);
     private int counter;
 
-    private final int maxVaporCapacity = 4000;
-    private final int maxVaporTransfer = 100;
     private final int efficency = 65;
 
     private final IAnimationStateMachine asm;
@@ -55,10 +50,6 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
             asm = null;
             asmCap = LazyOptional.empty();
         }
-    }
-
-    private IVaporStorage createVapor() {
-        return new CustomVaporStorage(maxVaporCapacity, maxVaporTransfer);
     }
 
     @Override
@@ -102,33 +93,20 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
 
     @Override
     public void read(CompoundNBT tag) {
-        // When block is broken?
 
-
-        CompoundNBT energyTag = tag.getCompound("vapor");
-        // Save energy when block is broken
-        vaporStorage.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(energyTag));
         super.read(tag);
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tag) {
 
-        // Write energy when block is placed
-        vaporStorage.ifPresent(w -> {
-            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
-            tag.put("vapor", compound);
-        });
+
         return super.write(tag);
     }
 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-
-        if (cap == CapabilityVapor.VAPOR) {
-            return vaporStorage.cast();
-        }
 
         if (cap == CapabilityAnimation.ANIMATION_CAPABILITY) {
             return asmCap.cast();

@@ -1,18 +1,15 @@
 package com.agrejus.netherendingenergy.blocks.terra.collector;
 
 import com.agrejus.netherendingenergy.RegistryNames;
-import com.agrejus.netherendingenergy.common.blocks.PartialModelFillBlock;
-import com.agrejus.netherendingenergy.common.fluids.CustomFluidAttributes;
+import com.agrejus.netherendingenergy.common.attributes.CustomFluidAttributes;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
+import com.agrejus.netherendingenergy.common.tank.MixableAcidFluidTank;
 import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
-import com.agrejus.netherendingenergy.fluids.ModFluids;
 import com.agrejus.netherendingenergy.items.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -27,29 +24,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidActionResult;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.EmptyHandler;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class TerraCollectingStationBlock extends Block {
 
@@ -112,8 +94,8 @@ public class TerraCollectingStationBlock extends Block {
             tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(w -> {
 
                 // we lose our tags here
-                NEEFluidTank tank = (NEEFluidTank) w;
-                if (tank.resolveDrainAmount(1000) == 1000) {
+                MixableAcidFluidTank tank = (MixableAcidFluidTank) w;
+                if (tank.simulateDrainAmount(1000).getAmount() == 1000) {
                     FluidStack drainedStack = tank.drain(1000, IFluidHandler.FluidAction.EXECUTE);
                     heldItemStack.shrink(1);
 

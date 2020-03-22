@@ -14,9 +14,12 @@ public class AcidOfTheWinterFluid extends AcidFluid {
     }
 
     @Override
-    protected int getUses() {
-        return 15;
+    protected float getDecayRate() {
+        return 1;
     }
+
+    @Override
+    protected int getBaseEnergyPerTick() { return 305; }
 
     @Override
     protected float getStrength() {

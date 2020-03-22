@@ -4,9 +4,9 @@ import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.base.reactor.DirectionalReactorPartBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorReactorMultiBlock;
-import com.agrejus.netherendingenergy.common.fluids.CustomFluidAttributes;
+import com.agrejus.netherendingenergy.common.attributes.CustomFluidAttributes;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
-import com.agrejus.netherendingenergy.common.reactor.attributes.AcidAttributes;
+import com.agrejus.netherendingenergy.common.attributes.AcidAttributes;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -104,9 +104,10 @@ public class TerraReactorAcidPortBlock extends DirectionalReactorPartBlock {
                     fluidAttributes.getEfficiency(),
                     fluidAttributes.getStability(),
                     fluidAttributes.getResponse(),
-                    fluidAttributes.getUses(),
                     fluidAttributes.getSpatial(),
-                    fluidAttributes.getSpatialAmount());
+                    fluidAttributes.getSpatialAmount(),
+                    fluidAttributes.getBaseEnergyPerTick(),
+                    fluidAttributes.getDecayRate());
         }
 
         FluidHelpers.serializeCustomFluidAttributes(tag, attributes);

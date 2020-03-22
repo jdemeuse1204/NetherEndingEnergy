@@ -14,9 +14,12 @@ public class AcidOfTheChorusFluid extends AcidFluid {
     }
 
     @Override
-    protected int getUses() {
-        return 20;
+    protected float getDecayRate() {
+        return 1;
     }
+
+    @Override
+    protected int getBaseEnergyPerTick() { return 480; }
 
     @Override
     protected float getStrength() {

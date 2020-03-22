@@ -14,9 +14,12 @@ public class AcidOfTheLivingFluid extends AcidFluid {
     }
 
     @Override
-    protected int getUses() {
-        return 10;
+    protected float getDecayRate() {
+        return 1;
     }
+
+    @Override
+    protected int getBaseEnergyPerTick() { return 300; }
 
     @Override
     protected float getStrength() {

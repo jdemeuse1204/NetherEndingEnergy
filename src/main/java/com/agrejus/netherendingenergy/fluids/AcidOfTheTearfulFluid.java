@@ -14,9 +14,12 @@ public class AcidOfTheTearfulFluid extends AcidFluid {
     }
 
     @Override
-    protected int getUses() {
-        return 20;
+    protected float getDecayRate() {
+        return 1;
     }
+
+    @Override
+    protected int getBaseEnergyPerTick() { return 460; }
 
     @Override
     protected float getStrength() {

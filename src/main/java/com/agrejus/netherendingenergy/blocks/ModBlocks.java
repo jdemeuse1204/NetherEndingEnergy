@@ -2,7 +2,11 @@ package com.agrejus.netherendingenergy.blocks;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
-import com.agrejus.netherendingenergy.blocks.soil.CausticFarmlandBlock;
+import com.agrejus.netherendingenergy.blocks.flowers.roots.CausticBellRootsBlock;
+import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexBlock;
+import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexContainer;
+import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexTile;
+import com.agrejus.netherendingenergy.blocks.soil.CausticDirtBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortBlock;
@@ -38,7 +42,6 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCore
 import com.agrejus.netherendingenergy.blocks.terra.reactor.stabilizer.TerraReactorItemStabilizerBlock;
 import com.agrejus.netherendingenergy.blocks.test.TileTank;
 import com.agrejus.netherendingenergy.fluids.AcidOfTheTearfulFluid;
-import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
@@ -59,8 +62,11 @@ public class ModBlocks {
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_CASING)
     public static TerraReactorCasingBlock TERRA_REACTOR_CASING_BLOCK;
 
-    @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_FARMLAND)
-    public static CausticFarmlandBlock CAUSTIC_FARMLAND_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_DIRT)
+    public static CausticDirtBlock CAUSTIC_DIRT_BLOCK;
+
+    @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_ROOTS)
+    public static CausticBellRootsBlock CAUSTIC_ROOTS_BLOCK;
 
     /* Heat Sink */
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_HEAT_SINK)
@@ -100,6 +106,14 @@ public class ModBlocks {
     public static TileEntityType<TerraReactorCoreTile> TERRA_REACTOR_CORE_TILE;
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_CORE)
     public static ContainerType<TerraReactorCoreContainer> TERRA_REACTOR_CORE_CONTAINER;
+
+    /* Botanists Collector */
+    @ObjectHolder("netherendingenergy:" + RegistryNames.BOTANISTS_CODEX)
+    public static BotanistsCodexBlock BOTANISTS_CODEX_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.BOTANISTS_CODEX)
+    public static TileEntityType<BotanistsCodexTile> BOTANISTS_CODEX_TILE;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.BOTANISTS_CODEX)
+    public static ContainerType<BotanistsCodexContainer> BOTANISTS_CODEX_CONTAINER;
 
     /* Generator */
     @ObjectHolder("netherendingenergy:" + RegistryNames.FURNACE_GENERATOR)

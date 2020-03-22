@@ -14,9 +14,12 @@ public class AcidOfTheFortunateFluid extends AcidFluid {
     }
 
     @Override
-    protected int getUses() {
-        return 6;
+    protected float getDecayRate() {
+        return 1;
     }
+
+    @Override
+    protected int getBaseEnergyPerTick() { return 333; }
 
     @Override
     protected float getStrength() {

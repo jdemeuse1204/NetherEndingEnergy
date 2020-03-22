@@ -2,12 +2,13 @@ package com.agrejus.netherendingenergy.blocks.terra.collector;
 
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorConfig;
-import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorReactorMultiBlock;
 import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
 import com.agrejus.netherendingenergy.common.Ratio;
-import com.agrejus.netherendingenergy.common.fluids.CustomFluidAttributes;
+import com.agrejus.netherendingenergy.common.attributes.CustomFluidAttributes;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
+import com.agrejus.netherendingenergy.common.reactor.ReactorBaseConfig;
+import com.agrejus.netherendingenergy.common.reactor.ReactorBaseType;
+import com.agrejus.netherendingenergy.common.tank.MixableAcidFluidTank;
 import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
 import com.agrejus.netherendingenergy.fluids.ModFluids;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
@@ -25,7 +26,6 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -36,6 +36,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -50,24 +51,19 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         super(ModBlocks.TERRA_COLLECTING_STATION_TILE);
     }
 
-    private int tickCounter;
-    private Item growthMedium;
-
     private IntArraySupplierReferenceHolder referenceHolder;
 
-    private final int cycleProcessAmount = 100; // need at least 10 in the tank to start processing
-    private final int ticksToProcess = 40;
-    private final int energyUsePerTick = 25;
-    private int resovledCycleProcessAmount = 0;
-    private int tickProcessCount = 0;
-    private boolean isProcessing = false;
-
-    public static final String INPUT_TANK_NAME = "INPUT";
-    public static final String OUTPUT_TANK_NAME = "OUTPUT";
+    private int tick;
+    private int progress;
+    private int energyUsePerTick = 1;
+    private final int ticksToCollect = 60; // 5 seconds
+    private final int ticksToProcess = 120;
+    private final int acidAmountToProcess = 100;
+    private final float efficiency = .6f;
 
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
-    private LazyOptional<IItemHandler> itemHandler = LazyOptional.of(() -> this.createHandler(this));
-    private NEEFluidTank inputTank = new NEEFluidTank(INPUT_TANK_NAME, 1000) {
+    private LazyOptional<IItemHandler> inventory = LazyOptional.of(this::createHandler);
+    private NEEFluidTank inputTank = new NEEFluidTank(1000) {
         @Override
         protected void onContentsChanged() {
             BlockState state = world.getBlockState(pos);
@@ -76,8 +72,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         }
     };
 
-    // Change to acid mixing tank
-    private NEEFluidTank outputTank = new NEEFluidTank(OUTPUT_TANK_NAME, 4000) {
+    private MixableAcidFluidTank outputTank = new MixableAcidFluidTank(4000) {
         @Override
         protected void onContentsChanged() {
             BlockState state = world.getBlockState(pos);
@@ -90,7 +85,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         return new CustomEnergyStorage(60000, 200, 0);
     }
 
-    private IItemHandler createHandler(TerraCollectingStationTile tile) {
+    private IItemHandler createHandler() {
         return new ItemStackHandler(1) {
 
             @Override
@@ -125,8 +120,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                     return stack;
                 }
 
-                tile.setGrowthMedium(stack.getItem());
-
+                // Remove this?
                 BlockState state = world.getBlockState(pos);
                 world.notifyBlockUpdate(pos, state, state, 3);
                 markDirty();
@@ -136,8 +130,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             @Nonnull
             @Override
             public ItemStack extractItem(int slot, int amount, boolean simulate) {
-                tile.setGrowthMedium(null);
-
+                // Remove this?
                 BlockState state = world.getBlockState(pos);
                 world.notifyBlockUpdate(pos, state, state, 3);
                 markDirty();
@@ -146,16 +139,12 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         };
     }
 
-    public NEEFluidTank getInputTank() {
+    public FluidTank getInputTank() {
         return inputTank;
     }
 
-    public NEEFluidTank getOutputTank() {
+    public MixableAcidFluidTank getOutputTank() {
         return outputTank;
-    }
-
-    public void setGrowthMedium(Item item) {
-        this.growthMedium = item;
     }
 
     @Override
@@ -165,125 +154,97 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             return;
         }
 
+        if (tick <= 0) {
+            tick = 20; // Every second
+        }
+
         AtomicBoolean shouldMarkDirtyAndUpdateBlock = new AtomicBoolean(false);
-        boolean hasTwentyTickProcessingStarted = false;
+        TileEntity aboveTileEntity = world.getTileEntity(this.pos.up());
 
-        // check to see if we can process input tank filling
-        if (tickCounter > 0) {
-            tickCounter--;
+        // Collect every second
+        if (this.tick == 20) {
 
-            if (tickCounter <= 0) {
-                hasTwentyTickProcessingStarted = true;
+            // Try and collect acid, doesn't require power
+            if (aboveTileEntity != null) {
+                inventory.ifPresent(x -> {
+
+                    // Make sure there is a piece of dirt
+                    if (x.getStackInSlot(0).getItem() == Items.DIRT) {
+
+                        if (aboveTileEntity instanceof CausticBellTile) {
+                            CausticBellTile bell = (CausticBellTile) aboveTileEntity;
+
+                            float yield = bell.getYield(); // mB
+                            float strength = bell.getStrengthRatio();
+                            float purity = bell.getPurityRatio();
+
+
+                            int fillAmount = Math.round(yield * strength * purity);
+                            int resolvedAmount = inputTank.simulateFillAmount(fillAmount);
+
+                            inputTank.fill(new FluidStack(ModFluids.RAW_ACID_FLUID, resolvedAmount), IFluidHandler.FluidAction.EXECUTE);
+                            shouldMarkDirtyAndUpdateBlock.set(true);
+                        }
+                    }
+                });
             }
         }
 
-        if (this.isProcessing == true && tickProcessCount > 0) {
-            AtomicBoolean finalShouldMarkDirtyAndUpdateBlock = shouldMarkDirtyAndUpdateBlock;
+        boolean hasEnoughFluid = this.inputTank.getFluidInTank(0).getAmount() >= this.acidAmountToProcess;
+
+        // Try and process
+        if (this.progress == 0 && hasEnoughFluid) {
+            this.progress = this.ticksToCollect;
+        }
+
+        if (this.progress > 0 && hasEnoughFluid) {
             energy.ifPresent(w -> {
 
+                // Make sure we have enough energy
                 if (w.getEnergyStored() >= this.energyUsePerTick) {
-                    ((CustomEnergyStorage)w).consumeEnergy(energyUsePerTick);
+                    ((CustomEnergyStorage) w).consumeEnergy(energyUsePerTick);
 
-                    tickProcessCount--;
-                    finalShouldMarkDirtyAndUpdateBlock.set(true);
+                    --this.progress;
+
+                    // processing finished
+                    if (this.progress == 0) {
+                        // Drain Raw Acid
+                        inputTank.drain(this.acidAmountToProcess, IFluidHandler.FluidAction.EXECUTE);
+
+                        // Fill Acid of the Ordinary
+                        int fillAmount = Math.round(this.acidAmountToProcess * this.efficiency);
+                        FluidStack stackToFill = getFillStack(fillAmount);
+                        outputTank.fill(stackToFill, IFluidHandler.FluidAction.EXECUTE);
+                    }
+
+                    shouldMarkDirtyAndUpdateBlock.set(true);
                 }
             });
         }
 
-        if (hasTwentyTickProcessingStarted && inputTank.canFill() == true) {
-            BlockPos aboveBlock = this.pos.up();
-            TileEntity aboveTileEntity = world.getTileEntity(aboveBlock);
-            if (aboveTileEntity instanceof CausticBellTile) {
-                CausticBellTile bell = (CausticBellTile) aboveTileEntity;
-
-                int yield = bell.getYield(); // mB
-                Ratio strength = bell.getStrengthRatio();
-                Ratio purity = bell.getPurityRatio();
-                Ratio burnTimeAugment = bell.getBurnTimeAugmentRatio();
-
-                // we will need to handle if the flower changes
-
-                Ratio amount = Ratio.addMany(strength, purity, burnTimeAugment);
-                int fillAmount = Math.round(yield * amount.asPercent());
-                int resolvedAmount = inputTank.resolveFillAmount(fillAmount);
-
-                inputTank.fill(new FluidStack(ModFluids.RAW_ACID_FLUID, resolvedAmount), IFluidHandler.FluidAction.EXECUTE);
-                shouldMarkDirtyAndUpdateBlock.set(true);
-            }
-        }
-
-        // keep checking if we have enough to process
-        if (hasTwentyTickProcessingStarted && this.canProcessInputFluid(cycleProcessAmount) && this.isProcessing == false) {
-
-            // Make sure we have enough to drain
-            this.resovledCycleProcessAmount = inputTank.resolveDrainAmount(cycleProcessAmount);
-            this.isProcessing = true; // start processing
-            this.tickProcessCount = this.ticksToProcess;
-        }
-
-        // if we lose fluid, stop processing
-        if (hasTwentyTickProcessingStarted && this.canProcessInputFluid(this.resovledCycleProcessAmount) == false && this.isProcessing == true) {
-            this.resovledCycleProcessAmount = 0;
-            this.isProcessing = false;
-            this.tickProcessCount = 0;
-        }
-
-        if (tickCounter <= 0) {
-            tickCounter = 20; // Every second
-        }
-
-        if (this.isProcessing == true && tickProcessCount <= 0) {
-
-            // Stop Processing
-            tickProcessCount = 0;
-            this.isProcessing = false;
-
-            inputTank.drain(this.resovledCycleProcessAmount, IFluidHandler.FluidAction.EXECUTE);
-
-            FluidStack stackToFill = getFillStack(this.resovledCycleProcessAmount);
-            outputTank.fill(stackToFill, IFluidHandler.FluidAction.EXECUTE);
-
-            this.tickProcessCount = 0;
-            this.isProcessing = false;
-            shouldMarkDirtyAndUpdateBlock.set(true);
-        }
-
-
-        BlockPos acidPortPosition = TerraReactorReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.TERRA_REACTOR_ACID_PORT_BLOCK, TerraReactorConfig.INSTANCE);
-
-        if (acidPortPosition != null) {
-            this.sendOutLiquid();
-        }
+        // Try send out liquid
+        this.sendOutLiquid();
 
         if (shouldMarkDirtyAndUpdateBlock.get() == true) {
             BlockState state = world.getBlockState(pos);
             world.notifyBlockUpdate(pos, state, state, 3);
             markDirty();
         }
+
+        --this.tick;
     }
 
     private FluidStack getFillStack(int amount) {
 
         FluidStack stackToFill = new FluidStack(ModFluids.ACID_OF_THE_ORDINARY, amount);
-        CustomFluidAttributes attributes = (CustomFluidAttributes)stackToFill.getFluid().getAttributes();
+        CustomFluidAttributes attributes = (CustomFluidAttributes) stackToFill.getFluid().getAttributes();
 
         CompoundNBT fluidTag = new CompoundNBT();
 
         // need to do sea level minus max divided by 16.  ex: (62-254)/16 = 12 is the max
-        int y = pos.getY();
-        int spatialAmount = 1;
-        if (y > 64) {
-            int stepTotal = TerraReactorConfig.INSTANCE.getSpatialSteps();
-            spatialAmount = y / stepTotal;
-        }
+        int spatialAmount = ReactorBaseConfig.INSTANCE.ComputeSpatial(ReactorBaseType.Terra, pos.getY());
 
-        fluidTag.putFloat("strength", attributes.getStrength());
-        fluidTag.putFloat("efficiency", attributes.getEfficiency());
-        fluidTag.putFloat("stability", attributes.getStability());
-        fluidTag.putFloat("response", attributes.getResponse());
-        fluidTag.putInt("uses", attributes.getUses());
-        fluidTag.putInt("spatialAmount", spatialAmount);
-        fluidTag.putFloat("spatial", attributes.getSpatial());
+        FluidHelpers.serializeCustomFluidAttributes(fluidTag, attributes, spatialAmount);
 
         stackToFill.setTag(fluidTag);
 
@@ -293,66 +254,53 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
     private void sendOutLiquid() {
         if (outputTank.getFluidAmount() > 0) {
 
-            for(Direction direction: Direction.values()) {
-                TileEntity te = world.getTileEntity(pos.offset(direction));
+            for (Direction direction : Direction.values()) {
+                TileEntity tileEntity = world.getTileEntity(pos.offset(direction));
 
-                if (te != null) {
-                    boolean doContinue = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction).map(handler -> {
-                        NEEFluidTank tank = (NEEFluidTank)handler;
-                        if (tank.canFill() && outputTank.getFluidAmount() > 1) {
-                            tank.fill(new FluidStack(ModFluids.ACID_OF_THE_ORDINARY, 1), IFluidHandler.FluidAction.EXECUTE);
-                            outputTank.drain(new FluidStack(ModFluids.ACID_OF_THE_ORDINARY, 1), IFluidHandler.FluidAction.EXECUTE);
+                if (tileEntity != null) {
+                    tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction).ifPresent(handler -> {
 
+                        if (outputTank.getFluidAmount() > 1) {
+
+                            int drainAmount = 1000;
+
+                            if (outputTank.getFluidAmount() < 1000) {
+                                drainAmount = outputTank.getFluidAmount();
+                            }
+
+                            FluidStack drained = outputTank.drain(new FluidStack(ModFluids.ACID_OF_THE_ORDINARY, drainAmount), IFluidHandler.FluidAction.EXECUTE);;
+
+                            handler.fill(drained, IFluidHandler.FluidAction.EXECUTE);
 
                             markDirty();
-
-                            return outputTank.getFluidAmount() > 0;
-                        } else {
-                            return true;
                         }
-                    }).orElse(true);
-
-                    if (!doContinue) {
-                        return;
-                    }
+                    });
                 }
             }
         }
     }
 
-    private boolean canProcessInputFluid(int amountNeeded) {
-
-        // need to make wait until we have enough to process
-        return inputTank.getFluidAmount() >= amountNeeded && outputTank.canFill() && outputTank.resolveFillAmount(amountNeeded) == amountNeeded;
-    }
-
-    @Override
-    public void read(CompoundNBT tag) {
-
+    private void readNBT(CompoundNBT tag) {
         inputTank.readFromNBT(tag.getCompound("input_tank"));
         outputTank.readFromNBT(tag.getCompound("output_tank"));
 
         CompoundNBT invTag = tag.getCompound("inv");
 
-        itemHandler.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(invTag));
+        inventory.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(invTag));
 
         CompoundNBT energyTag = tag.getCompound("energy");
 
         energy.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(energyTag));
-
-        super.read(tag);
     }
 
-    @Override
-    public CompoundNBT write(CompoundNBT tag) {
-
+    private void writeNBT(CompoundNBT tag) {
         CompoundNBT inputTankNBT = new CompoundNBT();
         tag.put("input_tank", inputTank.writeToNBT(inputTankNBT));
 
         CompoundNBT outputTankNBT = new CompoundNBT();
         tag.put("output_tank", outputTank.writeToNBT(outputTankNBT));
 
-        itemHandler.ifPresent(w -> {
+        inventory.ifPresent(w -> {
             CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
             tag.put("inv", compound);
         });
@@ -361,32 +309,24 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
             CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
             tag.put("energy", compound);
         });
+    }
 
+    @Override
+    public void read(CompoundNBT tag) {
+        readNBT(tag);
+        super.read(tag);
+    }
+
+    @Override
+    public CompoundNBT write(CompoundNBT tag) {
+        writeNBT(tag);
         return super.write(tag);
     }
 
     @Override
     public CompoundNBT getUpdateTag() {
         CompoundNBT tag = super.getUpdateTag();
-        CompoundNBT inputTankNBT = new CompoundNBT();
-        CompoundNBT outputTankNBT = new CompoundNBT();
-
-        inputTank.writeToNBT(inputTankNBT);
-        outputTank.writeToNBT(outputTankNBT);
-
-        itemHandler.ifPresent(w -> {
-            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
-            tag.put("inv", compound);
-        });
-
-        energy.ifPresent(w -> {
-            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
-            tag.put("energy", compound);
-        });
-
-        tag.put("input_tank", inputTankNBT);
-        tag.put("output_tank", outputTankNBT);
-
+        writeNBT(tag);
         return tag;
     }
 
@@ -399,15 +339,8 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
-        CompoundNBT nbt = packet.getNbtCompound();
-        inputTank.readFromNBT(nbt.getCompound("input_tank"));
-        outputTank.readFromNBT(nbt.getCompound("output_tank"));
-
-        CompoundNBT invTag = nbt.getCompound("inv");
-        CompoundNBT energyTag = nbt.getCompound("energy");
-
-        itemHandler.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(invTag));
-        energy.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(energyTag));
+        CompoundNBT tag = packet.getNbtCompound();
+        readNBT(tag);
     }
 
     @Nonnull
@@ -419,7 +352,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         }
 
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return itemHandler.cast();
+            return inventory.cast();
         }
 
         //if (cap == CapabilityEnergy.ENERGY && side != null && side == Direction.DOWN) {
@@ -446,7 +379,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                 () -> this.outputTank.getFluidAmount(),
                 () -> this.inputTank.getCapacity(),
                 () -> this.inputTank.getFluidAmount(),
-                () -> this.tickProcessCount,
+                () -> this.progress,
                 () -> this.ticksToProcess,
                 () -> this.energy.map(w -> w.getEnergyStored()).orElse(0),
                 () -> this.energy.map(w -> w.getMaxEnergyStored()).orElse(0));

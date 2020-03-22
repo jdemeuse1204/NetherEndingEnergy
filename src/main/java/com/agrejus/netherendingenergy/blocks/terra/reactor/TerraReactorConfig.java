@@ -236,9 +236,4 @@ public class TerraReactorConfig implements IReactorConfig {
         }
         return this.map;
     }
-
-    @Override
-    public int getSpatialSteps() {
-        return 16;
-    }
 }

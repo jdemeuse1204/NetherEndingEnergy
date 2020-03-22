@@ -14,9 +14,12 @@ public class AcidOfTheNetherFluid extends AcidFluid {
     }
 
     @Override
-    protected int getUses() {
-        return 5;
+    protected float getDecayRate() {
+        return 1;
     }
+
+    @Override
+    protected int getBaseEnergyPerTick() { return 350; }
 
     @Override
     protected float getStrength() {

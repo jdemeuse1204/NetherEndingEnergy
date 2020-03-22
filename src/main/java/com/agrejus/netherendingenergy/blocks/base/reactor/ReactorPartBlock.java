@@ -85,10 +85,6 @@ public abstract class ReactorPartBlock extends RedstoneDetectorBlock {
             return super.onBlockActivated(state, world, pos, player, hand, hit);
         }
 
-/*        if (player.isSneaking() && player.getHeldItem(hand).getItem() == this.Type.getFormationItem()) {
-            this.Type.toggleMultiBlock(world, pos, state, player);
-            return true;
-        }*/
         // Only work if the block is formed
         Block block = state.getBlock();
         if (this.Type.getMenuAccessibleBlockClasses().contains(block) && state.get(FORMED) != TerraReactorPartIndex.UNFORMED) {

@@ -3,6 +3,7 @@ package com.agrejus.netherendingenergy.items;
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.fluids.RawAcidFluid;
 import net.minecraft.item.BucketItem;
+import net.minecraft.item.Item;
 import net.minecraftforge.registries.ObjectHolder;
 
 public class ModItems {
@@ -43,4 +44,10 @@ public class ModItems {
     public static BucketItem ACID_OF_THE_WISE_BUCKET;
     @ObjectHolder("netherendingenergy:acid_of_the_wither_fluid_bucket")
     public static BucketItem ACID_OF_THE_WITHER_BUCKET;
+
+    @ObjectHolder("netherendingenergy:caustic_bell")
+    public static Item CAUSTIC_BELL;
+
+    @ObjectHolder("netherendingenergy:caustic_mash")
+    public static Item CAUSTIC_MASH;
 }

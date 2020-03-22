@@ -62,7 +62,7 @@ public class InjectorBeam extends TexturedParticle implements IParticleRenderTyp
     public void beginRender(BufferBuilder buffer, TextureManager textureManager) {
         RenderHelper.disableStandardItemLighting();
         GlStateManager.depthMask(true);
-        textureManager.bindTexture(new ResourceLocation(NetherEndingEnergy.MODID, "block/terra_reactor_casing"));
+        textureManager.bindTexture(new ResourceLocation(NetherEndingEnergy.MODID, "particle/caustic_cloud"));
         GlStateManager.disableBlend();
         buffer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
     }

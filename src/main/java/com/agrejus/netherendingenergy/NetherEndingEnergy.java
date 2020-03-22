@@ -5,13 +5,17 @@ import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock
 import com.agrejus.netherendingenergy.blocks.chaotic.heatsink.ChaoticHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
+import com.agrejus.netherendingenergy.blocks.flowers.roots.CausticBellRootsBlock;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineBlock;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineContainer;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineTile;
+import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexBlock;
+import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexContainer;
+import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexTile;
 import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorBlock;
 import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorContainer;
 import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorTile;
-import com.agrejus.netherendingenergy.blocks.soil.CausticFarmlandBlock;
+import com.agrejus.netherendingenergy.blocks.soil.CausticDirtBlock;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationBlock;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationContainer;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
@@ -38,13 +42,14 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraR
 import com.agrejus.netherendingenergy.blocks.terra.reactor.stabilizer.TerraReactorItemStabilizerBlock;
 import com.agrejus.netherendingenergy.blocks.test.BlockTank;
 import com.agrejus.netherendingenergy.fluids.*;
+import com.agrejus.netherendingenergy.items.CausticMashItem;
 import com.agrejus.netherendingenergy.items.FirstItem;
 import com.agrejus.netherendingenergy.setup.ClientProxy;
 import com.agrejus.netherendingenergy.setup.IProxy;
 import com.agrejus.netherendingenergy.setup.ModSetup;
 import com.agrejus.netherendingenergy.setup.ServerProxy;
-import com.agrejus.netherendingenergy.setup.config.CausticBellConfig;
-import com.agrejus.netherendingenergy.setup.config.CausticBellFeature;
+import com.agrejus.netherendingenergy.worldgen.feature.config.CausticBellConfig;
+import com.agrejus.netherendingenergy.worldgen.feature.CausticBellFeature;
 import com.agrejus.netherendingenergy.tools.CapabilityVapor;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.block.Block;
@@ -76,6 +81,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Random;
 import java.util.Set;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -87,6 +93,7 @@ public class NetherEndingEnergy {
     public static IProxy proxy = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
 
     public static ModSetup setup = new ModSetup();
+    public static Random random = new Random();
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -116,6 +123,19 @@ public class NetherEndingEnergy {
         ModFluids.AcidOfTheUnstable = new AcidOfTheUnstableFluid();
         ModFluids.AcidOfTheWinter = new AcidOfTheWinterFluid();
     }
+
+    public static boolean rollBoolean() {
+        return roll(random, 1, 1000) % 2 == 0;
+    }
+
+    public static int roll(int min, int max) {
+        return roll(random, min, max);
+    }
+
+    public static int roll(Random rnd, int min, int max) {
+        return rnd.nextInt(max - min + 1) + min;
+    }
+
 
     public NetherEndingEnergy() {
 
@@ -190,9 +210,11 @@ public class NetherEndingEnergy {
 
 
             /* General */
+            event.getRegistry().register(new CausticBellRootsBlock());
             event.getRegistry().register(new CausticBellBlock());
-            event.getRegistry().register(new CausticFarmlandBlock());
+            event.getRegistry().register(new CausticDirtBlock());
             event.getRegistry().register(new ImbuingMachineBlock());
+            event.getRegistry().register(new BotanistsCodexBlock());
 
             // Terra
             event.getRegistry().register(new TerraReactorCasingBlock());
@@ -225,13 +247,17 @@ public class NetherEndingEnergy {
             // register a new item here
             Item.Properties properties = new Item.Properties().group(setup.itemGroup);
 
+            // Register Items
+            event.getRegistry().register(new CausticMashItem());
+
             // Tutorial
             event.getRegistry().register(new BlockItem(ModBlocks.Test.FIRSTBLOCK, properties).setRegistryName("firstblock"));
             event.getRegistry().register(new BlockItem(ModBlocks.Test.FIRSTTILE, properties).setRegistryName("firsttile"));
             event.getRegistry().register(new FirstItem());
 
             // New Stuff
-            event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_FARMLAND_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_FARMLAND));
+            event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_ROOTS_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_ROOTS));
+            event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_DIRT_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_DIRT));
             event.getRegistry().register(new BlockItem(ModBlocks.IMBUING_MACHINE_BLOCK, properties).setRegistryName(RegistryNames.IMBUING_MACHINE));
 
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_BELL_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_BELL));
@@ -240,6 +266,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_REACTOR_CORE_BLOCK, properties).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_COLLECTING_STATION_BLOCK, properties).setRegistryName(RegistryNames.TERRA_COLLECTING_STATION));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_MIXER_BLOCK, properties).setRegistryName(RegistryNames.TERRA_MIXER));
+            event.getRegistry().register(new BlockItem(ModBlocks.BOTANISTS_CODEX_BLOCK, properties).setRegistryName(RegistryNames.BOTANISTS_CODEX));
 
             /* Abyss */
             event.getRegistry().register(new BlockItem(ModBlocks.ABYSS_HEAT_SINK_BLOCK, properties).setRegistryName(RegistryNames.ABYSS_HEAT_SINK));
@@ -271,6 +298,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorCoreTile::new, ModBlocks.TERRA_REACTOR_CORE_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));
             event.getRegistry().register(TileEntityType.Builder.create(TerraCollectingStationTile::new, ModBlocks.TERRA_COLLECTING_STATION_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_COLLECTING_STATION));
             event.getRegistry().register(TileEntityType.Builder.create(TerraMixerTile::new, ModBlocks.TERRA_MIXER_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_MIXER));
+            event.getRegistry().register(TileEntityType.Builder.create(BotanistsCodexTile::new, ModBlocks.BOTANISTS_CODEX_BLOCK).build(null).setRegistryName(RegistryNames.BOTANISTS_CODEX));
 
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorRedstoneInputPortTile::new, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_REDSTONE_INPUT_PORT));
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorEnergyPortTile::new, ModBlocks.TERRA_REACTOR_ENERGY_PORT_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_ENERGY_PORT));
@@ -314,6 +342,11 @@ public class NetherEndingEnergy {
                 BlockPos pos = data.readBlockPos();
                 return new ImbuingMachineContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
             }).setRegistryName(RegistryNames.IMBUING_MACHINE));
+
+            event.getRegistry().register(IForgeContainerType.create((windowId, playerInventory, data) -> {
+                BlockPos pos = data.readBlockPos();
+                return new BotanistsCodexContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
+            }).setRegistryName(RegistryNames.BOTANISTS_CODEX));
         }
 
         public static final Set<BiomeDictionary.Type> TYPE_BLACKLIST = ImmutableSet.of(

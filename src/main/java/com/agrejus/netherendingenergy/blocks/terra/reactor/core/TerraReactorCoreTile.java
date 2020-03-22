@@ -14,9 +14,10 @@ import com.agrejus.netherendingenergy.common.models.BlockInformation;
 import com.agrejus.netherendingenergy.common.reactor.InjectorPackage;
 import com.agrejus.netherendingenergy.common.reactor.ReactorBaseConfig;
 import com.agrejus.netherendingenergy.common.reactor.ReactorBaseType;
-import com.agrejus.netherendingenergy.common.reactor.attributes.AcidAttributes;
-import com.agrejus.netherendingenergy.common.reactor.attributes.PotionAttributes;
+import com.agrejus.netherendingenergy.common.attributes.AcidAttributes;
+import com.agrejus.netherendingenergy.common.attributes.PotionAttributes;
 import com.agrejus.netherendingenergy.common.tank.AcidFluidTank;
+import com.agrejus.netherendingenergy.common.tank.MixableAcidFluidTank;
 import com.agrejus.netherendingenergy.fluids.ModFluids;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import net.minecraft.block.BlockState;
@@ -70,16 +71,13 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
 
     private int heatTickRate = 20; // add every 20 ticks,but really every tick, divide amount to add by 20 so its not jumpy
     private float heat;
-    private final int maxHeat = 2000;
+    private final int maxHeat = 3000;
+    private final int fatalHeat = 2000;
     private float heatAbsorptionRate = .9f;
 
     private LazyOptional<IItemHandler> inventory = LazyOptional.of(this::createInventory);
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
-    private AcidFluidTank acidTank = new AcidFluidTank(5000) {
-
-        // on add, mix attributes in case the are different
-
-
+    private MixableAcidFluidTank acidTank = new MixableAcidFluidTank(5000) {
         @Override
         protected void onContentsChanged() {
             BlockState state = world.getBlockState(pos);
@@ -304,7 +302,7 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
                                 ItemStack extractedStack = reactorInventory.extractBacklogSlot(1, false);
                                 reactorInventory.insertBurningSlot(extractedStack, false);
                                 float efficiency = TerraReactorEnergyMatrix.getEfficiency(ReactorBaseType.Terra, attributes, injectorPackage.getPotionAttributes());
-                                this.currentBurnItemTicks = (int) (burnTime * efficiency);
+                                this.currentBurnItemTicks = (int) TerraReactorEnergyMatrix.modify(burnTime, efficiency);
                                 this.currentBurnItemTotalTicks = this.currentBurnItemTicks;
 
                                 // set block state?

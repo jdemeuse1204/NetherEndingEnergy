@@ -20,6 +20,7 @@ import java.time.Period;
 @OnlyIn(Dist.CLIENT)
 public abstract class ContainerScreenBase<T extends Container> extends ContainerScreen<T> {
 
+    protected final int guiDefaultFontColor = 0xff404040;
     protected final int defaultGuiScreenHeight;
     protected final int defaultGuiScreenWidth;
 

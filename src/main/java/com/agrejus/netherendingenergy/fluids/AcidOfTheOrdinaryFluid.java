@@ -23,28 +23,31 @@ public class AcidOfTheOrdinaryFluid extends AcidFluid {
     }
 
     @Override
-    protected int getUses() {
-        return 20;
+    protected float getDecayRate() {
+        return 2;
     }
 
     @Override
+    protected int getBaseEnergyPerTick() { return 240; }
+
+    @Override
     protected float getStrength() {
-        return 1f;
+        return -.01f;
     }
 
     @Override
     protected float getEfficiency() {
-        return 1f;
+        return -.5f;
     }
 
     @Override
     protected float getStability() {
-        return 1f;
+        return .01f;
     }
 
     @Override
     protected float getResponse() {
-        return 1f;
+        return .01f;
     }
 
     @Override

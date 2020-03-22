@@ -3,6 +3,7 @@ package com.agrejus.netherendingenergy.setup;
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.blocks.*;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineScreen;
+import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexScreen;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationScreen;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTileEntityRenderer;
@@ -35,6 +36,7 @@ public class ClientProxy implements IProxy {
         ScreenManager.registerFactory(ModBlocks.FURNACE_GENERATOR_CONTAINER, FurnaceGeneratorScreen::new);
         ScreenManager.registerFactory(ModBlocks.TERRA_COLLECTING_STATION_CONTAINER, TerraCollectingStationScreen::new);
         ScreenManager.registerFactory(ModBlocks.TERRA_MIXER_CONTAINER, TerraMixerScreen::new);
+        ScreenManager.registerFactory(ModBlocks.BOTANISTS_CODEX_CONTAINER, BotanistsCodexScreen::new);
 
         ScreenManager.registerFactory(ModBlocks.Test.FIRSTTILE_CONTAINER, FirstTileScreen::new);
         ScreenManager.registerFactory(ModBlocks.IMBUING_MACHINE_CONTAINER, ImbuingMachineScreen::new);

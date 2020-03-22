@@ -1,6 +1,6 @@
 package com.agrejus.netherendingenergy.common.reactor;
 
-import com.agrejus.netherendingenergy.common.reactor.attributes.PotionAttributes;
+import com.agrejus.netherendingenergy.common.attributes.PotionAttributes;
 
 import java.util.List;
 

@@ -50,8 +50,8 @@
               "source": "block_entity",
               "ops": [
                 {
-                  "source": "superior_trait",
-                  "target": "BlockEntityTag.superior_trait",
+                  "source": "superior",
+                  "target": "BlockEntityTag.superior",
                   "op": "replace"
                 }
               ]
@@ -61,8 +61,8 @@
               "source": "block_entity",
               "ops": [
                 {
-                  "source": "inferior_trait",
-                  "target": "BlockEntityTag.inferior_trait",
+                  "source": "inferior",
+                  "target": "BlockEntityTag.inferior",
                   "op": "replace"
                 }
               ]
@@ -72,8 +72,30 @@
               "source": "block_entity",
               "ops": [
                 {
-                  "source": "recessive_trait",
-                  "target": "BlockEntityTag.recessive_trait",
+                  "source": "recessive",
+                  "target": "BlockEntityTag.recessive",
+                  "op": "replace"
+                }
+              ]
+            },
+            {
+              "function": "minecraft:copy_nbt",
+              "source": "block_entity",
+              "ops": [
+                {
+                  "source": "ph_level",
+                  "target": "BlockEntityTag.ph_level",
+                  "op": "replace"
+                }
+              ]
+            },
+            {
+              "function": "minecraft:copy_nbt",
+              "source": "block_entity",
+              "ops": [
+                {
+                  "source": "stage_advance",
+                  "target": "BlockEntityTag.stage_advance",
                   "op": "replace"
                 }
               ]

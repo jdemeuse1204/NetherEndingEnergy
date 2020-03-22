@@ -89,6 +89,9 @@ public enum CausticBellTrait implements IStringSerializable {
     private final int randomRollStart;
     private final int randomRollEnd;
 
+    // Optimization
+    public static final CausticBellTrait[] VALUES = CausticBellTrait.values();
+
     private CausticBellTrait(String trait, int randomRollStart, int randomRollEnd) {
         this.trait = trait;
         this.randomRollStart = randomRollStart;

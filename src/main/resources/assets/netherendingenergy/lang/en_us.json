@@ -4,12 +4,12 @@
   "itemGroup.netherendingenergy.tools": "Nether Ending Energy: Tools",
 
   "item.netherendingenergy.firstitem":  "First Item",
-
-  "item.netherendingenergy.caustic_mash": "Caustic Mash",
+  "item.netherendingenergy.caustic_mash":  "Caustic Mash",
 
   "block.netherendingenergy.firstblock": "First Block",
   "block.netherendingenergy.firsttile": "First Tile",
 
+  "block.netherendingenergy.caustic_roots": "Caustic Roots",
   "block.netherendingenergy.caustic_bell": "Caustic Bell",
   "block.netherendingenergy.terra_reactor_core": "Terra Reactor Core",
   "block.netherendingenergy.terra_heat_sink": "Terra Heat Sink",
@@ -27,8 +27,9 @@
   "block.netherendingenergy.chaotic_heat_sink": "Chaotic Heat Sink",
 
   "block.netherendingenergy.furnace_generator": "Furnace Generator",
-  "block.netherendingenergy.caustic_farmland": "Caustic Farmland",
+  "block.netherendingenergy.caustic_dirt": "Caustic Dirt",
   "block.netherendingenergy.imbuing_machine": "Imbuing Machine",
+  "block.netherendingenergy.botanists_codex": "Botanists Codex",
 
   "item.netherendingenergy.raw_acid_fluid_bucket": "Raw Acid Bucket",
   "item.netherendingenergy.acid_of_the_ordinary_fluid_bucket": "Acid of the Ordinary Bucket",

@@ -162,6 +162,11 @@ public class TerraReactorCoreScreen extends ContainerScreenBase<TerraReactorCore
         // Draw Heat Progression
         float heatPercent = this.getProgressionPercent(this.container.getHeat(), this.container.getMaxHeat());
         int heatProgression = Math.round(this.heatSlice.getHeight() * heatPercent);
+
+        if (heatPercent > 1) {
+            heatProgression = this.heatSlice.getHeight();
+        }
+
         this.heatSlice.setProgression(heatProgression);
         this.drawVerticalSliceWithProgression(this.heatDestination, this.heatSlice);
 

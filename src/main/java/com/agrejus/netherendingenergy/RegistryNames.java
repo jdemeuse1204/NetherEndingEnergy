@@ -1,8 +1,10 @@
 package com.agrejus.netherendingenergy;
 
 public class RegistryNames {
+    public static final String CAUSTIC_ROOTS = "caustic_roots";
     public static final String CAUSTIC_BELL = "caustic_bell";
-    public static final String CAUSTIC_FARMLAND = "caustic_farmland";
+    public static final String CAUSTIC_DIRT = "caustic_dirt";
+    public static final String CAUSTIC_MASH = "caustic_mash";
 
     /* Terra */
     public static final String TERRA_REACTOR_REDSTONE_INPUT_PORT = "terra_reactor_redstone_input_port";
@@ -25,6 +27,9 @@ public class RegistryNames {
 
     /* General */
     public static final String TERRA_REACTOR_ENERGY_PORT = "terra_reactor_energy_port";
+
+    public static final String BOTANISTS_CODEX = "botanists_codex";
+
 
     public static final String IMBUING_MACHINE = "imbuing_machine";
     public static final String FURNACE_GENERATOR = "furnace_generator";

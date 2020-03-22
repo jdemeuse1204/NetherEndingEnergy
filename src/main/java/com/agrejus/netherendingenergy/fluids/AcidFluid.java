@@ -1,7 +1,7 @@
 package com.agrejus.netherendingenergy.fluids;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
-import com.agrejus.netherendingenergy.common.fluids.CustomFluidAttributes;
+import com.agrejus.netherendingenergy.common.attributes.CustomFluidAttributes;
 import com.agrejus.netherendingenergy.setup.ModSetup;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
@@ -19,7 +19,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fml.RegistryObject;
 
@@ -53,12 +52,13 @@ public abstract class AcidFluid {
     protected ForgeFlowingFluid.Properties createProperties(RegistryObject<FlowingFluid> stillFlowingFluid, RegistryObject<FlowingFluid> flowingFlowingFluid) {
         return new ForgeFlowingFluid.Properties(stillFlowingFluid, flowingFlowingFluid, CustomFluidAttributes.builder(getStillTexture(), getFlowingTexture())
                 .strength(this.getStrength())
-                .uses(this.getUses())
                 .efficiency(this.getEfficiency())
                 .stability(this.getStability())
                 .response(this.getResponse())
                 .spatial(this.getSpatial())
                 .spatialAmount(1) // default to 1, mixer/collector will set this value
+                .baseEnergyPerTick(this.getBaseEnergyPerTick())
+                .decayRate(this.getDecayRate())
                 .rarity(Rarity.UNCOMMON)
                 .color(this.color))
                 .bucket(bucket)
@@ -66,8 +66,9 @@ public abstract class AcidFluid {
                 .levelDecreasePerBlock(2);
     }
 
+    protected abstract float getDecayRate();
+    protected abstract int getBaseEnergyPerTick();
     protected abstract float getSpatial();
-    protected abstract int getUses();
     protected abstract float getStrength();
     protected abstract float getEfficiency();
     protected abstract float getStability();

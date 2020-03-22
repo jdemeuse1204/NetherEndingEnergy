@@ -42,9 +42,7 @@ public class RawAcidFluid extends AcidFluid {
     }
 
     @Override
-    protected int getUses() {
-        return 0;
-    }
+    protected int getBaseEnergyPerTick() { return 0; }
 
     @Override
     protected float getSpatial() {
@@ -74,6 +72,11 @@ public class RawAcidFluid extends AcidFluid {
     @Override
     protected FlowingFluidBlock createBlock(RegistryObject<FlowingFluid> stillFluid) {
         return new RawAcidBlock(stillFluid, Block.Properties.create(Material.WATER));
+    }
+
+    @Override
+    protected float getDecayRate() {
+        return 0;
     }
 
     public static class RawAcidBlock extends AcidFluid.AcidBlock {

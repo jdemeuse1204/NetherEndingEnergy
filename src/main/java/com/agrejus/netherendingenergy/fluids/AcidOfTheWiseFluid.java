@@ -14,9 +14,12 @@ public class AcidOfTheWiseFluid extends AcidFluid {
     }
 
     @Override
-    protected int getUses() {
-        return 9;
+    protected float getDecayRate() {
+        return 1;
     }
+
+    @Override
+    protected int getBaseEnergyPerTick() { return 314; }
 
     @Override
     protected float getStrength() {
