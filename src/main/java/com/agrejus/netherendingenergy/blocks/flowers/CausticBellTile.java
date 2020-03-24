@@ -3,12 +3,12 @@ package com.agrejus.netherendingenergy.blocks.flowers;
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.NetherEndingEnergyBlockStateProperties;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
+import com.agrejus.netherendingenergy.common.factories.RootFactory;
 import com.agrejus.netherendingenergy.common.flowers.CausticBellTrait;
 import com.agrejus.netherendingenergy.common.flowers.CausticBellTraitConfig;
 import com.agrejus.netherendingenergy.common.helpers.BlockHelpers;
-import com.agrejus.netherendingenergy.common.models.MainTrunkRoot;
-import com.agrejus.netherendingenergy.common.models.OffshootBud;
-import com.agrejus.netherendingenergy.common.models.OffshootRoot;
+import com.agrejus.netherendingenergy.common.interfaces.IRoot;
+import com.agrejus.netherendingenergy.common.models.RootBud;
 import com.agrejus.netherendingenergy.common.models.RootPoint;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -25,9 +25,10 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
-import java.util.*;
-
-import static com.agrejus.netherendingenergy.common.models.MainTrunkRoot.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
@@ -83,9 +84,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     private float purity;
     private float pHLevel;
     private int stageAdvanceTimeTicks;
-    private int baseTendrilLength = 6;
-    private int maxTendrilLength = 32;
-    private Map<Direction, MainTrunkRoot> mainTrunkRoots;
+    private Map<Direction, RootBud> mainTrunkRoots;
 
     // Traits
     private CausticBellTrait superiorTrait;
@@ -123,6 +122,8 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         strength = 1f;
         purity = 1f;
         mainTrunkRoots = new HashMap<>();
+
+        // absorbing dirt/stone/wood, bring traits closer to 0
     }
 
     public void setSuperiorTrait(CausticBellTrait superiorTrait) {
@@ -185,7 +186,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         }
 
         //this.stageAdvanceTimeTicks
-        if (spreadCounter >= 5) {
+        if (spreadCounter >= 1) {
             spreadCounter = 0; // reset
             this.trySpread();
         }
@@ -207,118 +208,103 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         // Only spread if the below block is caustic dirt
         if (startingBlock == ModBlocks.CAUSTIC_DIRT_BLOCK) {
 
-            int causticStage = startingState.get(NetherEndingEnergyBlockStateProperties.CAUSTIC_0_5);
+            // put down root
+            world.setBlockState(startingPosition, ModBlocks.CAUSTIC_ROOTS_BLOCK.getDefaultState(), 3);
 
-            // is the current block saturated?
-            // If not raise level
-            if (causticStage < 5) {
-                BlockState nextStateState = startingState.with(NetherEndingEnergyBlockStateProperties.CAUSTIC_0_5, ++causticStage);
-                world.setBlockState(startingPosition, nextStateState, 3);
-                return;
-            }
+            // set the caustic roots variable so we can detect that is has roots, so we can't break and replace on other roots
+            return;
+        }
 
-            // get base direction to spread
+        // Don't spread if broken and replaced on roots
+        if (startingBlock == ModBlocks.CAUSTIC_ROOTS_BLOCK) {
+
             Direction startingDirection = getRandomDirection();
-            this.tryCreateTendrilRoot(startingDirection, startingPosition);
+
+            if (tryAdvanceState(startingState, startingPosition, startingDirection) == false) {
+                // get base direction to spread
+                this.spread(startingDirection, startingPosition);
+            }
         }
     }
 
-    private OffshootRoot plotOffshootRoot(OffshootRoot offshootRoot, Direction travelingDirection) {
+    private ArrayList<BlockPos> spreadableSurroundingPositions(BlockPos pos) {
+        ArrayList<BlockPos> result = new ArrayList<>();
 
-        for (int i = 1; i < offshootRoot.size(); i++) {
-            BlockPos nextInlinePosition = offshootRoot.getNextPosition(i - 1);
-            BlockPos startingPosition = offshootRoot.get(0).getPosition();
-            int nextDeviation = BlockHelpers.getDeviation(nextInlinePosition, startingPosition, travelingDirection);
+        result.add(pos.offset(Direction.NORTH));
+        result.add(pos.offset(Direction.SOUTH));
+        result.add(pos.offset(Direction.EAST));
+        result.add(pos.offset(Direction.WEST));
 
-            if (nextDeviation < OffshootRoot.MIN_DEVIATION) {
-
-                int nextDeviationAmount = BlockHelpers.deviate(offshootRoot.getSideOfMainTrunkDirection());
-                Direction deviationDirection = offshootRoot.getSideOfMainTrunkDirection();
-                // deviation is in the wrong direction
-                BlockPos deviationBlockPosition = BlockHelpers.deviateBlockPosition(nextInlinePosition, nextDeviationAmount, deviationDirection);
-                offshootRoot.plotPoint(deviationBlockPosition, i);
-                continue;
-            }
-
-            // try and deviate
-            int secondaryDeviation = NetherEndingEnergy.random.nextInt(3) - 1;
-
-            if (secondaryDeviation != 0) {
-
-                // Get deviation direction
-                Direction deviationDirection = BlockHelpers.getDeviationDirection(secondaryDeviation, travelingDirection);
-                BlockPos deviationBlockPosition = BlockHelpers.deviateBlockPosition(nextInlinePosition, secondaryDeviation, deviationDirection);
-
-                // can we deviate?
-                int deviation = BlockHelpers.getDeviation(deviationBlockPosition, startingPosition, travelingDirection);
-                ;
-                if (deviation <= OffshootRoot.MAX_DEVIATION && deviation >= OffshootRoot.MIN_DEVIATION) {
-                    offshootRoot.plotPoint(deviationBlockPosition, i);
-                    continue;
-                }
-            }
-
-            // cannot deviate
-            offshootRoot.plotPoint(nextInlinePosition, i);
-        }
-
-        return offshootRoot;
-    }
-
-    private MainTrunkRoot createMainTrunk(Direction startingDirection, BlockPos startingPosition) {
-        int size = NetherEndingEnergy.roll(MainTrunkRoot.MIN_LENGTH, MainTrunkRoot.MAX_LENGTH);
-        MainTrunkRoot result = new MainTrunkRoot(startingPosition, startingDirection, size);
-        int offshootCount = NetherEndingEnergy.roll(MIN_OFFSHOOT_COUNT, MAX_OFFSHOOT_COUNT);
-
-        // plot the root
-        // Start at 1 because 0 is already plotted
-        for (int i = 1; i < size; i++) {
-            BlockPos nextInlinePosition = result.getNextPosition(i - 1);
-            int deviation = NetherEndingEnergy.random.nextInt(3) - 1;
-
-            if (deviation != 0) {
-
-                // Get deviation direction
-                Direction deviationDirection = BlockHelpers.getDeviationDirection(deviation, startingDirection);
-                BlockPos deviationBlockPosition = BlockHelpers.deviateBlockPosition(nextInlinePosition, deviation, deviationDirection);
-
-                // can we deviate?
-                if (result.canDeviate(deviationBlockPosition)) {
-
-                    if (offshootCount > 0 && i >= MIN_OFFSHOOT_INDEX  && i <= MAX_OFFSHOOT_INDEX && NetherEndingEnergy.roll(0, 2) == 1) {
-                        // try and add a bud
-                        ArrayList<Direction> perpendicularDirections = BlockHelpers.getPerpendicularDirections(startingDirection);
-                        int index = NetherEndingEnergy.roll(0, 1);
-                        Direction offshootBudDirection = perpendicularDirections.get(index);
-                        result.plotPoint(deviationBlockPosition, i, new OffshootBud(offshootBudDirection));
-                        --offshootCount;
-                    } else {
-                        result.plotPoint(deviationBlockPosition, i);
-                    }
-                    continue;
-                }
-            }
-
-            if (offshootCount > 0 && i >= MIN_OFFSHOOT_INDEX  && i <= MAX_OFFSHOOT_INDEX && NetherEndingEnergy.roll(0, 2) == 1) {
-                // try and add a bud
-                ArrayList<Direction> perpendicularDirections = BlockHelpers.getPerpendicularDirections(startingDirection);
-                int index = NetherEndingEnergy.roll(0, 1);
-                Direction offshootBudDirection = perpendicularDirections.get(index);
-                result.plotPoint(nextInlinePosition, i, new OffshootBud(offshootBudDirection));
-                --offshootCount;
-            } else {
-                result.plotPoint(nextInlinePosition, i);
-            }
-        }
+        result.add(pos.offset(Direction.NORTH).offset(Direction.EAST));
+        result.add(pos.offset(Direction.EAST).offset(Direction.SOUTH));
+        result.add(pos.offset(Direction.SOUTH).offset(Direction.WEST));
+        result.add(pos.offset(Direction.WEST).offset(Direction.NORTH));
 
         return result;
     }
 
-    private boolean tryAdvanceState(BlockState state, BlockPos pos) {
+    private void absorbAboveBlocks(BlockPos pos, Direction travelingDirection) {
+
+        ArrayList<Direction> perpendicularDirections = BlockHelpers.getPerpendicularDirections(travelingDirection);
+        ArrayList<BlockPos> positions = new ArrayList<BlockPos>() {
+            {
+                add(pos.offset(Direction.UP));
+                add(pos.offset(Direction.UP).offset(Direction.UP));
+                add(pos.offset(perpendicularDirections.get(0)).offset(Direction.UP));
+                add(pos.offset(perpendicularDirections.get(1)).offset(Direction.UP));
+            }
+        };
+
+        // Account for perpendicular blocks
+
+        int size = positions.size();
+        for (int i = 0; i < size; i++) {
+            BlockPos blockPosition = positions.get(i);
+            Block blockToEat = world.getBlockState(blockPosition).getBlock();
+            Block belowBlock = world.getBlockState(blockPosition.offset(Direction.DOWN)).getBlock();
+
+            if (isImpenetrable(blockToEat) == false && blockToEat != ModBlocks.CAUSTIC_BELL_BLOCK &&
+                    (belowBlock == ModBlocks.CAUSTIC_ROOTS_BLOCK || belowBlock == ModBlocks.CAUSTIC_DIRT_BLOCK || belowBlock == Blocks.AIR)) {
+                world.setBlockState(blockPosition, Blocks.AIR.getDefaultState(), 3);
+            }
+        }
+    }
+
+    private boolean tryAdvanceState(BlockState state, BlockPos pos, Direction travelingDirection) {
+        if (state.has(NetherEndingEnergyBlockStateProperties.CAUSTIC_0_5) == false) {
+            return false;
+        }
+
         int currentStage = state.get(NetherEndingEnergyBlockStateProperties.CAUSTIC_0_5);
 
         if (currentStage < 5) {
             int nextStage = ++currentStage;
+
+            if (nextStage == 5) {
+
+                // eat Above Blocks
+                absorbAboveBlocks(pos, travelingDirection);
+
+                // turn blocks around it to caustic dirt
+                ArrayList<BlockPos> spreadableDirections = spreadableSurroundingPositions(pos);
+                int size = spreadableDirections.size();
+                for (int i = 0; i < size; i++) {
+                    BlockPos spreadablePosition = spreadableDirections.get(i);
+                    BlockState blockToOvertakeState = world.getBlockState(spreadablePosition);
+                    Block blockToOvertake = blockToOvertakeState.getBlock();
+
+                    if (isImpenetrable(blockToOvertake) == false && blockToOvertake != Blocks.AIR && blockToOvertake != ModBlocks.CAUSTIC_ROOTS_BLOCK) {
+
+                        float hardness = blockToOvertakeState.getBlockHardness(world, spreadablePosition);
+
+                        if (hardness <= .8F) {
+                            // .8f = sandstone
+                            world.setBlockState(spreadablePosition, ModBlocks.CAUSTIC_DIRT_BLOCK.getDefaultState(), 3);
+                        }
+                    }
+                }
+            }
+
             world.setBlockState(pos, state.with(NetherEndingEnergyBlockStateProperties.CAUSTIC_0_5, nextStage), 3);
             return true;
         }
@@ -326,101 +312,67 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         return false;
     }
 
-    private void tryCreateTendrilRoot(Direction startingDirection, BlockPos startingPosition) {
+    private void spread(Direction startingDirection, BlockPos startingPosition) {
 
-        MainTrunkRoot mainTrunkRoot = this.mainTrunkRoots.get(startingDirection);
+        RootBud mainBud = this.mainTrunkRoots.get(startingDirection);
 
-        if (mainTrunkRoot == null) {
-            mainTrunkRoot = createMainTrunk(startingDirection, startingPosition);
+        if (mainBud == null) {
+            // Create the full root tree
+            mainBud = RootFactory.createPlotAndGet(startingPosition, startingDirection);
 
-            this.mainTrunkRoots.put(startingDirection, mainTrunkRoot);
+            this.mainTrunkRoots.put(startingDirection, mainBud);
         }
 
-        if (mainTrunkRoot.isDead() == true) {
-            // leave it?
-            return;
-        }
+        ArrayList<RootBud> buds = new ArrayList<>();
+        buds.add(mainBud);
 
-        // start tracing main trunk
-        for (int i = 0; i < mainTrunkRoot.size(); i++) {
-            RootPoint point = mainTrunkRoot.get(i);
+        for (int budIndex = 0; budIndex < buds.size(); budIndex++) {
+            IRoot root = buds.get(budIndex).getRoot();
 
-            BlockPos pos = point.getPosition();
-            BlockState state = world.getBlockState(pos);
-            Block block = state.getBlock();
-
-            if (isStopBlock(block)) {
-                return;// Stop?
-            }
-
-            // make sure up isnt dirt
-
-            // head down if there is air in front
-            if (block == Blocks.AIR) {
-                pos.offset(Direction.DOWN);
-            }
-
-            if (block != ModBlocks.CAUSTIC_DIRT_BLOCK) {
-                world.setBlockState(pos, ModBlocks.CAUSTIC_DIRT_BLOCK.getDefaultState(), 3);
-                return;
-            }
-
-            if (tryAdvanceState(state, pos) == true) {
-                return; // Stop
-            }
-        }
-
-        // create off shoot or start new trunk,
-        Direction randomDirection = this.getRandomDirection();
-        MainTrunkRoot root = this.mainTrunkRoots.get(randomDirection);
-
-        for (int i = 0; i < root.size(); i++) {
-            RootPoint point = root.get(i);
-
-            if (point.hasOffshootBud() == false) {
+            if (root == null) {
                 continue;
             }
 
-            OffshootRoot offshootRoot = point.getOffshootRoot();
+            int size = root.size();
 
-            if (offshootRoot == null) {
-                int size = NetherEndingEnergy.roll(OffshootRoot.MIN_LENGTH, OffshootRoot.MAX_LENGTH);
-                offshootRoot = point.addAndGetOffshoot(point.getPosition(), randomDirection, size);
+            // trace root, skip origin
+            for (int i = 1; i < size; i++) {
+                RootPoint point = root.get(i);
 
-                // Plot the new offshoot root
-                plotOffshootRoot(offshootRoot, randomDirection);
-            }
-
-            // Trace the offshoot
-            for (int j = 0; j < offshootRoot.size(); j++) {
-                RootPoint offshootRootPoint = offshootRoot.get(j);
-
-                BlockPos pos = offshootRootPoint.getPosition();
+                BlockPos pos = point.getPosition();
                 BlockState state = world.getBlockState(pos);
                 Block block = state.getBlock();
 
-                if (isStopBlock(block)) {
-                    return;// Stop?
+                if (tryAdvanceState(state, pos, startingDirection) == true) {
+                    return; // Stop
                 }
 
-                // head down if there is air in front
-                if (block == Blocks.AIR) {
-                    pos.offset(Direction.DOWN);
-                }
-
-                if (block != ModBlocks.CAUSTIC_DIRT_BLOCK) {
-                    world.setBlockState(pos, ModBlocks.CAUSTIC_DIRT_BLOCK.getDefaultState(), 3);
+                // Roots only spread through caustic dirt
+                if (isImpenetrable(block)) {
                     return;
                 }
 
-                if (tryAdvanceState(state, pos) == true) {
-                    return; // Stop
+                // burrowing
+                if (block != ModBlocks.CAUSTIC_DIRT_BLOCK && block != ModBlocks.CAUSTIC_ROOTS_BLOCK) {
+                    world.setBlockState(pos, ModBlocks.CAUSTIC_ROOTS_BLOCK.getDefaultState(), 3);
+                    return;
+                }
+
+                // account for up and down terrain
+                if (block == ModBlocks.CAUSTIC_DIRT_BLOCK) {
+                    if (block != ModBlocks.CAUSTIC_ROOTS_BLOCK) {
+                        world.setBlockState(pos, ModBlocks.CAUSTIC_ROOTS_BLOCK.getDefaultState(), 3);
+                        return;
+                    }
                 }
             }
+
+            // Add any buds to the list.  Add here because we are done traversing root
+            buds.addAll(root.getBuds());
         }
     }
 
-    private boolean isStopBlock(Block block) {
+    private boolean isImpenetrable(Block block) {
         return block == Blocks.OBSIDIAN;
     }
 

@@ -72,7 +72,7 @@ public class CausticBellBlock extends FlowerBlock {
         Block block = state.getBlock();
         Material material = block.getMaterial(state);
 
-        if (material == Material.EARTH) {
+        if (material == Material.EARTH || block == ModBlocks.CAUSTIC_ROOTS_BLOCK) {
             return true;
         }
 

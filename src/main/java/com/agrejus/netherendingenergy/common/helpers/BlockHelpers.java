@@ -18,10 +18,10 @@ public class BlockHelpers {
             default:
             case NORTH:
             case SOUTH:
-                return startingBlockPosition.getX() - nextBlockPosition.getX();
+                return Math.abs(startingBlockPosition.getX() - nextBlockPosition.getX());
             case EAST:
             case WEST:
-                return startingBlockPosition.getZ() - nextBlockPosition.getZ();
+                return Math.abs(startingBlockPosition.getZ() - nextBlockPosition.getZ());
         }
     }
 

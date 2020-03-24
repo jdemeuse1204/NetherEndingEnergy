@@ -2,7 +2,8 @@ package com.agrejus.netherendingenergy.blocks;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
-import com.agrejus.netherendingenergy.blocks.flowers.roots.CausticBellRootsBlock;
+import com.agrejus.netherendingenergy.blocks.flowers.roots.CausticBellRootBlock;
+import com.agrejus.netherendingenergy.blocks.flowers.vines.CausticBellVineBlock;
 import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexBlock;
 import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexContainer;
 import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexTile;
@@ -65,8 +66,11 @@ public class ModBlocks {
     @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_DIRT)
     public static CausticDirtBlock CAUSTIC_DIRT_BLOCK;
 
+    @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_VINES)
+    public static CausticBellVineBlock CAUSTIC_VINES_BLOCK;
+
     @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_ROOTS)
-    public static CausticBellRootsBlock CAUSTIC_ROOTS_BLOCK;
+    public static CausticBellRootBlock CAUSTIC_ROOTS_BLOCK;
 
     /* Heat Sink */
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_HEAT_SINK)

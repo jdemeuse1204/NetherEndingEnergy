@@ -19,11 +19,5 @@ public class CausticDirtBlock extends Block {
                 .hardnessAndResistance(.5f)
                 .lightValue(0));
         setRegistryName(RegistryNames.CAUSTIC_DIRT);
-        setDefaultState(getStateContainer().getBaseState().with(NetherEndingEnergyBlockStateProperties.CAUSTIC_0_5, 0));
-    }
-
-    @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(NetherEndingEnergyBlockStateProperties.CAUSTIC_0_5);
     }
 }

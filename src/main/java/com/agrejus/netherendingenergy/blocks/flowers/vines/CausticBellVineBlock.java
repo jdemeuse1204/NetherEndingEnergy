@@ -1,4 +1,4 @@
-package com.agrejus.netherendingenergy.blocks.flowers.roots;
+package com.agrejus.netherendingenergy.blocks.flowers.vines;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import it.unimi.dsi.fastutil.objects.Object2BooleanArrayMap;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CausticBellRootsBlock extends Block implements net.minecraftforge.common.IShearable {
+public class CausticBellVineBlock extends Block implements net.minecraftforge.common.IShearable {
 
     public static final BooleanProperty DOWN = SixWayBlock.DOWN;
     public static final BooleanProperty UP = SixWayBlock.UP;
@@ -39,12 +39,12 @@ public class CausticBellRootsBlock extends Block implements net.minecraftforge.c
     protected static final VoxelShape SOUTH_AABB = Block.makeCuboidShape(0.0D, 0.0D, 15.0D, 16.0D, 16.0D, 16.0D);
     protected static final VoxelShape DOWN_AABB = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 1.0D, 16.0D);
 
-    public CausticBellRootsBlock() {
+    public CausticBellVineBlock() {
         super(Block.Properties.create(Material.TALL_PLANTS)
                 .doesNotBlockMovement()
                 .hardnessAndResistance(0.2F)
                 .sound(SoundType.PLANT));
-        setRegistryName(RegistryNames.CAUSTIC_ROOTS);
+        setRegistryName(RegistryNames.CAUSTIC_VINES);
         this.setDefaultState(this.stateContainer.getBaseState().with(UP, Boolean.valueOf(false)).with(NORTH, Boolean.valueOf(false)).with(EAST, Boolean.valueOf(false)).with(SOUTH, Boolean.valueOf(false)).with(WEST, Boolean.valueOf(false)).with(DOWN, Boolean.valueOf(false)));
     }
 

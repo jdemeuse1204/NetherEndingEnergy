@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "netherendingenergy:block/caustic_dirt_1"
+    "all": "netherendingenergy:block/caustic_dirt"
   }
 }

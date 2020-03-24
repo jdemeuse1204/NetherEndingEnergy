@@ -1,10 +1,5 @@
 {
-  "variants" : {
-    "caustic=0": { "model": "netherendingenergy:block/caustic_dirt_0" },
-    "caustic=1": { "model": "netherendingenergy:block/caustic_dirt_1" },
-    "caustic=2": { "model": "netherendingenergy:block/caustic_dirt_2" },
-    "caustic=3": { "model": "netherendingenergy:block/caustic_dirt_3" },
-    "caustic=4": { "model": "netherendingenergy:block/caustic_dirt_4" },
-    "caustic=5": { "model": "netherendingenergy:block/caustic_dirt_5" }
+  "variants": {
+    "": { "model": "netherendingenergy:block/caustic_dirt" }
   }
 }

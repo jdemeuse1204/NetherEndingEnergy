@@ -5,7 +5,8 @@ import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock
 import com.agrejus.netherendingenergy.blocks.chaotic.heatsink.ChaoticHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
-import com.agrejus.netherendingenergy.blocks.flowers.roots.CausticBellRootsBlock;
+import com.agrejus.netherendingenergy.blocks.flowers.roots.CausticBellRootBlock;
+import com.agrejus.netherendingenergy.blocks.flowers.vines.CausticBellVineBlock;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineBlock;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineContainer;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineTile;
@@ -210,7 +211,8 @@ public class NetherEndingEnergy {
 
 
             /* General */
-            event.getRegistry().register(new CausticBellRootsBlock());
+            event.getRegistry().register(new CausticBellRootBlock());
+            event.getRegistry().register(new CausticBellVineBlock());
             event.getRegistry().register(new CausticBellBlock());
             event.getRegistry().register(new CausticDirtBlock());
             event.getRegistry().register(new ImbuingMachineBlock());
@@ -256,6 +258,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new FirstItem());
 
             // New Stuff
+            event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_VINES_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_VINES));
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_ROOTS_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_ROOTS));
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_DIRT_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_DIRT));
             event.getRegistry().register(new BlockItem(ModBlocks.IMBUING_MACHINE_BLOCK, properties).setRegistryName(RegistryNames.IMBUING_MACHINE));
