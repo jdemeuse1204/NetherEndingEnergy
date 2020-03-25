@@ -137,4 +137,94 @@ public class CausticBellTraitConfig {
                 return 1f;
         }
     }
+
+    public static float getMaxStrength(CausticBellTrait trait) {
+        switch (trait) {
+            case AIMLESS:
+                return (float) 160/ (float) 100;
+            case ADAPTOR:
+            case POLLINATING:
+            case NOXIOUS:
+                return (float) 500 / (float) 100;
+            case POTENT:
+            case ALTITUDINAL:
+                return (float) 200 / (float) 100;
+            case UNSTABLE:
+                return (float) 300 / (float) 100;
+            case STEADY:
+            case DORMANT:
+            default:
+                return 1f;
+        }
+    }
+
+    public static float getMaxPurity(CausticBellTrait trait) {
+        switch (trait) {
+            case ADAPTOR:
+                return (float) 85 / (float) 100;
+            case AIMLESS:
+                return (float) 90/ (float) 100;
+            case POLLINATING:
+            case ROAMING:
+            case NOXIOUS:
+            case ALTITUDINAL:
+            case POTENT:
+            case UNSTABLE:
+            case STEADY:
+            case DORMANT:
+            default:
+                return (float) 100/ (float) 100;
+        }
+    }
+
+    public static float getMaxYield(CausticBellTrait trait) {
+        switch (trait) {
+            case ADAPTOR:
+                return 10f;
+            case AIMLESS:
+                return 6f;
+            case ROAMING:
+                return 3f;
+            case NOXIOUS:
+                return 120f;
+            case ALTITUDINAL:
+                return 70f;
+            case POTENT:
+                return 80f;
+            case UNSTABLE:
+                return 100f;
+            case STEADY:
+            case POLLINATING:
+                return 5f;
+            case DORMANT:
+            default:
+                return 1f;
+        }
+    }
+
+    public static int getAbsorbTicks(CausticBellTrait trait) {
+        switch (trait) {
+            case ADAPTOR:
+                return 2600;
+            case AIMLESS:
+                return 2800;
+            case ROAMING:
+                return 3200;
+            case NOXIOUS:
+                return 200;
+            case ALTITUDINAL:
+                return 2400;
+            case POTENT:
+                return 400;
+            case UNSTABLE:
+                return 1200;
+            case STEADY:
+                return 2000;
+            case POLLINATING:
+                return 3000;
+            case DORMANT:
+            default:
+                return 5000;
+        }
+    }
 }

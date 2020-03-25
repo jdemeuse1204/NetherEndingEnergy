@@ -2,12 +2,12 @@ package com.agrejus.netherendingenergy.common.factories;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.blocks.flowers.roots.MainTrunkRootConfiguration;
-import com.agrejus.netherendingenergy.blocks.flowers.roots.MainTrunkRootExtensionConfiguration;
 import com.agrejus.netherendingenergy.blocks.flowers.roots.OffshootRootConfiguration;
 import com.agrejus.netherendingenergy.common.enumeration.RootType;
 import com.agrejus.netherendingenergy.common.helpers.BlockHelpers;
 import com.agrejus.netherendingenergy.common.interfaces.IRoot;
 import com.agrejus.netherendingenergy.common.interfaces.IRootConfiguration;
+import com.agrejus.netherendingenergy.common.interfaces.ISourceRoot;
 import com.agrejus.netherendingenergy.common.models.MainTrunkRoot;
 import com.agrejus.netherendingenergy.common.models.OffshootRoot;
 import com.agrejus.netherendingenergy.common.models.RootBud;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 public class RootFactory {
 
-    public static IRoot create(BlockPos origin, Direction travelingDirection, RootBud bud, IRootConfiguration rootConfiguration) {
+    private static IRoot create(BlockPos origin, Direction travelingDirection, RootBud bud, IRootConfiguration rootConfiguration) {
         int size = NetherEndingEnergy.roll(rootConfiguration.getMinLength(), rootConfiguration.getMaxLength());
         switch (bud.getRootType()) {
             case OFFSHOOT:
@@ -34,8 +34,6 @@ public class RootFactory {
         switch (type) {
             case OFFSHOOT:
                 return new OffshootRootConfiguration();
-            case MAIN_TRUNK_OFFSHOOT:
-                return new MainTrunkRootExtensionConfiguration();
             default:
                 throw new IllegalStateException("no root type found");
             case MAIN_TRUNK:
@@ -43,7 +41,7 @@ public class RootFactory {
         }
     }
 
-    public static RootBud createPlotAndGet(BlockPos startingPosition, Direction startingDirection) {
+    public static RootBud createPlotAndGet(BlockPos startingPosition, Direction startingDirection, ISourceRoot sourceRoot) {
 
         RootBud result = new RootBud(startingDirection, startingPosition, RootType.MAIN_TRUNK, null);
 
@@ -82,7 +80,7 @@ public class RootFactory {
                     deviationBlockPosition.offset(startingDirection);
 
                     // Add the bud to the list to grow it
-                    RootPoint plottedRootPoint = plotAndGetRootPoint(root, offshootCount, i, (size - i) == 2, deviationBlockPosition, startingPosition, startingDirection, root.getLastBudSideOfTrunk(), configuration);
+                    RootPoint plottedRootPoint = plotAndGetRootPoint(sourceRoot, root, offshootCount, i, (size - i) == 2, deviationBlockPosition, startingPosition, startingDirection, root.getLastBudSideOfTrunk(), configuration);
                     RootBud bud = plottedRootPoint.getOffshootBud();
 
                     if (bud != null) {
@@ -105,7 +103,7 @@ public class RootFactory {
                     if (canDeviate(deviationBlockPosition, root.getTravelingDirection(), root.getOrigin(), configuration)) {
 
                         // Add the bud to the list to grow it
-                        RootPoint plottedRootPoint = plotAndGetRootPoint(root, offshootCount, i, (size - i) == 2, deviationBlockPosition, startingPosition, startingDirection, root.getLastBudSideOfTrunk(), configuration);
+                        RootPoint plottedRootPoint = plotAndGetRootPoint(sourceRoot, root, offshootCount, i, (size - i) == 2, deviationBlockPosition, startingPosition, startingDirection, root.getLastBudSideOfTrunk(), configuration);
                         RootBud bud = plottedRootPoint.getOffshootBud();
 
                         if (bud != null) {
@@ -117,7 +115,7 @@ public class RootFactory {
                 }
 
                 // Add the bud to the list to grow it
-                RootPoint plottedRootPoint = plotAndGetRootPoint(root, offshootCount, i, (size - i) == 2, nextInlinePosition, startingPosition, startingDirection, root.getLastBudSideOfTrunk(), configuration);
+                RootPoint plottedRootPoint = plotAndGetRootPoint(sourceRoot, root, offshootCount, i, (size - i) == 2, nextInlinePosition, startingPosition, startingDirection, root.getLastBudSideOfTrunk(), configuration);
                 RootBud bud = plottedRootPoint.getOffshootBud();
 
                 if (bud != null) {
@@ -141,11 +139,11 @@ public class RootFactory {
         return currentDeviation >= configuration.getMinDeviation() && currentDeviation <= configuration.getMaxDeviation();
     }
 
-    private static RootPoint plotAndGetRootPoint(IRoot root, int offshootCount, int index, boolean isTwoIndicesAwayFromEnd, BlockPos plotPosition, BlockPos startingPosition, Direction mainTravelingDirection, Direction lastBudGrowthDirection, IRootConfiguration configuration) {
+    private static RootPoint plotAndGetRootPoint(ISourceRoot sourceRoot, IRoot root, int offshootCount, int index, boolean isTwoIndicesAwayFromEnd, BlockPos plotPosition, BlockPos startingPosition, Direction mainTravelingDirection, Direction lastBudGrowthDirection, IRootConfiguration configuration) {
         RootBud bud = null;
 
         // no growth beyond 32 blocks
-        if (offshootCount > 0 && BlockHelpers.getDistance(plotPosition, startingPosition) < 32) {
+        if (offshootCount > 0 && BlockHelpers.getDistance(plotPosition, startingPosition) < sourceRoot.getMaxSpread()) {
             bud = getOffshootRootBud(offshootCount, index, plotPosition, mainTravelingDirection, lastBudGrowthDirection, isTwoIndicesAwayFromEnd, configuration);
         }
 

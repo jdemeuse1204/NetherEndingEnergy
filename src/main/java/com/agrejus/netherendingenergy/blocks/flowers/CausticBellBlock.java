@@ -9,7 +9,6 @@ import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -145,6 +144,8 @@ public class CausticBellBlock extends FlowerBlock {
             System.out.println("Tile INFERIOR: " +  tile.getInferiorTrait());
             System.out.println("Tile RECESSIVE: " +  tile.getRecessiveTrait());
             System.out.println("YIELD: " +  tile.getYield());
+            System.out.println("PURITY: " +  tile.getPurity());
+            System.out.println("STRENGTH: " +  tile.getStrength());
 
             //worldIn.setBlockState(pos.down().east(), ModBlocks.CAUSTIC_DIRT_BLOCK.getDefaultState(), 3);
         }

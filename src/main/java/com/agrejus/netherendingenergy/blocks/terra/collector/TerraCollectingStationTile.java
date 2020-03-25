@@ -3,7 +3,6 @@ package com.agrejus.netherendingenergy.blocks.terra.collector;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
 import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
-import com.agrejus.netherendingenergy.common.Ratio;
 import com.agrejus.netherendingenergy.common.attributes.CustomFluidAttributes;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
 import com.agrejus.netherendingenergy.common.reactor.ReactorBaseConfig;
@@ -175,8 +174,8 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                             CausticBellTile bell = (CausticBellTile) aboveTileEntity;
 
                             float yield = bell.getYield(); // mB
-                            float strength = bell.getStrengthRatio();
-                            float purity = bell.getPurityRatio();
+                            float strength = bell.getStrength();
+                            float purity = bell.getPurity();
 
 
                             int fillAmount = Math.round(yield * strength * purity);

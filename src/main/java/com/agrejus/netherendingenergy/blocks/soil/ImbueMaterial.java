@@ -3,6 +3,7 @@ package com.agrejus.netherendingenergy.blocks.soil;
 import net.minecraft.util.IStringSerializable;
 
 public enum ImbueMaterial implements IStringSerializable {
+
     DIAMOND("diamond"),
     EMERALD("emerald"),
     LAPIS("lapis"),

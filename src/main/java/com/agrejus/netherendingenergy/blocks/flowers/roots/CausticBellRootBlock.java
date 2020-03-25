@@ -9,6 +9,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.potion.Effects;
 import net.minecraft.state.StateContainer;
+import net.minecraft.util.BlockRenderLayer;
 
 public class CausticBellRootBlock extends Block {
     public CausticBellRootBlock() {
@@ -23,5 +24,9 @@ public class CausticBellRootBlock extends Block {
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(NetherEndingEnergyBlockStateProperties.CAUSTIC_0_5);
+    }
+
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.TRANSLUCENT;
     }
 }
