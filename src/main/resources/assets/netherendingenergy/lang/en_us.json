@@ -3,11 +3,7 @@
   "itemGroup.netherendingenergy.items": "Nether Ending Energy: Items",
   "itemGroup.netherendingenergy.tools": "Nether Ending Energy: Tools",
 
-  "item.netherendingenergy.firstitem":  "First Item",
   "item.netherendingenergy.caustic_mash":  "Caustic Mash",
-
-  "block.netherendingenergy.firstblock": "First Block",
-  "block.netherendingenergy.firsttile": "First Tile",
 
   "block.netherendingenergy.caustic_dirt": "Caustic Dirt",
   "block.netherendingenergy.caustic_vines": "Caustic Vines",

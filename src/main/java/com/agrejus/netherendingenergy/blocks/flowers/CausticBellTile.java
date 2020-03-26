@@ -27,13 +27,21 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
+    private static NumberRoll[] ranges = new NumberRoll[]{
+            new NumberRoll(0, 500, 0),
+            new NumberRoll(501, 750, 5),
+            new NumberRoll(751, 875, 10),
+            new NumberRoll(876, 938, 15),
+            new NumberRoll(939, 970, 19)
+    };
+
+    private static Direction[] mainTrunkDirections = new Direction[]{
+            Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST
+    };
     private static Map<Block, BellTraits> consumableBlocks = new HashMap<Block, BellTraits>() {
         {
             put(Blocks.DIAMOND_BLOCK, new BellTraits(.75f, 2.3f, 2.5f));
@@ -131,15 +139,23 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
             add(Direction.WEST);
         }
     };
+    private Map<BlockPos, AbsorbableBlock> absorbableBlocks = new HashMap<>();
+
+    private int absorbCounter;
     private int spreadCounter;
     private int counter;
+
+    private int terraSlurryCounter;
+    private int chaoticSlurryCounter;
+    private int abyssalSlurryCounter;
 
     // Statistics
     private float yield;
     private float strength;
     private float purity;
     private float pHLevel;
-    private int stageAdvanceTimeTicks;
+    private int spreadAdvanceTicks;
+    private int absorbTicks;
     private RootSystem rootSystem;
 
     // Traits
@@ -167,7 +183,8 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         this.purity = CausticBellTraitConfig.getRandomPurity(this.superiorTrait);
 
         // add to NBT
-        this.stageAdvanceTimeTicks = CausticBellTraitConfig.getStageAdvanceTimeTicks(this.superiorTrait);
+        this.spreadAdvanceTicks = CausticBellTraitConfig.getStageAdvanceTimeTicks(this.superiorTrait);
+        this.absorbTicks = CausticBellTraitConfig.getStageAdvanceTimeTicks(this.superiorTrait);
         this.pHLevel = CausticBellTraitConfig.getpHLevel(this.superiorTrait);
     }
 
@@ -203,24 +220,13 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         return this.recessiveTrait;
     }
 
-    public void setYield(int yield) {
-        this.yield = yield;
-    }
 
     public float getYield() {
         return yield;
     }
 
-    public void setStrength(float strength) {
-        this.strength = strength;
-    }
-
     public float getStrength() {
         return strength;
-    }
-
-    public void setPurity(float purity) {
-        this.purity = purity;
     }
 
     public float getPurity() {
@@ -252,19 +258,42 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
         //this.stageAdvanceTimeTicks
         // stageAdvanceTime is also the time it takes to eat a block, better flowers = faster eating
-        if (spreadCounter >= 1) {
+        if (spreadCounter >= 2) {
             spreadCounter = 0; // reset
             this.trySpread();
         }
 
-        // eat blocks at a different rate, depends on pH level
+        // Enqueue blocks to be absorbed
+        //this.absorbTicks
+        if (this.absorbCounter >= 5) {
+            this.absorbCounter = 0;
+            this.enqueueAbsorbableBlocks();
+        }
 
+        // Dequeue blocks to be absorbed, absorb every 5 ticks?
+        if (this.absorbableBlocks.size() > 0) {
+
+            Map.Entry<BlockPos, AbsorbableBlock> entry = this.absorbableBlocks.entrySet().iterator().next();
+
+            while(entry != null) {
+                AbsorbableBlock absorbableBlock = this.absorbableBlocks.remove(entry.getKey());
+                this.tryAbsorbBlock(absorbableBlock);
+
+                if (this.absorbableBlocks.entrySet().iterator().hasNext() == false) {
+                    break;
+                }
+                entry = this.absorbableBlocks.entrySet().iterator().next();
+            }
+        }
+
+        // Poison surrounding entities
         if (counter == 20) {
             this.tryPoisonSurroundingEntities();
         }
 
-        --counter;
-        ++spreadCounter;
+        --this.counter;
+        ++this.spreadCounter;
+        ++this.absorbCounter;
     }
 
     private void trySpread() {
@@ -278,8 +307,6 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
             // put down root
             world.setBlockState(startingPosition, ModBlocks.CAUSTIC_ROOTS_BLOCK.getDefaultState(), 3);
-
-            // set the caustic roots variable so we can detect that is has roots, so we can't break and replace on other roots
             return;
         }
 
@@ -291,12 +318,10 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
                 this.rootSystem = new RootSystem(20, startingPosition);
             }
 
-            // spread like a flower, grow down and then out on top, upside down xmas tree
-
             Direction startingDirection = getRandomDirection();
 
             // Spreads down first
-            if (tryAdvanceState(startingState, startingPosition, startingDirection) == false) {
+            if (tryAdvanceState(startingState, startingPosition) == false) {
 
                 // Roll a random root
                 int rootToSpreadTo = this.getRandomBranchingRoot();
@@ -309,14 +334,6 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
     private int getRandomBranchingRoot() {
 
-        NumberRoll[] ranges = new NumberRoll[]{
-                new NumberRoll(0, 500, 0),
-                new NumberRoll(501, 750, 5),
-                new NumberRoll(751, 875, 10),
-                new NumberRoll(876, 938, 15),
-                new NumberRoll(939, 970, 19)
-        };
-
         int random = NetherEndingEnergy.roll(0, 970);
 
         for (int i = 0; i < ranges.length; i++) {
@@ -326,7 +343,71 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         }
 
         return -1;
-        // if we pick a root and we arent spread down there yet, try to spread down
+    }
+
+    private void enqueueAbsorbableBlocks() {
+        if (this.rootSystem == null) {
+            return;
+        }
+
+        // this may cause lag, cycle through branches and enqueue them 1 at a time?
+
+        // traverse all branches and find blocks to absorb
+        int rootSystemSize = this.rootSystem.size();
+        int mainTrunkDirectionsSize = mainTrunkDirections.length;
+        for (int i = 0; i < rootSystemSize; i++) {
+            ISourceRoot sourceRoot = this.rootSystem.get(i);
+
+            for (int j = 0; j < mainTrunkDirectionsSize; j++) {
+                Direction rootDirection = mainTrunkDirections[j];
+                RootBud mainBud = sourceRoot.getMainTrunk(rootDirection);
+
+                if (mainBud == null) {
+                    continue;
+                }
+
+                ArrayList<RootBud> buds = new ArrayList<RootBud>() {
+                    {
+                        add(mainBud);
+                    }
+                };
+
+                for (int budIndex = 0; budIndex < buds.size(); budIndex++) {
+                    IRoot root = buds.get(budIndex).getRoot();
+
+                    if (root == null) {
+                        continue;
+                    }
+
+                    int size = root.size();
+
+                    // trace root, skip origin
+                    for (int k = 1; k < size; k++) {
+                        RootPoint point = root.get(k);
+
+                        BlockPos pos = point.getPosition();
+                        BlockState triggeringBlockState = world.getBlockState(pos);
+                        Block triggeringBlock = triggeringBlockState.getBlock();
+
+                        if (triggeringBlock != ModBlocks.CAUSTIC_ROOTS_BLOCK) {
+                            break;
+                        }
+
+                        int stage = triggeringBlockState.get(NetherEndingEnergyBlockStateProperties.CAUSTIC_0_5);
+
+                        if (stage != 5) {
+                            break;
+                        }
+
+                        // Tick differently to absorb blocks
+                        enqueueBlocksToAbsorb(pos, mainBud.getGrowthDirection());
+                    }
+
+                    // Add any buds to the list.  Add here because we are done traversing root
+                    buds.addAll(root.getBuds());
+                }
+            }
+        }
     }
 
     private void spread(Direction startingDirection, int randomSourceRootIndex) {
@@ -358,17 +439,17 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
                     return;
                 }
 
-                if (tryAdvanceState(state, pos, null)) {
+                if (tryAdvanceState(state, pos)) {
                     return;
                 }
             }
 
-            // root doesnt branch, needed so we can grow down
+            // root doesn't branch
             if (sourceRoot instanceof SourceRoot) {
                 randomSourceRootIndex = this.getRandomBranchingRoot();
 
                 // we want to grow a different branch, don't waste the execution
-                while(randomSourceRootIndex == 19){
+                while (randomSourceRootIndex == 19) {
                     randomSourceRootIndex = this.getRandomBranchingRoot();
                 }
 
@@ -405,7 +486,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
                 BlockState state = world.getBlockState(pos);
                 Block block = state.getBlock();
 
-                if (tryAdvanceState(state, pos, startingDirection) == true) {
+                if (tryAdvanceState(state, pos) == true) {
                     return; // Stop
                 }
 
@@ -444,8 +525,6 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         result.add(pos.offset(Direction.EAST).offset(Direction.SOUTH));
         result.add(pos.offset(Direction.SOUTH).offset(Direction.WEST));
         result.add(pos.offset(Direction.WEST).offset(Direction.NORTH));
-
-        result.add(pos.offset(Direction.DOWN));
 
         return result;
     }
@@ -489,66 +568,105 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         }
     }
 
-    private void absorbBlocks(BlockPos pos, Direction travelingDirection) {
+    private void enqueueBlocksToAbsorb(BlockPos pos, Direction travelingDirection) {
 
         ArrayList<Direction> perpendicularDirections = BlockHelpers.getPerpendicularDirections(travelingDirection);
-        ArrayList<BlockPos> positions = new ArrayList<BlockPos>() {
-            {
-                add(pos.offset(Direction.UP));
-                add(pos.offset(Direction.UP).offset(Direction.UP));
+        Direction perpendicularDirectionOne = perpendicularDirections.get(0);
+        Direction perpendicularDirectionTwo = perpendicularDirections.get(1);
+        AbsorbableBlock[] blocksToTest = new AbsorbableBlock[]{
+                new AbsorbableBlock(pos.offset(Direction.UP), pos, true),
+                new AbsorbableBlock(pos.offset(Direction.UP).offset(Direction.UP), pos, true),
 
-                add(pos.offset(perpendicularDirections.get(0)).offset(Direction.UP));
-                add(pos.offset(perpendicularDirections.get(1)).offset(Direction.UP));
-            }
+                new AbsorbableBlock(pos.offset(Direction.DOWN), pos, true),
+                new AbsorbableBlock(pos.offset(Direction.DOWN).offset(Direction.DOWN), pos, true),
+
+                new AbsorbableBlock(pos.offset(perpendicularDirectionOne).offset(Direction.UP), pos.offset(perpendicularDirectionOne), false),
+                new AbsorbableBlock(pos.offset(perpendicularDirectionTwo).offset(Direction.UP), pos.offset(perpendicularDirectionTwo), false),
+
+                new AbsorbableBlock(pos.offset(perpendicularDirectionOne).offset(Direction.DOWN), pos.offset(perpendicularDirectionOne), false),
+                new AbsorbableBlock(pos.offset(perpendicularDirectionTwo).offset(Direction.DOWN), pos.offset(perpendicularDirectionTwo), false),
+
         };
 
         // go back and up in each direction to account for kitty corner blocks
-
-        int size = positions.size();
+        int size = blocksToTest.length;
         for (int i = 0; i < size; i++) {
-            BlockPos blockPosition = positions.get(i);
-            BlockState blockToEatState = world.getBlockState(blockPosition);
-            Block blockToEat = blockToEatState.getBlock();
-            Block offsetBlock = world.getBlockState(blockPosition.offset(Direction.DOWN)).getBlock();
-            Block offsetOffsetBlock = world.getBlockState(blockPosition.offset(Direction.DOWN).offset(Direction.DOWN)).getBlock();
+            AbsorbableBlock absorbableBlock = blocksToTest[i];
+            BlockPos position = absorbableBlock.getPos();
 
-            if (canAbsorbBlock(blockToEat, offsetBlock, offsetOffsetBlock) == true && i <= 1) {
-
-                // 0-1, block is above root
-                BellTraits blockTraits = consumableBlocks.getOrDefault(blockToEat, null);
-                if (blockTraits != null) {
-
-                    this.addStrength(blockTraits.getStrength());
-                    this.addPurity(blockTraits.getPurity());
-                    this.addYield(blockTraits.getYield());
-
-                    // Eat the block
-                    world.setBlockState(blockPosition, Blocks.AIR.getDefaultState(), 3);
-                    markDirty();
-                    return;
-                }
-
-                Material materialToEat = blockToEatState.getMaterial();
-                BellTraits materialTraits = consumableMaterials.getOrDefault(materialToEat, null);
-                if (materialTraits != null) {
-
-                    this.addStrength(materialTraits.getStrength());
-                    this.addPurity(materialTraits.getPurity());
-                    this.addYield(materialTraits.getYield());
-
-                    // Eat the block
-                    world.setBlockState(blockPosition, Blocks.AIR.getDefaultState(), 3);
-                    markDirty();
-                    return;
-                }
-
-                // just destroy, don't absorb
-                world.setBlockState(blockPosition, Blocks.AIR.getDefaultState(), 3);
+            // only remove once
+            if (this.absorbableBlocks.containsKey(position)) {
+                continue;
             }
+
+            Block blockToAbsorb = world.getBlockState(position).getBlock();
+
+            if (isImpenetrable(blockToAbsorb) == true) {
+                continue;
+            }
+
+            Block triggeringBlock = world.getBlockState(absorbableBlock.getTriggeringPos()).getBlock();
+
+            // If we are going to absorb the block lets make sure we can first
+            if (absorbableBlock.isShouldAbsorb()) {
+                boolean canAbsorb = canAbsorbAndDestroyBlock(blockToAbsorb, triggeringBlock);
+                absorbableBlock.setShouldAbsorb(canAbsorb);
+                absorbableBlocks.put(position, absorbableBlock);
+                continue;
+            }
+
+            absorbableBlocks.put(position, absorbableBlock);
         }
     }
 
-    private boolean tryAdvanceState(BlockState state, BlockPos pos, Direction travelingDirection) {
+    private void tryAbsorbBlock(AbsorbableBlock absorbableBlock) {
+
+        BlockPos blockPosition = absorbableBlock.getPos();
+        BlockState blockToEatState = world.getBlockState(absorbableBlock.getPos());
+        Block blockToEat = blockToEatState.getBlock();
+
+        if (isImpenetrable(blockToEat) == true) {
+            return;
+        }
+
+        Block triggeringBlock = world.getBlockState(absorbableBlock.getTriggeringPos()).getBlock();
+
+        // check again
+        if (canAbsorbAndDestroyBlock(blockToEat, triggeringBlock) == true) {
+            // 0-1, block is above root
+            BellTraits blockTraits = consumableBlocks.getOrDefault(blockToEat, null);
+            if (blockTraits != null) {
+
+                this.addStrength(blockTraits.getStrength());
+                this.addPurity(blockTraits.getPurity());
+                this.addYield(blockTraits.getYield());
+
+                // Eat the block
+                world.setBlockState(blockPosition, Blocks.AIR.getDefaultState(), 3);
+                markDirty();
+                return;
+            }
+
+            Material materialToEat = blockToEatState.getMaterial();
+            BellTraits materialTraits = consumableMaterials.getOrDefault(materialToEat, null);
+            if (materialTraits != null) {
+
+                this.addStrength(materialTraits.getStrength());
+                this.addPurity(materialTraits.getPurity());
+                this.addYield(materialTraits.getYield());
+
+                // Eat the block
+                world.setBlockState(blockPosition, Blocks.AIR.getDefaultState(), 3);
+                markDirty();
+                return;
+            }
+
+            // just destroy, don't absorb
+            world.setBlockState(blockPosition, Blocks.AIR.getDefaultState(), 3);
+        }
+    }
+
+    private boolean tryAdvanceState(BlockState state, BlockPos pos) {
         if (state.has(NetherEndingEnergyBlockStateProperties.CAUSTIC_0_5) == false) {
             return false;
         }
@@ -559,9 +677,6 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
             int nextStage = ++currentStage;
 
             if (nextStage == 5) {
-
-                // Tick differently to absorb blocks
-                //absorbBlocks(pos, travelingDirection);
 
                 // turn blocks around it to caustic dirt
                 ArrayList<BlockPos> spreadableDirections = spreadableSurroundingPositions(pos);
@@ -593,8 +708,13 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         world.setBlockState(pos, ModBlocks.CAUSTIC_DIRT_BLOCK.getDefaultState(), 3);
     }
 
-    private boolean canAbsorbBlock(Block block, Block offsetBlock, Block offsetOffsetBlock) {
-        return isImpenetrable(block) == false && block != ModBlocks.CAUSTIC_BELL_BLOCK && (offsetBlock == ModBlocks.CAUSTIC_ROOTS_BLOCK || offsetBlock == ModBlocks.CAUSTIC_DIRT_BLOCK || offsetOffsetBlock == ModBlocks.CAUSTIC_ROOTS_BLOCK);
+    private boolean canAbsorbAndDestroyBlock(Block blockToAbsorb, Block triggeringBlock) {
+
+        return isImpenetrable(blockToAbsorb) == false &&
+                blockToAbsorb != ModBlocks.CAUSTIC_BELL_BLOCK &&
+                blockToAbsorb != ModBlocks.CAUSTIC_ROOTS_BLOCK &&
+                blockToAbsorb != ModBlocks.CAUSTIC_DIRT_BLOCK &&
+                (triggeringBlock == ModBlocks.CAUSTIC_DIRT_BLOCK || triggeringBlock == ModBlocks.CAUSTIC_ROOTS_BLOCK);
     }
 
     private boolean isSpreadableBlock(Block block) {
@@ -645,7 +765,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         this.purity = tag.getFloat("purity");
         this.yield = tag.getFloat("yield");
         this.pHLevel = tag.getFloat("ph_level");
-        this.stageAdvanceTimeTicks = tag.getInt("stage_advance");
+        this.spreadAdvanceTicks = tag.getInt("stage_advance");
 
         String superior = tag.getString("superior");
         String inferior = tag.getString("inferior");
@@ -682,7 +802,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         tag.putFloat("purity", this.purity);
         tag.putFloat("yield", this.yield);
         tag.putFloat("ph_level", this.pHLevel);
-        tag.putInt("stage_advance", this.stageAdvanceTimeTicks);
+        tag.putInt("stage_advance", this.spreadAdvanceTicks);
 
         tag.putString("superior", this.superiorTrait.getName());
         tag.putString("inferior", this.inferiorTrait.getName());

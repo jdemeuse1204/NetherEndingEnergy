@@ -41,7 +41,6 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCore
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreContainer;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.stabilizer.TerraReactorItemStabilizerBlock;
-import com.agrejus.netherendingenergy.blocks.test.TileTank;
 import com.agrejus.netherendingenergy.fluids.AcidOfTheTearfulFluid;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.tileentity.TileEntityType;
@@ -161,22 +160,4 @@ public class ModBlocks {
     public static TerraReactorEnergyPortBlock TERRA_REACTOR_ENERGY_PORT_BLOCK;
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ENERGY_PORT)
     public static TileEntityType<TerraReactorEnergyPortTile> TERRA_REACTOR_ENERGY_PORT_TILE;
-
-    public static class Test {
-        /* Tutorial */
-        @ObjectHolder("netherendingenergy:firstblock")
-        public static FirstBlock FIRSTBLOCK;
-
-        @ObjectHolder("netherendingenergy:firsttile")
-        public static FirstTile FIRSTTILE;
-
-        @ObjectHolder("netherendingenergy:firsttile")
-        public static TileEntityType<FirstBlockTile> FIRSTBLOCK_TILE;
-
-        @ObjectHolder("netherendingenergy:firsttile")
-        public static ContainerType<FirstTileContainer> FIRSTTILE_CONTAINER;
-
-        @ObjectHolder("netherendingenergy:tank")
-        public static TileEntityType<TileTank> TANK_TILE;
-    }
 }

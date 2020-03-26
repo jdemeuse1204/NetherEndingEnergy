@@ -41,10 +41,8 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraR
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneOutputPortBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneOutputPortTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.stabilizer.TerraReactorItemStabilizerBlock;
-import com.agrejus.netherendingenergy.blocks.test.BlockTank;
 import com.agrejus.netherendingenergy.fluids.*;
 import com.agrejus.netherendingenergy.items.CausticMashItem;
-import com.agrejus.netherendingenergy.items.FirstItem;
 import com.agrejus.netherendingenergy.setup.ClientProxy;
 import com.agrejus.netherendingenergy.setup.IProxy;
 import com.agrejus.netherendingenergy.setup.ModSetup;
@@ -202,14 +200,6 @@ public class NetherEndingEnergy {
         @SubscribeEvent
         public static void onBlocksRegistry(final RegistryEvent.Register<Block> event) {
 
-            // register a new block here
-            event.getRegistry().register(new FirstBlock());
-            event.getRegistry().register(new FirstTile());
-            event.getRegistry().register(new BlockTank());
-
-
-
-
             /* General */
             event.getRegistry().register(new CausticBellRootBlock());
             event.getRegistry().register(new CausticBellVineBlock());
@@ -252,11 +242,6 @@ public class NetherEndingEnergy {
             // Register Items
             event.getRegistry().register(new CausticMashItem());
 
-            // Tutorial
-            event.getRegistry().register(new BlockItem(ModBlocks.Test.FIRSTBLOCK, properties).setRegistryName("firstblock"));
-            event.getRegistry().register(new BlockItem(ModBlocks.Test.FIRSTTILE, properties).setRegistryName("firsttile"));
-            event.getRegistry().register(new FirstItem());
-
             // New Stuff
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_VINES_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_VINES));
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_ROOTS_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_ROOTS));
@@ -292,7 +277,6 @@ public class NetherEndingEnergy {
 
         @SubscribeEvent
         public static void onTileEntityRegistry(final RegistryEvent.Register<TileEntityType<?>> event) {
-            event.getRegistry().register(TileEntityType.Builder.create(FirstBlockTile::new, ModBlocks.Test.FIRSTTILE).build(null).setRegistryName("firsttile"));
 
             // New Stuff
             event.getRegistry().register(TileEntityType.Builder.create(ImbuingMachineTile::new, ModBlocks.IMBUING_MACHINE_BLOCK).build(null).setRegistryName(RegistryNames.IMBUING_MACHINE));
@@ -315,12 +299,6 @@ public class NetherEndingEnergy {
 
         @SubscribeEvent
         public static void onContainerRegistry(final RegistryEvent.Register<ContainerType<?>> event) {
-            // this is client side registry
-            event.getRegistry().register(IForgeContainerType.create((windowId, playerInventory, data) -> {
-                BlockPos pos = data.readBlockPos();
-                return new FirstTileContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
-            }).setRegistryName("firsttile"));
-
             event.getRegistry().register(IForgeContainerType.create((windowId, playerInventory, data) -> {
                 BlockPos pos = data.readBlockPos();
                 return new TerraReactorCoreContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());

@@ -21,6 +21,8 @@ public class TerraMixerContainer extends Container {
     private PlayerEntity playerEntity;
     private IItemHandler playerInventory;
 
+    // what inventories do I have?
+
     // Exists on both server and client
     // Has slots of inventory and their links
     public TerraMixerContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
@@ -29,23 +31,7 @@ public class TerraMixerContainer extends Container {
         this.tileEntity = world.getTileEntity(pos);
         this.playerEntity = playerEntity;
 
-        trackInt(new IntReferenceHolder() {
-            @Override
-            public int get() {
-                return getVapor();
-            }
 
-            @Override
-            public void set(int value) {
-                tileEntity.getCapability(CapabilityVapor.VAPOR).ifPresent(w -> ((CustomVaporStorage)w).setVapor(value));
-            }
-        });
-    }
-
-    public int getVapor() {
-        LazyOptional<IVaporStorage> capability = tileEntity.getCapability(CapabilityVapor.VAPOR);
-
-        return capability.map(w -> w.getVaporStored()).orElse(0);
     }
 
     @Override

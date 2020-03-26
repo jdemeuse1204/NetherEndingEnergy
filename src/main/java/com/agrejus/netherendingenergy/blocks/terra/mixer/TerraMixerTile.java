@@ -4,6 +4,7 @@ import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.common.interfaces.IVaporStorage;
 import com.agrejus.netherendingenergy.tools.CapabilityVapor;
+import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import com.agrejus.netherendingenergy.tools.CustomVaporStorage;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,7 +27,11 @@ import net.minecraftforge.common.model.animation.CapabilityAnimation;
 import net.minecraftforge.common.model.animation.IAnimationStateMachine;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,59 +41,35 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
     private int counter;
 
     private final int efficency = 65;
+    private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
 
-    private final IAnimationStateMachine asm;
-    private final LazyOptional<IAnimationStateMachine> asmCap;
+    private IEnergyStorage createEnergy() {
+        return new CustomEnergyStorage(1000000, 0, 20000);
+    }
+
+/*    private final IAnimationStateMachine asm;
+    private final LazyOptional<IAnimationStateMachine> asmCap;*/
 
     public TerraMixerTile() {
         super(ModBlocks.TERRA_MIXER_TILE);
 
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+/*        if (FMLEnvironment.dist == Dist.CLIENT) {
             asm = ModelLoaderRegistry.loadASM(new ResourceLocation(NetherEndingEnergy.MODID, "asms/block/terra_mixer.json"), ImmutableMap.of());
             asmCap = LazyOptional.of(() -> asm);
         } else {
             asm = null;
             asmCap = LazyOptional.empty();
-        }
+        }*/
     }
 
-    @Override
+/*    @Override
     public boolean hasFastRenderer() {
         return true;
-    }
+    }*/
 
     @Override
     public void tick() {
 
-/*        // Block only works in the overworld
-        if (world.isRemote || world.dimension.getType() != DimensionType.OVERWORLD) {
-            return;
-        }
-
-
-        // (Dimension Height - Block Height) / 16) * spatial modifier
-        int modifier = ((world.dimension.getActualHeight() - block.getY()) / blockRatio) * spatialModifier;
-
-        System.out.println(this.block);
-
-        if (counter > 0) {
-            //System.out.println(surroundingCausticBells.size());
-            counter--;
-            if (counter <= 0) {
-                // going from 1 to 0, will reset next, do operation here
-
-                // Collect Gas here
-                // get block positions.  Only check every 20 ticks for performance reasons
-
-            }
-            markDirty();
-        }
-
-        if (counter <= 0) {
-            // Start of the operation
-
-            counter = 20;
-        }*/
     }
 
     @Override
@@ -108,9 +89,13 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 
-        if (cap == CapabilityAnimation.ANIMATION_CAPABILITY) {
+/*        if (cap == CapabilityAnimation.ANIMATION_CAPABILITY) {
             return asmCap.cast();
             //return CapabilityAnimation.ANIMATION_CAPABILITY.orEmpty(cap, asmCap);
+        }*/
+
+        if (cap == CapabilityEnergy.ENERGY && side != null && side == Direction.DOWN) {
+            return energy.cast();
         }
 
         return super.getCapability(cap, side);
