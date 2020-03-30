@@ -1,6 +1,8 @@
 package com.agrejus.netherendingenergy.common.tank;
 
 import net.minecraft.fluid.Fluid;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 

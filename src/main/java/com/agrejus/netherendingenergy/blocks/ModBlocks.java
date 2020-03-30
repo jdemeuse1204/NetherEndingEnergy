@@ -2,6 +2,8 @@ package com.agrejus.netherendingenergy.blocks;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStoreBlock;
+import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStoreTile;
 import com.agrejus.netherendingenergy.blocks.flowers.roots.CausticBellRootBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.vines.CausticBellVineBlock;
 import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexBlock;
@@ -160,4 +162,12 @@ public class ModBlocks {
     public static TerraReactorEnergyPortBlock TERRA_REACTOR_ENERGY_PORT_BLOCK;
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ENERGY_PORT)
     public static TileEntityType<TerraReactorEnergyPortTile> TERRA_REACTOR_ENERGY_PORT_TILE;
+
+    public static class Creative {
+
+        @ObjectHolder("netherendingenergy:" + RegistryNames.Creative.CREATIVE_ENERGY_STORE)
+        public static CreativeEnergyStoreBlock CREATIVE_ENERGY_STORE_BLOCK;
+        @ObjectHolder("netherendingenergy:" + RegistryNames.Creative.CREATIVE_ENERGY_STORE)
+        public static TileEntityType<CreativeEnergyStoreTile> CREATIVE_ENERGY_STORE_TILE;
+    }
 }

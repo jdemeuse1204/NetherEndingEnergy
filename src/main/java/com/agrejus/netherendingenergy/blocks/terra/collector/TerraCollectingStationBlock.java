@@ -90,7 +90,6 @@ public class TerraCollectingStationBlock extends Block {
         TileEntity tileEntity = worldIn.getTileEntity(pos);
         ItemStack heldItemStack = player.getHeldItem(hand);
         if (heldItemStack.getItem() == Items.BUCKET) {
-
             tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(w -> {
 
                 // we lose our tags here

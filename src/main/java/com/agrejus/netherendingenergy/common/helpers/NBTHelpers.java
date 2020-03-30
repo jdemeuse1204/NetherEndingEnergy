@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.common.helpers;
 
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public class NBTHelpers {
@@ -26,5 +27,11 @@ public class NBTHelpers {
 
     public static int getNBTInt(CompoundNBT tag, String key) {
         return tag.getInt(key);
+    }
+
+    public static void writeToNBT(CompoundNBT tag, BlockPos pos) {
+        tag.putInt("X", pos.getX());
+        tag.putInt("Y", pos.getY());
+        tag.putInt("Z", pos.getZ());
     }
 }

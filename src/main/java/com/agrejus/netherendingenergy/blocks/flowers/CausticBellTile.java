@@ -2,6 +2,7 @@ package com.agrejus.netherendingenergy.blocks.flowers;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.NetherEndingEnergyBlockStateProperties;
+import com.agrejus.netherendingenergy.NetherEndingEnergyConfig;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.flowers.roots.RootSystem;
 import com.agrejus.netherendingenergy.common.factories.RootFactory;
@@ -31,114 +32,6 @@ import java.util.*;
 
 public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
-    private static NumberRoll[] ranges = new NumberRoll[]{
-            new NumberRoll(0, 500, 0),
-            new NumberRoll(501, 750, 5),
-            new NumberRoll(751, 875, 10),
-            new NumberRoll(876, 938, 15),
-            new NumberRoll(939, 970, 19)
-    };
-
-    private static Direction[] mainTrunkDirections = new Direction[]{
-            Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST
-    };
-    private static Map<Block, BellTraits> consumableBlocks = new HashMap<Block, BellTraits>() {
-        {
-            put(Blocks.DIAMOND_BLOCK, new BellTraits(.75f, 2.3f, 2.5f));
-
-            put(Blocks.EMERALD_BLOCK, new BellTraits(1, 3.5f, 4f));
-
-            put(Blocks.IRON_BLOCK, new BellTraits(0, .15f, .001f));
-
-            put(Blocks.LAPIS_BLOCK, new BellTraits(.45f, .02f, .55f));
-
-            put(Blocks.REDSTONE_BLOCK, new BellTraits(.15f));
-
-            put(Blocks.PURPUR_BLOCK, new BellTraits(3.1f, 1f, 2.1f));
-            put(Blocks.END_STONE, new BellTraits(.95f));
-            put(Blocks.NETHER_BRICKS, new BellTraits(.1f));
-            put(Blocks.NETHERRACK, new BellTraits(.001f));
-            put(Blocks.SOUL_SAND, new BellTraits(-.001f, 1.9f, 1.6f));
-            put(Blocks.GLOWSTONE, new BellTraits(.45f));
-            put(Blocks.BONE_BLOCK, new BellTraits(-.001f, -.001f, 3f));
-            put(Blocks.BRICKS, new BellTraits(.01f));
-            put(Blocks.COAL_BLOCK, new BellTraits(.05f, 1.5f, -.5f));
-            put(Blocks.CHORUS_FLOWER, new BellTraits(0, 1f, 0));
-
-            put(Blocks.DRAGON_EGG, new BellTraits(10f, 5f, 1f));
-            put(Blocks.NETHER_WART_BLOCK, new BellTraits(.25f));
-            put(Blocks.QUARTZ_BLOCK, new BellTraits(.1f));
-
-            // Heads
-            put(Blocks.CREEPER_HEAD, new BellTraits(.6f, .2f, -.1f));
-            put(Blocks.DRAGON_HEAD, new BellTraits(2f, 3f, -.5f));
-            put(Blocks.PLAYER_HEAD, new BellTraits(1f, .6f, -.3f));
-            put(Blocks.ZOMBIE_HEAD, new BellTraits(.8f, .4f, -.25f));
-        }
-    };
-
-    private static Map<Material, BellTraits> consumableMaterials = new HashMap<Material, BellTraits>() {
-        {
-            put(Material.WOOD, new BellTraits(-.001f));
-            put(Material.EARTH, new BellTraits(-.01f));
-            put(Material.ROCK, new BellTraits(-.01f));
-            put(Material.BAMBOO, new BellTraits(-.001f));
-            put(Material.BAMBOO_SAPLING, new BellTraits(-.001f));
-            put(Material.CLAY, new BellTraits(.02f, 0, 0f));
-            put(Material.IRON, new BellTraits(0, .02f, 0f));
-            put(Material.LAVA, new BellTraits(0, .03f, -.001f));
-            put(Material.WATER, new BellTraits(-.001f, -.001f, .01f));
-            put(Material.LEAVES, new BellTraits(-.001f));
-            put(Material.FIRE, new BellTraits(0, .03f, -.001f));
-            put(Material.TNT, new BellTraits(.001f, .035f, -.001f));
-            put(Material.ICE, new BellTraits(-.001f, -.001f, .01f));
-            put(Material.SNOW, new BellTraits(-.001f, -.001f, .01f));
-            put(Material.SNOW_BLOCK, new BellTraits(-.001f, -.001f, .01f));
-        }
-    };
-    private static ArrayList<Direction> spreadableDirections = new ArrayList<Direction>() {
-        {
-            add(Direction.NORTH);
-            add(Direction.SOUTH);
-            add(Direction.EAST);
-            add(Direction.WEST);
-
-            add(Direction.NORTH);
-            add(Direction.SOUTH);
-            add(Direction.EAST);
-            add(Direction.WEST);
-
-            add(Direction.NORTH);
-            add(Direction.SOUTH);
-            add(Direction.EAST);
-            add(Direction.WEST);
-
-            add(Direction.NORTH);
-            add(Direction.SOUTH);
-            add(Direction.EAST);
-            add(Direction.WEST);
-
-            add(Direction.NORTH);
-            add(Direction.SOUTH);
-            add(Direction.EAST);
-            add(Direction.WEST);
-
-            add(Direction.NORTH);
-            add(Direction.SOUTH);
-            add(Direction.EAST);
-            add(Direction.WEST);
-
-            add(Direction.NORTH);
-            add(Direction.SOUTH);
-            add(Direction.EAST);
-            add(Direction.WEST);
-
-            add(Direction.NORTH);
-            add(Direction.SOUTH);
-            add(Direction.EAST);
-            add(Direction.WEST);
-        }
-    };
     private Map<BlockPos, AbsorbableBlock> absorbableBlocks = new HashMap<>();
 
     private int absorbCounter;
@@ -336,6 +229,8 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
         int random = NetherEndingEnergy.roll(0, 970);
 
+        NumberRoll[] ranges = NetherEndingEnergyConfig.CausticBell().ranges;
+
         for (int i = 0; i < ranges.length; i++) {
             if (ranges[i].isBetween(random)) {
                 return ranges[i].getResult();
@@ -351,6 +246,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         }
 
         // this may cause lag, cycle through branches and enqueue them 1 at a time?
+        Direction[] mainTrunkDirections = NetherEndingEnergyConfig.CausticBell().mainTrunkDirections;
 
         // traverse all branches and find blocks to absorb
         int rootSystemSize = this.rootSystem.size();
@@ -630,6 +526,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         }
 
         Block triggeringBlock = world.getBlockState(absorbableBlock.getTriggeringPos()).getBlock();
+        Map<Block, BellTraits> consumableBlocks = NetherEndingEnergyConfig.CausticBell().consumableBlocks;
 
         // check again
         if (canAbsorbAndDestroyBlock(blockToEat, triggeringBlock) == true) {
@@ -647,6 +544,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
                 return;
             }
 
+            Map<Material, BellTraits> consumableMaterials = NetherEndingEnergyConfig.CausticBell().consumableMaterials;
             Material materialToEat = blockToEatState.getMaterial();
             BellTraits materialTraits = consumableMaterials.getOrDefault(materialToEat, null);
             if (materialTraits != null) {
@@ -735,7 +633,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     }
 
     private Direction getRandomDirection() {
-        return getRandomDirection(spreadableDirections);
+        return getRandomDirection(NetherEndingEnergyConfig.CausticBell().spreadableDirections);
     }
 
     private void tryPoisonSurroundingEntities() {

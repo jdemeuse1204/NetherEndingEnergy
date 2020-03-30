@@ -2,6 +2,7 @@ package com.agrejus.netherendingenergy.common.interfaces;
 
 import com.agrejus.netherendingenergy.common.models.RootBud;
 import com.agrejus.netherendingenergy.common.models.RootPoint;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 

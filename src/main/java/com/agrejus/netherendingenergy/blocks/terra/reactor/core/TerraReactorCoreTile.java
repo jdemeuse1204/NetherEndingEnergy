@@ -404,7 +404,6 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
     }
 
     private void sendOutPower(BlockPos energyPortPosition) {
-        // THIS IS NOT ACCURATE, CLIENT IS OUT OF SYNC!!!!
         energy.ifPresent(w -> {
 
             CustomEnergyStorage energyStore = (CustomEnergyStorage) w;
@@ -423,34 +422,6 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
 
                     });
                 }
-                /*if (tileEntity != null) {
-
-                   tileEntity.getCapability(CapabilityEnergy.ENERGY, direction).ifPresent(x -> {
-                        if (x.canReceive()) {
-                            int received = x.receiveEnergy(Math.min(capacity.get(), Config.FIRSTBLOCK_SEND.get()), false);
-                            capacity.addAndGet(-received);
-
-                            // Extract from our own energy
-                            energyStore.consumeEnergy(received);
-
-                            int energyMaxStored = x.getMaxEnergyStored();
-                            int energyStored = capacity.get();
-                            int signalStrength = RedstoneHelpers.computeSignalStrength(energyStored, energyMaxStored);
-                            boolean hasEnergyStored = energyStored > 0;
-
-                            if (this.redstoneOutputPortState != null && this.redstoneOutputPortPosition != null) {
-                                BlockState newState = this.redstoneOutputPortState.with(BlockStateProperties.POWERED, Boolean.valueOf(hasEnergyStored)).with(BlockStateProperties.POWER_0_15, signalStrength);
-                                world.setBlockState(this.redstoneOutputPortPosition, newState, 3);
-                                world.notifyNeighbors(pos, newState.getBlock());
-                            }
-
-                            // Only do when signal strength changes
-                       *//*     BlockState state = world.getBlockState(pos);
-                            world.notifyBlockUpdate(pos, state, state, 3);*//*
-                            markDirty();
-                        }
-                    });
-                }*/
             }
         });
     }

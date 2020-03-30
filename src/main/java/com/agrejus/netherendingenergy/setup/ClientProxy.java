@@ -30,7 +30,7 @@ public class ClientProxy implements IProxy {
         ScreenManager.registerFactory(ModBlocks.BOTANISTS_CODEX_CONTAINER, BotanistsCodexScreen::new);
 
         ScreenManager.registerFactory(ModBlocks.IMBUING_MACHINE_CONTAINER, ImbuingMachineScreen::new);
-        
+
         ClientRegistry.bindTileEntitySpecialRenderer(TerraCollectingStationTile.class, new TerraCollectingStationTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TerraReactorCoreTile.class, new TerraReactorCoreTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TerraReactorInjectorTile.class, new TerraReactorInjectorTileEntityRenderer());

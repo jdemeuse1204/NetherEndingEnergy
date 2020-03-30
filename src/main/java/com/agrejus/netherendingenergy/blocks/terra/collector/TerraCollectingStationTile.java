@@ -27,6 +27,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -241,7 +242,7 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
         CompoundNBT fluidTag = new CompoundNBT();
 
         // need to do sea level minus max divided by 16.  ex: (62-254)/16 = 12 is the max
-        int spatialAmount = ReactorBaseConfig.INSTANCE.ComputeSpatial(ReactorBaseType.Terra, pos.getY());
+        int spatialAmount = ReactorBaseConfig.INSTANCE.ComputeSpatial(world, pos);
 
         FluidHelpers.serializeCustomFluidAttributes(fluidTag, attributes, spatialAmount);
 

@@ -1,7 +1,9 @@
 package com.agrejus.netherendingenergy.common.models;
 
 import com.agrejus.netherendingenergy.common.enumeration.RootType;
+import com.agrejus.netherendingenergy.common.helpers.NBTHelpers;
 import com.agrejus.netherendingenergy.common.interfaces.IRoot;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 
@@ -44,5 +46,19 @@ public class RootBud {
 
     public BlockPos getLocation() {
         return this.location;
+    }
+
+    public void writeAllButRootToNBT(CompoundNBT tag) {
+
+        tag.putString("RootType", rootType.toString());
+        tag.putString("GrowthDirection", growthDirection.toString());
+
+        if (sideOfTrunkDirection != null) {
+            tag.putString("SideOfTrunkDirection", sideOfTrunkDirection.toString());
+        }
+
+        CompoundNBT locationNBT = new CompoundNBT();
+        NBTHelpers.writeToNBT(locationNBT, location);
+        tag.put("Location", locationNBT);
     }
 }

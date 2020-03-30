@@ -38,6 +38,10 @@ public class RegistryNames {
     public static final String RAW_ACID = "raw_acid";
     public static final String RAW_ACID_FLOWING = "raw_acid_flowing";
 
+    public static class Creative {
+        public static final String CREATIVE_ENERGY_STORE = "creative_energy_store";
+    }
+
     public static String CreateModRegistryName(String registryName) {
         return String.format("{0}:{1}", NetherEndingEnergy.MODID, registryName);
     }

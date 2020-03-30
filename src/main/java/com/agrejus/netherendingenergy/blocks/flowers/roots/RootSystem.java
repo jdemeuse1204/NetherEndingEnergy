@@ -1,7 +1,10 @@
 package com.agrejus.netherendingenergy.blocks.flowers.roots;
 
+import com.agrejus.netherendingenergy.NetherEndingEnergyConfig;
+import com.agrejus.netherendingenergy.common.interfaces.IRoot;
 import com.agrejus.netherendingenergy.common.interfaces.ISourceRoot;
 import com.agrejus.netherendingenergy.common.models.BranchingSourceRoot;
+import com.agrejus.netherendingenergy.common.models.RootBud;
 import com.agrejus.netherendingenergy.common.models.SourceRoot;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -50,6 +53,47 @@ public class RootSystem implements INBTSerializable<CompoundNBT> {
 
     @Override
     public CompoundNBT serializeNBT() {
+        CompoundNBT tag = new CompoundNBT();
+        Direction[] mainTrunkDirections = NetherEndingEnergyConfig.CausticBell().mainTrunkDirections;
+
+        int size = sourceRoots.length;
+        for (int i = 0; i < size; i++) {
+            ISourceRoot sourceRoot = sourceRoots[i];
+
+            if (sourceRoot == null) {
+                continue;
+            }
+
+            // Create the tag to data items into
+            CompoundNBT sourceRootTag = new CompoundNBT();
+
+            int directionsSize = mainTrunkDirections.length;
+            for (int j = 0; j < directionsSize; j++) {
+                Direction mainRootDirection = mainTrunkDirections[j];
+                RootBud mainTrunkBud = sourceRoot.getMainTrunk(mainRootDirection);
+
+                if (mainTrunkBud == null) {
+                    continue;
+                }
+
+                // Save the main bud to NBT
+                CompoundNBT budNBT = new CompoundNBT();
+                mainTrunkBud.writeAllButRootToNBT(budNBT);
+
+                // Write the root to NBT
+                IRoot root = mainTrunkBud.getRoot();
+                if (root != null) {
+                    CompoundNBT rootNBT = new CompoundNBT();
+
+                    budNBT.put("Root", rootNBT);
+                }
+
+                sourceRootTag.put("RootBud", budNBT);
+            }
+
+            tag.put("SourceRoot", sourceRootTag);
+        }
+
         return null;
     }
 

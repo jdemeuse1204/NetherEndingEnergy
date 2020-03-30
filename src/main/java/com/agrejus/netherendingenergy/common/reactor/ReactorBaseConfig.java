@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.common.reactor;
 
 import com.agrejus.netherendingenergy.common.attributes.PotionAttributes;
+import com.agrejus.netherendingenergy.common.helpers.BlockHelpers;
 import com.agrejus.netherendingenergy.common.reactor.fuel.WorldFuelBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -8,6 +9,9 @@ import net.minecraft.item.Items;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +21,24 @@ public class ReactorBaseConfig {
     public static ReactorBaseConfig INSTANCE = new ReactorBaseConfig();
     private static Map<Potion, PotionAttributes> potionAttributesMap;
     private static Map<Item, PotionAttributes> itemAttributesMap;
+
+    public static WorldFuelBase getBaseFuel(DimensionType type) {
+
+        if (type == DimensionType.OVERWORLD) {
+            return new WorldFuelBase(0, .06f, 254, 62, .03f, 16);
+        }
+
+        if (type == DimensionType.THE_NETHER) {
+            return new WorldFuelBase(0, .08f, 32, 0, .04f, 32);
+        }
+
+        if (type == DimensionType.THE_END) {
+            return new WorldFuelBase(0, .1f, 40000, 0, .06f, 1000);
+        }
+
+        // Default
+        return new WorldFuelBase(0, .06f, 254, 62, .03f, 16);
+    }
 
     public static WorldFuelBase getBaseFuel(ReactorBaseType type) {
         switch (type) {
@@ -30,8 +52,25 @@ public class ReactorBaseConfig {
         }
     }
 
-    public int ComputeSpatial(ReactorBaseType type, int level) {
-        WorldFuelBase fuelBase = ReactorBaseConfig.getBaseFuel(type);
+    public int ComputeSpatial(World world, BlockPos position) {
+        DimensionType dimensionType = world.getDimension().getType();
+        int level = 0;
+
+        if (dimensionType == DimensionType.OVERWORLD) {
+            level = position.getY();
+        }
+
+        if (dimensionType == DimensionType.THE_NETHER) {
+
+        }
+
+        if (dimensionType == DimensionType.THE_END) {
+            // farthest x,z away from 0,0
+            BlockPos startingPosition = new BlockPos(0,64,0);
+            level = BlockHelpers.getDistance(position, startingPosition);
+        }
+
+        WorldFuelBase fuelBase = ReactorBaseConfig.getBaseFuel(dimensionType);
         int spatialAmount = 1;
         if (level > fuelBase.getBaseLevel()) {
             spatialAmount = (level - fuelBase.getBaseLevel()) / fuelBase.getStepAmount();

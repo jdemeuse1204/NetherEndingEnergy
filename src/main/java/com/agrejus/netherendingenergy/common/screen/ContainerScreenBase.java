@@ -5,6 +5,9 @@ import com.agrejus.netherendingenergy.common.rendering.RectProgression;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.util.text.ITextComponent;
@@ -12,6 +15,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.antlr.v4.runtime.misc.Interval;
+import org.lwjgl.opengl.GL11;
 
 import java.text.DecimalFormat;
 import java.time.Duration;
@@ -53,7 +57,7 @@ public abstract class ContainerScreenBase<T extends Container> extends Container
         GlStateManager.disableLighting();
         GlStateManager.disableDepthTest();
         GlStateManager.disableBlend();
-        renderer.drawStringWithShadow(s, (float)(left + 19 - 2 - renderer.getStringWidth(s)), (float)(top + 6 + 3), color);
+        renderer.drawStringWithShadow(s, (float) (left + 19 - 2 - renderer.getStringWidth(s)), (float) (top + 6 + 3), color);
         GlStateManager.enableBlend();
         GlStateManager.enableLighting();
         GlStateManager.enableDepthTest();
@@ -61,12 +65,40 @@ public abstract class ContainerScreenBase<T extends Container> extends Container
         // TODO: check if enabled blending still screws things up down the line.
         GlStateManager.enableBlend();
     }
+
     protected void drawNoShadowString(FontRenderer renderer, String text, int left, int top, int color) {
         renderer.drawString(text, (float) left, (float) top, color);
     }
 
     protected void drawNoShadowCenteredString(FontRenderer renderer, String text, int left, int top, int color) {
         renderer.drawString(text, (float) (left - renderer.getStringWidth(text) / 2), (float) top, color);
+    }
+
+    public void drawColoredRect(int x, int y, int w, int h, int color) {
+        GlStateManager.disableTexture();
+        GlStateManager.enableBlend();
+        GlStateManager.disableAlphaTest();
+        GlStateManager.blendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.shadeModel(GL11.GL_SMOOTH);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+
+        int red = color >> 16 & 255;
+        int green = color >> 8 & 255;
+        int blue = color & 255;
+        int alpha = color >> 24 & 255;
+
+        buffer.pos(x, y + h, 0).color(red, green, blue, alpha).endVertex();
+        buffer.pos(x + w, y + h, 0).color(red, green, blue, alpha).endVertex();
+        buffer.pos(x + w, y, 0).color(red, green, blue, alpha).endVertex();
+        buffer.pos(x, y, 0).color(red, green, blue, alpha).endVertex();
+
+        tessellator.draw();
+        GlStateManager.shadeModel(GL11.GL_FLAT);
+        GlStateManager.disableBlend();
+        GlStateManager.enableAlphaTest();
+        GlStateManager.enableTexture();
     }
 
     protected String getEnergyDisplayAmount(int amount) {

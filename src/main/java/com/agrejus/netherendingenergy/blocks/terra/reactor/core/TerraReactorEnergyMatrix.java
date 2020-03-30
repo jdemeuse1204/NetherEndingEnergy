@@ -32,15 +32,14 @@ public class TerraReactorEnergyMatrix {
 
     public static float getEfficiency(ReactorBaseType type, AcidAttributes attributes, List<PotionAttributes> injectedAttributes) {
         WorldFuelBase fuelBase = ReactorBaseConfig.getBaseFuel(type);
-        float response = getResponse(fuelBase, attributes, injectedAttributes);
+        float response = getTotalResponse(fuelBase, attributes, injectedAttributes);
         float injectorEfficiency = getInjectedPotionsEfficiency(injectedAttributes, response);
         return modify(attributes.getEfficiency(), injectorEfficiency);
     }
 
-    public static float getResponse(WorldFuelBase fuelBase, AcidAttributes attributes, List<PotionAttributes> injectedAttributes) {
+    public static float getTotalResponse(WorldFuelBase fuelBase, AcidAttributes attributes, List<PotionAttributes> injectedAttributes) {
         float injectorResponse = getInjectedPotionsResponse(injectedAttributes);
-        float modifiedResponse = modify(fuelBase.getResponsePercent(), attributes.getResponse());
-        return modify(modifiedResponse, injectorResponse);
+        return fuelBase.getResponsePercent() + attributes.getResponse() + injectorResponse;
     }
 
     private static float getInjectedPotionsStrength(List<PotionAttributes> injectedPotions, float response) {
@@ -128,14 +127,14 @@ public class TerraReactorEnergyMatrix {
 
     public static float getStability(ReactorBaseType type, AcidAttributes attributes, List<PotionAttributes> injectedPotions) {
         WorldFuelBase fuelBase = ReactorBaseConfig.getBaseFuel(type);
-        float response = getResponse(fuelBase, attributes, injectedPotions);
+        float response = getTotalResponse(fuelBase, attributes, injectedPotions);
         return getStability(attributes, injectedPotions, response);
     }
 
     private static int computeEnergyPerTick(AcidAttributes attributes, WorldFuelBase fuelBase, List<PotionAttributes> injectedPotions) {
 
         // Get base properties
-        float response = getResponse(fuelBase, attributes, injectedPotions);
+        float response = getTotalResponse(fuelBase, attributes, injectedPotions);
         float strength = getStrength(attributes, injectedPotions, response);
 
         // Base spatial modifiers on the fluid not the world, just get the steps from the world

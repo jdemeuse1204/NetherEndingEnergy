@@ -3,6 +3,8 @@ package com.agrejus.netherendingenergy;
 import com.agrejus.netherendingenergy.blocks.*;
 import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.chaotic.heatsink.ChaoticHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStoreBlock;
+import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStoreTile;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
 import com.agrejus.netherendingenergy.blocks.flowers.roots.CausticBellRootBlock;
@@ -43,6 +45,7 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraR
 import com.agrejus.netherendingenergy.blocks.terra.reactor.stabilizer.TerraReactorItemStabilizerBlock;
 import com.agrejus.netherendingenergy.fluids.*;
 import com.agrejus.netherendingenergy.items.CausticMashItem;
+import com.agrejus.netherendingenergy.network.NetherEndingEnergyNetworking;
 import com.agrejus.netherendingenergy.setup.ClientProxy;
 import com.agrejus.netherendingenergy.setup.IProxy;
 import com.agrejus.netherendingenergy.setup.ModSetup;
@@ -100,7 +103,6 @@ public class NetherEndingEnergy {
     public static final DeferredRegister<Fluid> FLUIDS = new DeferredRegister<>(ForgeRegistries.FLUIDS, MODID);
     public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, MODID);
     public static final Feature<CausticBellConfig> CAUSTIC_BELLS = new CausticBellFeature(CausticBellConfig::deserialize);
-    public static final NetherEndingEnergyBlockStateProperties BLOCK_STATE_PROPERTIES = new NetherEndingEnergyBlockStateProperties();
 
     static {
         ModFluids.RawAcidFluid = new RawAcidFluid();
@@ -157,6 +159,7 @@ public class NetherEndingEnergy {
     private void setup(final FMLCommonSetupEvent event) {
         setup.init();
         proxy.init();
+        NetherEndingEnergyNetworking.registerMessages();
         CapabilityVapor.register();
         RegistryEvents.addWorldgen();
     }
@@ -200,6 +203,11 @@ public class NetherEndingEnergy {
         @SubscribeEvent
         public static void onBlocksRegistry(final RegistryEvent.Register<Block> event) {
 
+            /* CREATIVE */
+            event.getRegistry().register(new CreativeEnergyStoreBlock());
+
+
+
             /* General */
             event.getRegistry().register(new CausticBellRootBlock());
             event.getRegistry().register(new CausticBellVineBlock());
@@ -239,6 +247,13 @@ public class NetherEndingEnergy {
             // register a new item here
             Item.Properties properties = new Item.Properties().group(setup.itemGroup);
 
+            // CREATIVE
+            event.getRegistry().register(new BlockItem(ModBlocks.Creative.CREATIVE_ENERGY_STORE_BLOCK, properties).setRegistryName(RegistryNames.Creative.CREATIVE_ENERGY_STORE));
+
+
+
+
+
             // Register Items
             event.getRegistry().register(new CausticMashItem());
 
@@ -277,6 +292,10 @@ public class NetherEndingEnergy {
 
         @SubscribeEvent
         public static void onTileEntityRegistry(final RegistryEvent.Register<TileEntityType<?>> event) {
+
+            /* CREATIVE */
+            event.getRegistry().register(TileEntityType.Builder.create(CreativeEnergyStoreTile::new, ModBlocks.Creative.CREATIVE_ENERGY_STORE_BLOCK).build(null).setRegistryName(RegistryNames.Creative.CREATIVE_ENERGY_STORE));
+
 
             // New Stuff
             event.getRegistry().register(TileEntityType.Builder.create(ImbuingMachineTile::new, ModBlocks.IMBUING_MACHINE_BLOCK).build(null).setRegistryName(RegistryNames.IMBUING_MACHINE));

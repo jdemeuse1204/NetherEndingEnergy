@@ -3,7 +3,9 @@ package com.agrejus.netherendingenergy.common.models;
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.common.enumeration.RootType;
 import com.agrejus.netherendingenergy.common.helpers.BlockHelpers;
+import com.agrejus.netherendingenergy.common.helpers.NBTHelpers;
 import com.agrejus.netherendingenergy.common.interfaces.IRoot;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 

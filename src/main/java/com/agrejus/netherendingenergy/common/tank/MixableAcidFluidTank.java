@@ -12,10 +12,19 @@ public class MixableAcidFluidTank extends NEEFluidTank {
         super(capacity);
     }
 
+    private FluidStack drainOverride(FluidStack resource, FluidAction action)
+    {
+        if (resource.isEmpty() || fluid.getFluid() != resource.getFluid())
+        {
+            return FluidStack.EMPTY;
+        }
+        return drain(resource.getAmount(), action);
+    }
+
     @Nonnull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
-        FluidStack result = super.drain(resource, action);
+        FluidStack result = drainOverride(resource, action);
 
         if (this.fluid == FluidStack.EMPTY) {
             onContentsChanged();
