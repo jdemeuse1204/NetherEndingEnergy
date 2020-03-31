@@ -23,13 +23,14 @@ public abstract class ReactorCapabilityTileEntity extends TileEntity {
     protected <T> LazyOptional<T> getCapabilityFromCore(@Nonnull Capability<T> cap, @Nullable Direction side) {
         BlockPos controllerPosition = TerraReactorReactorMultiBlock.INSTANCE.getControllerPosition(pos, getBlockState().get(FORMED));
         if (controllerPosition != null) {
-            TerraReactorCoreTile coreTile = (TerraReactorCoreTile) world.getTileEntity(controllerPosition);
+            TileEntity tileEntity = world.getTileEntity(controllerPosition);
 
-            if (coreTile != null) {
+            if (tileEntity instanceof TerraReactorCoreTile) {
+                TerraReactorCoreTile coreTile = (TerraReactorCoreTile) world.getTileEntity(controllerPosition);
                 return coreTile.getCapability(cap, side);
             }
         }
 
-        return null;
+        return super.getCapability(cap, side);
     }
 }

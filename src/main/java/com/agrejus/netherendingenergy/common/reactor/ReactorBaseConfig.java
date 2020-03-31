@@ -25,7 +25,7 @@ public class ReactorBaseConfig {
     public static WorldFuelBase getBaseFuel(DimensionType type) {
 
         if (type == DimensionType.OVERWORLD) {
-            return new WorldFuelBase(0, .06f, 254, 62, .03f, 16);
+            return new WorldFuelBase(0, .3f, 254, 62, 1.25f, 16);
         }
 
         if (type == DimensionType.THE_NETHER) {
@@ -44,7 +44,7 @@ public class ReactorBaseConfig {
         switch (type) {
             default:
             case Terra:
-                return new WorldFuelBase(0, .06f, 254, 62, .03f, 16);
+                return new WorldFuelBase(0, .3f, 254, 62, 1.25f, 16);
             case Chaotic:
                 return new WorldFuelBase(0, .08f, 32, 0, .04f, 32);
             case Abyssal:

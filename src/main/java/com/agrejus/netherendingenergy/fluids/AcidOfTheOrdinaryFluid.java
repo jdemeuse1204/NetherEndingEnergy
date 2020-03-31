@@ -24,7 +24,7 @@ public class AcidOfTheOrdinaryFluid extends AcidFluid {
 
     @Override
     protected float getDecayRate() {
-        return 2;
+        return 5;
     }
 
     @Override
@@ -32,17 +32,17 @@ public class AcidOfTheOrdinaryFluid extends AcidFluid {
 
     @Override
     protected float getStrength() {
-        return -.01f;
+        return .05f;
     }
 
     @Override
     protected float getEfficiency() {
-        return -.5f;
+        return .2f;
     }
 
     @Override
     protected float getStability() {
-        return .01f;
+        return 1f;
     }
 
     @Override

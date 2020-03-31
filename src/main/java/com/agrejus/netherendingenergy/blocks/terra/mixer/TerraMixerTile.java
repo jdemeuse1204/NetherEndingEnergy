@@ -13,6 +13,7 @@ import com.agrejus.netherendingenergy.common.reactor.ReactorBaseType;
 import com.agrejus.netherendingenergy.common.tank.MixableAcidFluidTank;
 import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
@@ -301,12 +302,14 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
 
                                     x.drain(acidUsagePerProcessingUnit, IFluidHandler.FluidAction.EXECUTE);
                                     w.extractEnergy(this.energyUsePerTick, false);
+                                    this.updateBlock();
                                     ++processingUnitTicks;
                                 }
                             });
                         }
                     } else {
                         w.extractEnergy(this.energyUsePerTick, false);
+                        this.updateBlock();
                         ++processingUnitTicks;
                     }
 
@@ -322,7 +325,8 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
 
                             if (amount == amountToFill) {
                                 x.fill(result, IFluidHandler.FluidAction.EXECUTE);
-                                w.extractEnergy(this.energyUsePerTick, false);
+                                //w.extractEnergy(this.energyUsePerTick, false);
+                                this.updateBlock();
                             }
                         });
 
@@ -334,6 +338,12 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
 
         this.sendOutFluid();
     }
+
+    public void updateBlock() {
+        BlockState state = world.getBlockState(getPos());
+        world.notifyBlockUpdate(getPos(), state, state, 3);
+    }
+
 
     private void sendOutFluid() {
         this.outputTank.ifPresent(w -> {

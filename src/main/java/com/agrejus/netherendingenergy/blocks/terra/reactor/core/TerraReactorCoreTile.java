@@ -16,7 +16,6 @@ import com.agrejus.netherendingenergy.common.reactor.ReactorBaseConfig;
 import com.agrejus.netherendingenergy.common.reactor.ReactorBaseType;
 import com.agrejus.netherendingenergy.common.attributes.AcidAttributes;
 import com.agrejus.netherendingenergy.common.attributes.PotionAttributes;
-import com.agrejus.netherendingenergy.common.tank.AcidFluidTank;
 import com.agrejus.netherendingenergy.common.tank.MixableAcidFluidTank;
 import com.agrejus.netherendingenergy.fluids.ModFluids;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
@@ -301,8 +300,9 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
                                 // Consume the item
                                 ItemStack extractedStack = reactorInventory.extractBacklogSlot(1, false);
                                 reactorInventory.insertBurningSlot(extractedStack, false);
-                                float efficiency = TerraReactorEnergyMatrix.getEfficiency(ReactorBaseType.Terra, attributes, injectorPackage.getPotionAttributes());
-                                this.currentBurnItemTicks = (int) TerraReactorEnergyMatrix.modify(burnTime, efficiency);
+                                List<PotionAttributes> injectedPotions = injectorPackage.getPotionAttributes();
+                                float efficiency = TerraReactorEnergyMatrix.getEfficiency(ReactorBaseType.Terra, attributes, injectedPotions);
+                                this.currentBurnItemTicks = TerraReactorEnergyMatrix.computeBurnTime(burnTime, efficiency, ReactorBaseType.Terra, attributes, injectedPotions);
                                 this.currentBurnItemTotalTicks = this.currentBurnItemTicks;
 
                                 // set block state?

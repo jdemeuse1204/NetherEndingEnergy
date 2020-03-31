@@ -7,6 +7,8 @@ import com.agrejus.netherendingenergy.common.attributes.PotionAttributes;
 import com.agrejus.netherendingenergy.common.reactor.fuel.WorldFuelBase;
 
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class TerraReactorEnergyMatrix {
     public static int getEnergyPerTick(ReactorBaseType type, AcidAttributes attributes, List<PotionAttributes> injectedAttributes) {
@@ -33,54 +35,54 @@ public class TerraReactorEnergyMatrix {
     public static float getEfficiency(ReactorBaseType type, AcidAttributes attributes, List<PotionAttributes> injectedAttributes) {
         WorldFuelBase fuelBase = ReactorBaseConfig.getBaseFuel(type);
         float response = getTotalResponse(fuelBase, attributes, injectedAttributes);
-        float injectorEfficiency = getInjectedPotionsEfficiency(injectedAttributes, response);
-        return modify(attributes.getEfficiency(), injectorEfficiency);
+        float sumInjectorEfficiency = getInjectedAndModifiedPotionsEfficiency(injectedAttributes, response);
+        float spatialAmount = getSpatialAmount(fuelBase, attributes);
+        float injectedTotal = sumInjectorEfficiency * response;
+        float spatialTotal = modify(attributes.getEfficiency(), spatialAmount);
+
+        return injectedTotal + spatialTotal;
+    }
+
+    public static int computeBurnTime(int burnTime, float efficiency, ReactorBaseType type, AcidAttributes attributes, List<PotionAttributes> injectedAttributes) {
+        WorldFuelBase fuelBase = ReactorBaseConfig.getBaseFuel(type);
+        float response = getTotalResponse(fuelBase, attributes, injectedAttributes);
+        float decayResistance = getInjectedAndModifiedPotionsDecayResistance(injectedAttributes, response);
+        float resistanceAugmentation = modify(burnTime, decayResistance);
+        float decayBurnTime = resistanceAugmentation / attributes.getDecayRate();
+        return Math.round(efficiency * decayBurnTime);
     }
 
     public static float getTotalResponse(WorldFuelBase fuelBase, AcidAttributes attributes, List<PotionAttributes> injectedAttributes) {
-        float injectorResponse = getInjectedPotionsResponse(injectedAttributes);
-        return fuelBase.getResponsePercent() + attributes.getResponse() + injectorResponse;
+        float sumInjectorResponse = getInjectedPotionsResponse(injectedAttributes);
+        return fuelBase.getResponsePercent() + attributes.getResponse() + sumInjectorResponse;
     }
 
-    private static float getInjectedPotionsStrength(List<PotionAttributes> injectedPotions, float response) {
-        int size = injectedPotions.size();
-        float result = 0;
-        for (int i = 0; i < size; i++) {
-            PotionAttributes attributes = injectedPotions.get(i);
-            result += attributes.getStrength();
-        }
-
-        return modify(result, response);
+    private static float getInjectedAndModifiedPotionsDecayResistance(List<PotionAttributes> injectedPotions, float response) {
+        return modify(getInjectorSum(injectedPotions, w -> w.getDecayResistance()), response);
     }
 
-    private static float getInjectedPotionsStability(List<PotionAttributes> injectedPotions, float response) {
-        int size = injectedPotions.size();
-        float result = 0;
-        for (int i = 0; i < size; i++) {
-            PotionAttributes attributes = injectedPotions.get(i);
-            result += attributes.getStability();
-        }
-
-        return modify(result, response);
+    private static float getInjectedAndModifiedPotionsStrength(List<PotionAttributes> injectedPotions, float response) {
+        return modify(getInjectorSum(injectedPotions, w -> w.getStrength()), response);
     }
 
-    private static float getInjectedPotionsEfficiency(List<PotionAttributes> injectedPotions, float response) {
-        int size = injectedPotions.size();
-        float result = 0;
-        for (int i = 0; i < size; i++) {
-            PotionAttributes attributes = injectedPotions.get(i);
-            result += attributes.getEfficiency();
-        }
+    private static float getInjectedAndModifiedPotionsStability(List<PotionAttributes> injectedPotions, float response) {
+        return modify(getInjectorSum(injectedPotions, w -> w.getStability()), response);
+    }
 
-        return modify(result, response);
+    private static float getInjectedAndModifiedPotionsEfficiency(List<PotionAttributes> injectedPotions, float response) {
+        return modify(getInjectorSum(injectedPotions, w -> w.getEfficiency()), response);
     }
 
     private static float getInjectedPotionsResponse(List<PotionAttributes> injectedPotions) {
+        return getInjectorSum(injectedPotions, w -> w.getResponse());
+    }
+
+    private static float getInjectorSum(List<PotionAttributes> injectedPotions, Function<PotionAttributes, Float> sumFunction) {
         int size = injectedPotions.size();
         float result = 0;
         for (int i = 0; i < size; i++) {
             PotionAttributes attributes = injectedPotions.get(i);
-            result += attributes.getResponse();
+            result += sumFunction.apply(attributes);
         }
 
         return result;
@@ -95,36 +97,43 @@ public class TerraReactorEnergyMatrix {
         return initial + (initial * modifyPercent);
     }
 
+    // Extra Energy Produced By Instability
     private static float getStabilityEnergy(AcidAttributes attributes, List<PotionAttributes> injectedPotions, float response) {
         float stability = getStability(attributes, injectedPotions, response);
-        float stabilityCalculated = 1;
+        float stabilityCalculated = 0;
 
         if (stability < 1) {
             stabilityCalculated = (Math.abs(stability - 1f) * 10f) / .05f;
         }
 
-        if (stability > 1) {
-            // Penalize for too much stability, change .1 to smaller number to penalize more
-            stabilityCalculated = (-Math.abs(stability - 1f) * 10f) / .1f;
-        }
-
         return stabilityCalculated;
     }
 
-    private static float getStrength(AcidAttributes attributes, List<PotionAttributes> injectedAttributes, float response) {
-        float injectorStrength = getInjectedPotionsStrength(injectedAttributes, response);
-        return modify(attributes.getStrength(), injectorStrength);
+
+    // Any Number
+    private static float getStrength(AcidAttributes attributes, List<PotionAttributes> injectedAttributes, float response, float spatialTotalAmount) {
+        float sumInjectorStrength = getInjectedAndModifiedPotionsStrength(injectedAttributes, response);
+        float injectedTotal = sumInjectorStrength * response;
+        float spatialTotal = modify(attributes.getStrength(), spatialTotalAmount);
+
+        return spatialTotal + injectedTotal;
     }
 
+    // Between 0-1, Over 1 = No energy, below 0 = boom
     private static float getStability(AcidAttributes attributes, List<PotionAttributes> injectedPotions, float response) {
-        float injectorStability = getInjectedPotionsStability(injectedPotions, response);
-        return modify(attributes.getStability(), injectorStability);
+        float sumInjectorStability = getInjectedAndModifiedPotionsStability(injectedPotions, response);
+        float injectedTotal = sumInjectorStability * response;
+        // No Spatial Effect
+        return injectedTotal + attributes.getStability();
     }
 
-    private static float getSpatial(WorldFuelBase fuelBase, AcidAttributes attributes) {
-        return modify(fuelBase.getSpatialModPercent(), attributes.getSpatial());
+    // Spatial Amount
+    private static float getSpatialAmount(WorldFuelBase fuelBase, AcidAttributes attributes) {
+        float result = Math.round((attributes.getSpatialAmount() - fuelBase.getBaseLevel()) / fuelBase.getStepAmount());
+        return result < 0 ? 0 : result;
     }
 
+    // Between 0-1, Over 1 = No energy, below 0 = boom
     public static float getStability(ReactorBaseType type, AcidAttributes attributes, List<PotionAttributes> injectedPotions) {
         WorldFuelBase fuelBase = ReactorBaseConfig.getBaseFuel(type);
         float response = getTotalResponse(fuelBase, attributes, injectedPotions);
@@ -133,22 +142,16 @@ public class TerraReactorEnergyMatrix {
 
     private static int computeEnergyPerTick(AcidAttributes attributes, WorldFuelBase fuelBase, List<PotionAttributes> injectedPotions) {
 
+        float spatialAmount = getSpatialAmount(fuelBase, attributes);
+
         // Get base properties
         float response = getTotalResponse(fuelBase, attributes, injectedPotions);
-        float strength = getStrength(attributes, injectedPotions, response);
+        float strength = getStrength(attributes, injectedPotions, response, spatialAmount);
 
         // Base spatial modifiers on the fluid not the world, just get the steps from the world
-        float spatial = getSpatial(fuelBase, attributes);
-        float spatialSteps = attributes.getSpatialAmount();
-        float spatialModified = modify(spatial, spatialSteps);
-
         float stabilityEnergy = getStabilityEnergy(attributes, injectedPotions, response);
+        float energy = modify(attributes.getBaseEnergyPerTick(), strength);
 
-        // Stability only modifies RF/t
-        float strengthEnergy = modify(attributes.getBaseEnergyPerTick(), strength);
-        float spatialEnergy = modify(strengthEnergy, spatialModified);
-        float energyPerTick = spatialEnergy + stabilityEnergy;
-
-        return (int) energyPerTick;
+        return Math.round(energy + stabilityEnergy);
     }
 }
