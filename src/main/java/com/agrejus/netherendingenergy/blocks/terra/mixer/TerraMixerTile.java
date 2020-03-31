@@ -7,9 +7,7 @@ import com.agrejus.netherendingenergy.common.attributes.CustomFluidAttributes;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
 import com.agrejus.netherendingenergy.common.handlers.ReactorInventoryStackHandler;
 import com.agrejus.netherendingenergy.common.models.MixerRecipe;
-import com.agrejus.netherendingenergy.common.models.ProcessingUnit;
 import com.agrejus.netherendingenergy.common.reactor.ReactorBaseConfig;
-import com.agrejus.netherendingenergy.common.reactor.ReactorBaseType;
 import com.agrejus.netherendingenergy.common.tank.MixableAcidFluidTank;
 import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
@@ -47,14 +45,12 @@ import java.util.*;
 public class TerraMixerTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
 
     // Export Config
-    private static class ExportConfig {
+    public static class ExportConfig {
         public static int drainAmountPerTick = 4000;
     }
 
     protected int energyUsePerTick = 160;
     protected float efficiency = .65f;
-
-    protected ProcessingUnit destructibleItemProcessingUnit;
 
     protected int destructibleItemTotalTicks;
     protected int destructibleItemTicks;
@@ -224,7 +220,7 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
         }
 
 
-        if (inputFluidStack.getAmount() > 0){
+        if (inputFluidStack.getAmount() > 0) {
             this.destructibleItemInventory.ifPresent(w -> {
                 ReactorInventoryStackHandler reactorInventory = (ReactorInventoryStackHandler) w;
                 ItemStack burningStack = reactorInventory.getStackInBurningSlot();
@@ -298,7 +294,7 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
                             this.inputTank.ifPresent(x -> {
 
                                 // Make sure we have enough input acid and energy
-                                if(acidUsagePerProcessingUnit == x.drain(acidUsagePerProcessingUnit, IFluidHandler.FluidAction.SIMULATE).getAmount()) {
+                                if (acidUsagePerProcessingUnit == x.drain(acidUsagePerProcessingUnit, IFluidHandler.FluidAction.SIMULATE).getAmount()) {
 
                                     x.drain(acidUsagePerProcessingUnit, IFluidHandler.FluidAction.EXECUTE);
                                     w.extractEnergy(this.energyUsePerTick, false);
@@ -343,7 +339,6 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
         BlockState state = world.getBlockState(getPos());
         world.notifyBlockUpdate(getPos(), state, state, 3);
     }
-
 
     private void sendOutFluid() {
         this.outputTank.ifPresent(w -> {
