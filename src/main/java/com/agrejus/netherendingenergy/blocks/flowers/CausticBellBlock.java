@@ -7,6 +7,8 @@ import com.agrejus.netherendingenergy.items.ModItems;
 import com.agrejus.netherendingenergy.particle.ModParticles;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -147,7 +149,6 @@ public class CausticBellBlock extends FlowerBlock {
             System.out.println("PURITY: " +  tile.getPurity());
             System.out.println("STRENGTH: " +  tile.getStrength());
 
-            //worldIn.setBlockState(pos.down().east(), ModBlocks.CAUSTIC_DIRT_BLOCK.getDefaultState(), 3);
         }
 
         return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);

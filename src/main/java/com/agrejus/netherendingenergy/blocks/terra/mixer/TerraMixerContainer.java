@@ -2,13 +2,19 @@ package com.agrejus.netherendingenergy.blocks.terra.mixer;
 
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.common.container.InventoryContainerBase;
+import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
+import com.agrejus.netherendingenergy.common.handlers.ReactorInventoryStackHandler;
+import com.agrejus.netherendingenergy.common.handlers.ReadOnlySlotItemHandler;
+import com.agrejus.netherendingenergy.common.models.MixerRecipe;
 import com.agrejus.netherendingenergy.common.models.TopLeftPos;
 import com.agrejus.netherendingenergy.common.reactor.ReactorSlotType;
 import com.agrejus.netherendingenergy.network.NetherEndingEnergyNetworking;
+import com.agrejus.netherendingenergy.network.PacketChangeRedstoneActivationType;
 import com.agrejus.netherendingenergy.network.PacketEmptyTank;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -16,13 +22,14 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class TerraMixerContainer extends InventoryContainerBase<TerraMixerTile> {
 
-    private TileEntity tileEntity;
+    private TerraMixerTile tileEntity;
     private PlayerEntity playerEntity;
     private IItemHandler playerInventory;
     private IIntArray tracking;
@@ -34,7 +41,7 @@ public class TerraMixerContainer extends InventoryContainerBase<TerraMixerTile> 
     // Exists on both server and client
     // Has slots of inventory and their links
     public TerraMixerContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        this(id, world, pos, playerInventory, playerEntity, new IntArray(11));
+        this(id, world, pos, playerInventory, playerEntity, new IntArray(12));
 
         this.world = world;
         this.pos = pos;
@@ -44,11 +51,13 @@ public class TerraMixerContainer extends InventoryContainerBase<TerraMixerTile> 
         super(ModBlocks.TERRA_MIXER_CONTAINER, id, world, pos, playerInventory, playerEntity);
 
         this.world = world;
-        this.tileEntity = this.world.getTileEntity(pos);
+        this.tileEntity = (TerraMixerTile)this.world.getTileEntity(pos);
 
         this.tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(w -> {
             addSlot(new SlotItemHandler(w, 0, 10, 33));
+            addSlot(new ReadOnlySlotItemHandler(w, 1, 55, 33));
         });
+
         this.playerEntity = playerEntity;
         this.tracking = intArray;
 
@@ -83,7 +92,23 @@ public class TerraMixerContainer extends InventoryContainerBase<TerraMixerTile> 
     }
 
     public void voidInputTank() {
-        NetherEndingEnergyNetworking.INSTANCE.sendToServer(new PacketEmptyTank(pos, Direction.DOWN));
+        this.tileEntity.voidInputTank();
+    }
+
+    public void voidOutputTank() {
+        this.tileEntity.voidOutputTank();
+    }
+
+    public MixerRecipe getCurrentRecipe() {
+        return this.tileEntity.getCurrentRecipe();
+    }
+
+    public void changeRedstoneActivationType(RedstoneActivationType type) {
+        this.tileEntity.changeRedstoneActivationType(type);
+    }
+
+    public BlockPos currentPosition() {
+        return tileEntity.getPos();
     }
 
     public FluidStack getInputTankFluid() {
@@ -116,5 +141,9 @@ public class TerraMixerContainer extends InventoryContainerBase<TerraMixerTile> 
 
     public int getEnergyPerTick() {
         return this.tracking.get(10);
+    }
+
+    public int getBurningItemUsageCount() {
+        return this.tracking.get(11);
     }
 }

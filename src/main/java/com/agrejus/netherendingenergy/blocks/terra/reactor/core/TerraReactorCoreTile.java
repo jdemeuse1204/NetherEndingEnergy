@@ -60,15 +60,12 @@ import java.util.Map;
 
 public class TerraReactorCoreTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
 
-    // Need a double inventory, one for the item being reacted with for display (1 stack of 1 item) and another for holding the other 63.
-    // We can get away with 1 inventory, but with 2 slots,  just set the stack size
-
     private int tick;
     private int generatedEnergyPerTick;
     private int currentBurnItemTicks;
     private int currentBurnItemTotalTicks;
 
-    private int heatTickRate = 20; // add every 20 ticks,but really every tick, divide amount to add by 20 so its not jumpy
+    private int heatTickRate = 20;
     private float heat;
     private final int maxHeat = 3000;
     private final int fatalHeat = 2000;
@@ -76,6 +73,9 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
 
     private LazyOptional<IItemHandler> inventory = LazyOptional.of(this::createInventory);
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
+
+    // Change to Lazy Optional
+    // Create NBT helper to write lazy optionals to NBT
     private MixableAcidFluidTank acidTank = new MixableAcidFluidTank(5000) {
         @Override
         protected void onContentsChanged() {
@@ -89,14 +89,6 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
     private IntArraySupplierReferenceHolder referenceHolder;
     private int heatSinkAbsorptionAmount = 112;
 
-    private @Nullable
-    BlockPos redstoneInputPortPosition;
-    private @Nullable
-    BlockPos energyPortPosition;
-    private @Nullable
-    BlockPos redstoneOutputPortPosition;
-    private @Nullable
-    BlockState redstoneOutputPortState;
     private static Map<Item, Integer> burnTimes = AbstractFurnaceTileEntity.getBurnTimes();
     private static List<Fluid> allowedFluids;
 
@@ -143,8 +135,8 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
 
             @Override
             protected void onContentsChanged(int slot) {
-                BlockState state = world.getBlockState(pos);
-                world.notifyBlockUpdate(pos, state, state, 3);
+/*                BlockState state = world.getBlockState(pos);
+                world.notifyBlockUpdate(pos, state, state, 3);*/
                 markDirty();
             }
 
@@ -168,32 +160,22 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
         };
     }
 
-    private void resolveCache() {
-        if (this.redstoneInputPortPosition == null) {
-            this.redstoneInputPortPosition = TerraReactorReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK, TerraReactorConfig.INSTANCE);
-        }
+    private BlockPos getRedstoneOutputPortPosition() {
+        return TerraReactorReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.TERRA_REACTOR_REDSTONE_OUTPUT_PORT_BLOCK, TerraReactorConfig.INSTANCE);
+    }
 
-        if (this.energyPortPosition == null) {
-            this.energyPortPosition = TerraReactorReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.TERRA_REACTOR_ENERGY_PORT_BLOCK, TerraReactorConfig.INSTANCE);
-        }
+    private BlockPos getEnergyPortPosition() {
+        return TerraReactorReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.TERRA_REACTOR_ENERGY_PORT_BLOCK, TerraReactorConfig.INSTANCE);
+    }
 
-        if (this.redstoneOutputPortPosition == null) {
-            this.redstoneOutputPortPosition = TerraReactorReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.TERRA_REACTOR_REDSTONE_OUTPUT_PORT_BLOCK, TerraReactorConfig.INSTANCE);
-        }
-
-        if (this.redstoneOutputPortState == null && this.redstoneOutputPortPosition != null) {
-            this.redstoneOutputPortState = world.getBlockState(this.redstoneOutputPortPosition);
-        }
+    private BlockPos getRedstoneInputPortPosition() {
+        return TerraReactorReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, ModBlocks.REACTOR_REDSTONE_PORT_BLOCK, TerraReactorConfig.INSTANCE);
     }
 
     private boolean isReactorFormed() {
         TerraReactorPartIndex result = world.getBlockState(pos).get(TerraReactorCoreBlock.FORMED);
 
         if (result == TerraReactorPartIndex.UNFORMED) {
-            this.redstoneInputPortPosition = null;
-            this.energyPortPosition = null;
-            this.redstoneOutputPortPosition = null;
-            this.redstoneOutputPortState = null;
             return false;
         }
 
@@ -257,8 +239,6 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
             return;
         }
 
-        this.resolveCache();
-
         if (this.isReactorOn() == true) {
 
             FluidStack fluidStack = acidTank.getFluid();
@@ -317,6 +297,7 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
 
                     // can we add energy?
                     energy.ifPresent(x -> {
+                        CustomEnergyStorage customEnergyStorage = (CustomEnergyStorage)x;
                         int energyStored = x.getEnergyStored();
                         int energyMaxStored = x.getMaxEnergyStored();
                         int delta = energyMaxStored - energyStored;
@@ -347,19 +328,9 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
 
                                 this.generatedEnergyPerTick = energyToAdd;
 
-                                ((CustomEnergyStorage) x).addEnergy(energyToAdd);
-                                int signalStrength = RedstoneHelpers.computeSignalStrength(energyStored, energyMaxStored);
-                                boolean hasEnergyStored = x.getEnergyStored() > 0;
+                                customEnergyStorage.addEnergy(energyToAdd);
+                                this.updateRedstoneOutputLevel(energyStored, energyMaxStored, customEnergyStorage);
 
-                                if (this.redstoneOutputPortState != null && this.redstoneOutputPortPosition != null) {
-                                    BlockState currentState = world.getBlockState(this.redstoneOutputPortPosition);
-
-                                    if (currentState.get(BlockStateProperties.POWER_0_15) != signalStrength) {
-                                        BlockState newState = this.redstoneOutputPortState.with(BlockStateProperties.POWERED, Boolean.valueOf(hasEnergyStored)).with(BlockStateProperties.POWER_0_15, signalStrength);
-                                        world.setBlockState(this.redstoneOutputPortPosition, newState, 3);
-                                        world.notifyNeighbors(pos, newState.getBlock());
-                                    }
-                                }
                             } else {
                                 // Still add heat, still reacting
                                 // Still on, have active and a burnable item
@@ -369,19 +340,52 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
                     });
                 } else {
                     // lose heat
+                    this.loseHeat();
                 }
             } else {
                 // lose heat
+                this.loseHeat();
             }
         } else {
             // lose heat
+            this.loseHeat();
         }
 
-        if (this.energyPortPosition != null) {
-            this.sendOutPower(this.energyPortPosition);
+        // Send out power
+        BlockPos energyPortPosition = this.getEnergyPortPosition();
+        if (energyPortPosition != null) {
+            this.sendOutPower(energyPortPosition);
         }
 
         --this.tick;
+    }
+
+    private void updateRedstoneOutputLevel(int energyStored, int energyMaxStored, CustomEnergyStorage energyStorage) {
+        BlockPos redstoneOutputPortPosition = this.getRedstoneOutputPortPosition();
+
+        if (redstoneOutputPortPosition != null) {
+
+            int signalStrength = RedstoneHelpers.computeSignalStrength(energyStored, energyMaxStored);
+            boolean hasEnergyStored = energyStorage.getEnergyStored() > 0;
+            BlockState redstoneOutputPortState = world.getBlockState(redstoneOutputPortPosition);
+
+            if (redstoneOutputPortState != null && redstoneOutputPortPosition != null) {
+                BlockState currentState = world.getBlockState(redstoneOutputPortPosition);
+
+                if (currentState.get(BlockStateProperties.POWER_0_15) != signalStrength) {
+                    BlockState newState = redstoneOutputPortState.with(BlockStateProperties.POWERED, Boolean.valueOf(hasEnergyStored)).with(BlockStateProperties.POWER_0_15, signalStrength);
+                    world.setBlockState(redstoneOutputPortPosition, newState, 3);
+                    world.notifyNeighbors(pos, newState.getBlock());
+                }
+            }
+        }
+    }
+
+    private void loseHeat() {
+
+        if (this.heat > 0) {
+            this.heat -= .1f;
+        }
     }
 
     private void addHeat(AcidAttributes attributes, InjectorPackage injectorPackage) {
@@ -389,8 +393,9 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
     }
 
     private boolean isReactorOn() {
-        if (this.redstoneInputPortPosition != null) {
-            BlockState redstonePortState = world.getBlockState(this.redstoneInputPortPosition);
+        BlockPos redstoneInputPortPosition = this.getRedstoneInputPortPosition();
+        if (redstoneInputPortPosition != null) {
+            BlockState redstonePortState = world.getBlockState(redstoneInputPortPosition);
 
             // If the block is broken, it wont exist here
             if (redstonePortState == null || redstonePortState.getBlock() != ModBlocks.REACTOR_REDSTONE_PORT_BLOCK) {
@@ -414,12 +419,15 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
                 TileEntity tileEntity = world.getTileEntity(energyPortPosition.offset(direction));
 
                 if (tileEntity != null) {
-                    tileEntity.getCapability(CapabilityEnergy.ENERGY, direction).ifPresent(x -> {
+                    tileEntity.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite()).ifPresent(x -> {
                         if (x.canReceive() == false) {
                             return;
                         }
 
-
+                        int amountReceived = x.receiveEnergy(((CustomEnergyStorage) w).getMaxExtract(), true);
+                        if (amountReceived > 0) {
+                            x.receiveEnergy(amountReceived, false);
+                        }
                     });
                 }
             }
@@ -442,6 +450,7 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
         CompoundNBT energyTag = tag.getCompound("energy");
         // Save energy when block is broken
         energy.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(energyTag));
+
         super.read(tag);
     }
 
@@ -453,8 +462,6 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
             tag.put("inv", compound);
         });
 
-
-        // Write energy when block is placed
         energy.ifPresent(w -> {
             CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
             tag.put("energy", compound);

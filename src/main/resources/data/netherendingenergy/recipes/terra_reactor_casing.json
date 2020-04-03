@@ -7,10 +7,10 @@
   ],
   "key": {
     "x": {
-      "tag": "forge:ingots/iron"
+      "item": "#ingotIron"
     }
   },
   "result": {
-    "item": "netherendingenergy:terra_machine_casing"
+    "item": "netherendingenergy:terra_reactor_casing"
   }
 }

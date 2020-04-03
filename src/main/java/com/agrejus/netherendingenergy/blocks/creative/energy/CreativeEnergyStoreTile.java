@@ -60,7 +60,10 @@ public class CreativeEnergyStoreTile extends TileEntity implements ITickableTile
                                 return;
                             }
 
-                            x.receiveEnergy(1000000, false);
+                            x.receiveEnergy(1000, false);
+
+                            // Add Back Energy Received
+                            energyStore.addEnergy(1000);
                         });
                     }
                 }

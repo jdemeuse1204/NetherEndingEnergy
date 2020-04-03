@@ -52,9 +52,6 @@ public class BotanistsCodexTile extends TileEntity implements INamedContainerPro
 
             @Override
             protected void onContentsChanged(int slot) {
-                // Marks the tile entity as changed so the system knows it needs to be saved
-                BlockState state = world.getBlockState(pos);
-                world.notifyBlockUpdate(pos, state, state, 3);
                 markDirty();
             }
 

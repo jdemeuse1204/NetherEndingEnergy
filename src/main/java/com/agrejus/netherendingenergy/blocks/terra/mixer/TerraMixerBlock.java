@@ -154,7 +154,7 @@ public class TerraMixerBlock extends Block {
                 int size = acceptableFluidBucketItems.size();
                 for (int i = 0; i < size; i++) {
                     BucketItem acceptableBucketItem = acceptableFluidBucketItems.get(i);
-                    if (acceptableBucketItem.getFluid() ==simulatedDrain.getFluid()) {
+                    if (acceptableBucketItem.getFluid() == simulatedDrain.getFluid()) {
                         resultBucketItem = acceptableBucketItem;
                         break;
                     }

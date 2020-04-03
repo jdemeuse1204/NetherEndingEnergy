@@ -74,6 +74,35 @@ public abstract class ContainerScreenBase<T extends Container> extends Container
         renderer.drawString(text, (float) (left - renderer.getStringWidth(text) / 2), (float) top, color);
     }
 
+    public static void drawGradientRect(int x0, int y0, int x1, int y1, int color0, int color1)
+    {
+        float alpha0 = (color0 >> 24&255)/255.0F;
+        float blue0 = (color0 >> 16&255)/255.0F;
+        float green0 = (color0 >> 8&255)/255.0F;
+        float red0 = (color0&255)/255.0F;
+        float alpha1 = (color1 >> 24&255)/255.0F;
+        float blue1 = (color1 >> 16&255)/255.0F;
+        float green1 = (color1 >> 8&255)/255.0F;
+        float red1 = (color1&255)/255.0F;
+        GlStateManager.disableTexture();
+        GlStateManager.enableBlend();
+        GlStateManager.disableAlphaTest();
+        GlStateManager.blendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.shadeModel(GL11.GL_SMOOTH);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder worldrenderer = tessellator.getBuffer();
+        worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        worldrenderer.pos(x1, y0, 0).color(blue0, green0, red0, alpha0).endVertex();
+        worldrenderer.pos(x0, y0, 0).color(blue0, green0, red0, alpha0).endVertex();
+        worldrenderer.pos(x0, y1, 0).color(blue1, green1, red1, alpha1).endVertex();
+        worldrenderer.pos(x1, y1, 0).color(blue1, green1, red1, alpha1).endVertex();
+        tessellator.draw();
+        GlStateManager.shadeModel(GL11.GL_FLAT);
+        GlStateManager.disableBlend();
+        GlStateManager.enableAlphaTest();
+        GlStateManager.enableTexture();
+    }
+
     public void drawColoredRect(int x, int y, int w, int h, int color) {
         GlStateManager.disableTexture();
         GlStateManager.enableBlend();

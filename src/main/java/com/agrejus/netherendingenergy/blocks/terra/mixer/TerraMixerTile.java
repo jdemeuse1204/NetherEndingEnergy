@@ -4,12 +4,18 @@ import com.agrejus.netherendingenergy.NetherEndingEnergyConfig;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
 import com.agrejus.netherendingenergy.common.attributes.CustomFluidAttributes;
+import com.agrejus.netherendingenergy.common.blocks.EnergyBlock;
+import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
 import com.agrejus.netherendingenergy.common.handlers.ReactorInventoryStackHandler;
+import com.agrejus.netherendingenergy.common.interfaces.IRedstoneActivatable;
 import com.agrejus.netherendingenergy.common.models.MixerRecipe;
 import com.agrejus.netherendingenergy.common.reactor.ReactorBaseConfig;
 import com.agrejus.netherendingenergy.common.tank.MixableAcidFluidTank;
 import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
+import com.agrejus.netherendingenergy.network.NetherEndingEnergyNetworking;
+import com.agrejus.netherendingenergy.network.PacketChangeRedstoneActivationType;
+import com.agrejus.netherendingenergy.network.PacketEmptyTank;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,7 +28,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
@@ -42,14 +47,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class TerraMixerTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public class TerraMixerTile extends EnergyBlock implements INamedContainerProvider, IRedstoneActivatable {
 
     // Export Config
     public static class ExportConfig {
         public static int drainAmountPerTick = 4000;
     }
 
-    protected int energyUsePerTick = 160;
     protected float efficiency = .65f;
 
     protected int destructibleItemTotalTicks;
@@ -62,13 +66,14 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
     private IntArraySupplierReferenceHolder referenceHolder;
 
     private LazyOptional<IItemHandler> destructibleItemInventory = LazyOptional.of(this::createInventory);
-    private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
     private LazyOptional<NEEFluidTank> inputTank = LazyOptional.of(this::createInputTank);
     private LazyOptional<MixableAcidFluidTank> outputTank = LazyOptional.of(this::createOutputTank);
 
     private static Map<Item, Integer> destructibleItems = NetherEndingEnergyConfig.Mixer().destructibleItems;
     private static ArrayList<MixerRecipe> recipes = NetherEndingEnergyConfig.Mixer().recipes;
     private static ArrayList<Direction> horizontalDirections = NetherEndingEnergyConfig.General().horizontalDirections;
+
+    private RedstoneActivationType redstoneActivationType;
 
     private IItemHandler createInventory() {
         return new ReactorInventoryStackHandler() {
@@ -109,6 +114,8 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
         return new MixableAcidFluidTank(32000) {
             @Override
             protected void onContentsChanged() {
+                BlockState state = world.getBlockState(pos);
+                world.notifyBlockUpdate(pos, state, state, 3);
                 markDirty();
             }
         };
@@ -118,6 +125,8 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
         return new NEEFluidTank(32000) {
             @Override
             protected void onContentsChanged() {
+                BlockState state = world.getBlockState(pos);
+                world.notifyBlockUpdate(pos, state, state, 3);
                 markDirty();
             }
 
@@ -141,7 +150,7 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
         };
     }
 
-    private IEnergyStorage createEnergy() {
+    protected IEnergyStorage createEnergy() {
         return new CustomEnergyStorage(100000, 10000, this.energyUsePerTick);
     }
 
@@ -149,7 +158,7 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
     private final LazyOptional<IAnimationStateMachine> asmCap;*/
 
     public TerraMixerTile() {
-        super(ModBlocks.TERRA_MIXER_TILE);
+        super(160, ModBlocks.TERRA_MIXER_TILE);
 
 /*        if (FMLEnvironment.dist == Dist.CLIENT) {
             asm = ModelLoaderRegistry.loadASM(new ResourceLocation(NetherEndingEnergy.MODID, "asms/block/terra_mixer.json"), ImmutableMap.of());
@@ -158,12 +167,62 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
             asm = null;
             asmCap = LazyOptional.empty();
         }*/
+
+        redstoneActivationType = RedstoneActivationType.ALWAYS_ACTIVE;
     }
 
 /*    @Override
     public boolean hasFastRenderer() {
         return true;
     }*/
+
+    @Override
+    public RedstoneActivationType getRedstoneActivationType() {
+        return this.redstoneActivationType;
+    }
+
+    @Override
+    public void setRedstoneActivationType(RedstoneActivationType type) {
+        this.redstoneActivationType = type;
+        markDirty();
+    }
+
+    public void voidInputTank() {
+        this.inputTank.ifPresent(w -> {
+            int amount = w.getFluidAmount();
+            w.drain(amount, IFluidHandler.FluidAction.EXECUTE);
+            markDirty();
+        });
+        NetherEndingEnergyNetworking.INSTANCE.sendToServer(new PacketEmptyTank(pos, Direction.DOWN));
+    }
+
+    public void voidOutputTank() {
+        this.outputTank.ifPresent(w -> {
+            int amount = w.getFluidAmount();
+            w.drain(amount, IFluidHandler.FluidAction.EXECUTE);
+            markDirty();
+        });
+
+        if (world.isRemote) {
+            NetherEndingEnergyNetworking.INSTANCE.sendToServer(new PacketEmptyTank(pos, Direction.EAST));
+        }
+    }
+
+    public void changeRedstoneActivationType(RedstoneActivationType type) {
+        this.redstoneActivationType = type;
+
+        if (world.isRemote) {
+            NetherEndingEnergyNetworking.INSTANCE.sendToServer(new PacketChangeRedstoneActivationType(pos, type));
+        }
+    }
+
+    public MixerRecipe getCurrentRecipe() {
+        return this.currentRecipe;
+    }
+
+    public void setCurrentRecipe(MixerRecipe recipe) {
+        this.currentRecipe = recipe;
+    }
 
     private boolean isItemValidForFluid(Fluid fluid, Item item) {
         ArrayList<MixerRecipe> availableRecipes = getRecipeByIngredientFluid(fluid);
@@ -210,75 +269,78 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
             return;
         }
 
-        // Get our fluid
-        FluidStack inputFluidStack = inputTank.map(w -> w.getFluid()).orElse(FluidStack.EMPTY);
-        Fluid inputFluid = inputFluidStack.getFluid();
+        this.energy.ifPresent(energy -> {
+            // Get our fluid
+            FluidStack inputFluidStack = inputTank.map(w -> w.getFluid()).orElse(FluidStack.EMPTY);
+            Fluid inputFluid = inputFluidStack.getFluid();
 
-        // No acid, remove the recipe
-        if (inputFluidStack.getAmount() == 0 || this.destructibleItemTicks == 0) {
-            this.currentRecipe = null;
-        }
+            // No acid, remove the recipe
+            if ((inputFluidStack.getAmount() == 0 || this.destructibleItemTicks == 0) && this.currentRecipe != null) {
+                this.currentRecipe = null;
+                this.updateBlock();
+                markDirty();
+            }
 
-
-        if (inputFluidStack.getAmount() > 0) {
-            this.destructibleItemInventory.ifPresent(w -> {
-                ReactorInventoryStackHandler reactorInventory = (ReactorInventoryStackHandler) w;
-                ItemStack burningStack = reactorInventory.getStackInBurningSlot();
-
-                if (burningStack.isEmpty() == false) {
-                    this.currentRecipe = getRecipe(inputFluid, burningStack.getItem());
-                }
-            });
-        }
-
-        if (this.destructibleItemTicks == 0) {
-
-            // Make sure we have fluid and items
-            // Do nothing until we have an acid in the input tank
-            if (inputFluidStack.getAmount() > 0) {
-
-                // get another item to destroy
+            if (inputFluidStack.getAmount() > 0 && this.currentRecipe == null) {
                 this.destructibleItemInventory.ifPresent(w -> {
                     ReactorInventoryStackHandler reactorInventory = (ReactorInventoryStackHandler) w;
                     ItemStack burningStack = reactorInventory.getStackInBurningSlot();
 
-                    // If we have an item that was burning, lets extract it
                     if (burningStack.isEmpty() == false) {
-                        // consume the item from the burning inventory because burn time ticks are 0
-                        reactorInventory.extractBurningSlot(1, false);
-                    }
-
-                    ItemStack backlogStack = reactorInventory.getStackInBacklogSlot();
-
-                    // Do we have items in the backlog
-                    if (backlogStack.isEmpty() == false) {
-
-                        int destructibleTime = destructibleItems.get(backlogStack.getItem());
-
-                        if (destructibleTime > 0) {
-
-                            // Consume the item
-                            ItemStack extractedStack = reactorInventory.extractBacklogSlot(1, false);
-                            reactorInventory.insertBurningSlot(extractedStack, false);
-
-                            // Set the recipe
-                            this.currentRecipe = getRecipe(inputFluid, extractedStack.getItem());
-
-                            this.destructibleItemTicks = destructibleTime;
-                            this.destructibleItemTotalTicks = destructibleTime;
-
-                            markDirty();
-                        }
+                        this.currentRecipe = getRecipe(inputFluid, burningStack.getItem());
+                        this.updateBlock();
+                        markDirty();
                     }
                 });
             }
-        }
 
-        if (this.currentRecipe != null) {
+            if (this.destructibleItemTicks == 0) {
 
-            // Make sure we have energy
-            this.energy.ifPresent(w -> {
-                if (this.energyUsePerTick == w.extractEnergy(this.energyUsePerTick, true)) {
+                // Make sure we have fluid and items
+                // Do nothing until we have an acid in the input tank
+                if (inputFluidStack.getAmount() > 0) {
+
+                    // get another item to destroy
+                    this.destructibleItemInventory.ifPresent(w -> {
+                        ReactorInventoryStackHandler reactorInventory = (ReactorInventoryStackHandler) w;
+                        ItemStack burningStack = reactorInventory.getStackInBurningSlot();
+
+                        // If we have an item that was burning, lets extract it
+                        if (burningStack.isEmpty() == false) {
+                            // consume the item from the burning inventory because burn time ticks are 0
+                            reactorInventory.extractBurningSlot(1, false);
+                        }
+
+                        ItemStack backlogStack = reactorInventory.getStackInBacklogSlot();
+
+                        // Do we have items in the backlog
+                        if (backlogStack.isEmpty() == false) {
+
+                            int destructibleTime = destructibleItems.get(backlogStack.getItem());
+
+                            if (destructibleTime > 0) {
+
+                                // Consume the item
+                                ItemStack extractedStack = reactorInventory.extractBacklogSlot(1, false);
+                                reactorInventory.insertBurningSlot(extractedStack, false);
+
+                                // Set the recipe
+                                this.currentRecipe = getRecipe(inputFluid, extractedStack.getItem());
+
+                                this.destructibleItemTicks = destructibleTime;
+                                this.destructibleItemTotalTicks = destructibleTime;
+
+                                markDirty();
+                            }
+                        }
+                    });
+                }
+            }
+
+            if (this.currentRecipe != null) {
+
+                // Make sure we have energy
+                if (this.energyUsePerTick == energy.extractEnergy(this.energyUsePerTick, true)) {
 
                     // Start Processing
                     if (processingUnitTicks == 0) {
@@ -297,15 +359,17 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
                                 if (acidUsagePerProcessingUnit == x.drain(acidUsagePerProcessingUnit, IFluidHandler.FluidAction.SIMULATE).getAmount()) {
 
                                     x.drain(acidUsagePerProcessingUnit, IFluidHandler.FluidAction.EXECUTE);
-                                    w.extractEnergy(this.energyUsePerTick, false);
+                                    energy.extractEnergy(this.energyUsePerTick, false);
                                     this.updateBlock();
+                                    this.markDirty();
                                     ++processingUnitTicks;
                                 }
                             });
                         }
                     } else {
-                        w.extractEnergy(this.energyUsePerTick, false);
+                        energy.extractEnergy(this.energyUsePerTick, false);
                         this.updateBlock();
+                        this.markDirty();
                         ++processingUnitTicks;
                     }
 
@@ -321,16 +385,18 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
 
                             if (amount == amountToFill) {
                                 x.fill(result, IFluidHandler.FluidAction.EXECUTE);
-                                //w.extractEnergy(this.energyUsePerTick, false);
                                 this.updateBlock();
+                                this.markDirty();
                             }
                         });
 
                         this.processingUnitTicks = 0;
                     }
                 }
-            });
-        }
+            }
+
+            super.tick();
+        });
 
         this.sendOutFluid();
     }
@@ -422,6 +488,15 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
 
         energy.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(energyTag));
 
+        CompoundNBT currentRecipeTag = tag.getCompound("current_recipe");
+        this.currentRecipe = null;
+        if (currentRecipeTag.isEmpty() == false) {
+            MixerRecipe recipe = new MixerRecipe();
+            recipe.deserializeNBT(currentRecipeTag);
+            this.currentRecipe = recipe;
+        }
+
+        this.redstoneActivationType = RedstoneActivationType.get(tag.getString("activation"));
         this.destructibleItemTicks = tag.getInt("destructible_item_ticks");
         this.destructibleItemTotalTicks = tag.getInt("destructible_item_total_ticks");
         this.processingUnitTicks = tag.getInt("processing_unit_ticks");
@@ -452,6 +527,14 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
         tag.putInt("destructible_item_total_ticks", this.destructibleItemTotalTicks);
         tag.putInt("processing_unit_ticks", this.processingUnitTicks);
         tag.putInt("processing_unit_total_ticks", this.processingUnitTotalTicks);
+        tag.putString("activation", this.redstoneActivationType.getName());
+
+        if (this.currentRecipe != null) {
+            CompoundNBT currentRecipeCompound = this.currentRecipe.serializeNBT();
+            tag.put("current_recipe", currentRecipeCompound);
+        } else {
+            tag.put("current_recipe", new CompoundNBT());
+        }
     }
 
     @Nonnull
@@ -506,7 +589,8 @@ public class TerraMixerTile extends TileEntity implements ITickableTileEntity, I
                 () -> this.destructibleItemTicks,
                 () -> this.destructibleItemTotalTicks,
                 () -> this.outputTank.map(w -> w.getFluid().getFluid().getAttributes().getColor()).orElse(0),
-                () -> 1);
+                () -> this.getEnergyUsedPerTick(),
+                () -> this.destructibleItemInventory.map(w -> w.getStackInSlot(1)).orElse(ItemStack.EMPTY).getCount());
 
         return new TerraMixerContainer(worldId, world, pos, playerInventory, playerEntity, this.referenceHolder);
     }

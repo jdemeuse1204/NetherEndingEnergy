@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.terra.mixer;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
+import com.agrejus.netherendingenergy.common.models.MixerRecipe;
 import com.agrejus.netherendingenergy.common.rendering.Rect;
 import com.agrejus.netherendingenergy.common.rendering.RectProgression;
 import com.agrejus.netherendingenergy.common.screen.ContainerScreenBase;
@@ -28,9 +29,15 @@ public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
     private ResourceLocation GUI = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/terra_mixer_gui.png");
     private static final ResourceLocation MIXER_BUTTONS = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/terra_mixer_buttons.png");
     private Rect inputFluidLocation;
+    private Rect inputFluidMixingLocation;
     private Rect outputFluidLocation;
+    private Rect outputFluidMixingLocation;
+
     private RectProgression energySlice;
     private Rect energyDestination;
+
+    private RectProgression progressionSlice;
+    private Rect progressionDestination;
 
     public TerraMixerScreen(TerraMixerContainer container, PlayerInventory inv, ITextComponent name) {
         super(container, inv, name, 176, 184);
@@ -48,11 +55,21 @@ public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
         // _7_ = height of hovered button? of button when hovered ? Offset?
         // _6_ = top of still button
 
+        progressionDestination = createRectBasedOnGui(59, 71, 84, 73);
+        progressionSlice = createProgressionSliceRect(19, this.defaultGuiScreenWidth, 190, 33);
+
         energyDestination = createRectBasedOnGui(27, 152, 167, 67);
         energySlice = createProgressionSliceRect(44, this.defaultGuiScreenWidth + 1, 192, 84);
 
-        inputFluidLocation = createRectBasedOnGui(27, 116, 132, 59);
-        outputFluidLocation = createRectBasedOnGui(65, 116, 132, 97);
+        inputFluidLocation = createRectBasedOnGui(27, 120, 135, 59);
+        inputFluidMixingLocation = createRectBasedOnGui(33, 75, 91, 49);
+
+        outputFluidLocation = createRectBasedOnGui(65, 120, 135, 97);
+        outputFluidMixingLocation = createRectBasedOnGui(75, 66, 82, 91);
+
+        // Redstone button!
+
+        //this.container.changeRedstoneActivationType();
 
         // Tab button
         this.addButton((new ImageButton(this.guiLeft + 125, this.guiTop, 51, 22, 0, 60, 0, MIXER_BUTTONS, (p_214087_1_) -> {
@@ -60,13 +77,13 @@ public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
         })));
 
         // Clear Input Tank
-        this.addButton((new ImageButton(this.guiLeft + 135, this.guiTop + 26, 9, 9, 0, 30, 0, MIXER_BUTTONS, (p_214087_1_) -> {
+        this.addButton((new ImageButton(this.guiLeft + 139, this.guiTop + 26, 9, 9, 0, 30, 0, MIXER_BUTTONS, (p_214087_1_) -> {
             this.container.voidInputTank();
         })));
 
-        // Clear Tank 2
-        this.addButton((new ImageButton(this.guiLeft + 135, this.guiTop + 64, 9, 9, 0, 30, 9, MIXER_BUTTONS, (p_214087_1_) -> {
-
+        // Clear Output Tank
+        this.addButton((new ImageButton(this.guiLeft + 139, this.guiTop + 64, 9, 9, 0, 30, 0, MIXER_BUTTONS, (p_214087_1_) -> {
+            this.container.voidOutputTank();
         })));
     }
 
@@ -89,25 +106,50 @@ public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
             tooltip.add(String.format("%s mB", amount));
         }
 
+        if (this.isMouseOver(this.inputFluidMixingLocation, mouseX, mouseY)) {
+            FluidStack stack = this.container.getInputTankFluid();
+
+            tooltip.add(new StringTextComponent("Input Acid").getFormattedText());
+            if (stack.getAmount() > 0) {
+                tooltip.add(stack.getDisplayName().getFormattedText());
+            } else {
+                tooltip.add(new StringTextComponent("None").getFormattedText());
+            }
+        }
+
+        if (this.isMouseOver(this.outputFluidMixingLocation, mouseX, mouseY)) {
+
+            MixerRecipe currentRecipe = this.container.getCurrentRecipe();
+            tooltip.add(new StringTextComponent("Acid Result").getFormattedText());
+
+            if (currentRecipe == null) {
+                tooltip.add(new StringTextComponent("None").getFormattedText());
+            } else {
+                FluidStack stack = new FluidStack(currentRecipe.getResultFluid(), 1);
+                tooltip.add(stack.getDisplayName().getFormattedText());
+            }
+        }
+
         if (this.isMouseOver(this.energyDestination, mouseX, mouseY)) {
             int amount = container.getEnergyStored();
             int tickAmount = container.getEnergyPerTick();
             int maxStorage = container.getMaxEnergyStored();
             tooltip.add(String.format("%s / %s RF", amount, maxStorage));
 
+            TextFormatting textFormatting = TextFormatting.WHITE;
             if (tickAmount > 0) {
-                tooltip.add(new StringTextComponent(TextFormatting.GREEN + String.format("%s RF/t", tickAmount)).getFormattedText());
+                textFormatting = TextFormatting.GREEN;
             } else if (tickAmount < 0) {
-                tooltip.add(new StringTextComponent(TextFormatting.RED + String.format("-%s RF/t", tickAmount)).getFormattedText());
-            } else {
-                tooltip.add(String.format("%s RF/t", tickAmount));
+                textFormatting = TextFormatting.RED;
             }
+
+            tooltip.add(new StringTextComponent(textFormatting + String.format("%s RF/t", tickAmount)).getFormattedText());
         }
 
         if (this.isMouseOver(this.outputFluidLocation, mouseX, mouseY)) {
             int amount = this.container.getOutputFluidAmount();
 
-           if (amount > 0) {
+            if (amount > 0) {
                 FluidStack fluidStack = this.container.getOutputTankFluid();
                 tooltip.add(fluidStack.getDisplayName().getFormattedText());
             }
@@ -123,12 +165,14 @@ public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         drawNoShadowString(Minecraft.getInstance().fontRenderer, "Terra Mixer", 6, 5, 0xffffff);
-        int destructibleItemTicks = this.container.getDestructibleItemTicks();
 
+        int destructibleItemTicks = this.container.getDestructibleItemTicks();
         if (destructibleItemTicks > 0) {
-            drawNoShadowString(Minecraft.getInstance().fontRenderer, String.format("%s", destructibleItemTicks), 7, 53, this.guiDefaultFontColor);
+            drawShadowCenteredOverlayString(Minecraft.getInstance().fontRenderer, String.format("%s", destructibleItemTicks), 50, 32, 0xffffff);
         }
 
+        drawNoShadowString(Minecraft.getInstance().fontRenderer, "Spatial:", 7, 60, this.guiDefaultFontColor);
+        drawNoShadowString(Minecraft.getInstance().fontRenderer, String.format("%s", this.container.currentPosition().getY()), 7, 70, this.guiDefaultFontColor);
     }
 
     @Override
@@ -140,6 +184,14 @@ public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
 
         // set the size of the GUI to slice off the right hand images
         this.blit(i, j, 0, 0, this.xSize, this.ySize);
+
+        // Processing Progression
+/*        this.blit(this.progressionDestination.getLeft(),
+                this.progressionDestination.getTop(),
+                this.progressionSlice.getLeft(),
+                this.progressionSlice.getBottom(),
+                this.progressionSlice.getWidth(),
+                this.progressionSlice.getHeight());*/
 
         // Draw Energy Progression
         float energyPercent = this.getProgressionPercent(this.container.getEnergyStored(), this.container.getMaxEnergyStored());
@@ -160,6 +212,8 @@ public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
             int h = totalHeight - inputFillHeight;
             int y = totalHeight - h;
             drawColoredRect(inputFluidLocation.getLeft(), y, inputFluidLocation.getWidth(), h, color);
+
+            drawColoredRect(inputFluidMixingLocation.getLeft(), inputFluidMixingLocation.getTop(), inputFluidMixingLocation.getWidth(), inputFluidMixingLocation.getHeight(), color);
         }
 
         int outputTankAmount = this.container.getOutputFluidAmount();
@@ -173,6 +227,18 @@ public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
             int h = totalHeight - outputFillHeight;
             int y = totalHeight - h;
             drawColoredRect(outputFluidLocation.getLeft(), y, outputFluidLocation.getWidth(), h, color);
+        }
+
+        MixerRecipe currentRecipe = this.container.getCurrentRecipe();
+
+        int x0 = this.guiLeft + 68;
+        int y0 = this.guiTop + 45;
+        int x1 = this.guiLeft + 71;
+        int y1 = this.guiTop + 49;
+        drawGradientRect(x0, y0, x1, y1, 0xff4CE500,   0xffE84444);
+
+        if (currentRecipe != null) {
+            drawColoredRect(outputFluidMixingLocation.getLeft(), outputFluidMixingLocation.getTop(), outputFluidMixingLocation.getWidth(), outputFluidMixingLocation.getHeight(), currentRecipe.getResultFluid().getAttributes().getColor());
         }
     }
 }

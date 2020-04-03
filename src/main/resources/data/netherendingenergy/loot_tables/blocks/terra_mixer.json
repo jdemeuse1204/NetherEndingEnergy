@@ -57,8 +57,13 @@
                   "op": "replace"
                 },
                 {
-                  "source": "current_recipe_index",
-                  "target": "BlockEntityTag.current_recipe_index",
+                  "source": "current_recipe",
+                  "target": "BlockEntityTag.current_recipe",
+                  "op": "replace"
+                },
+                {
+                  "source": "activation",
+                  "target": "BlockEntityTag.activation",
                   "op": "replace"
                 }
               ]
