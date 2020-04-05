@@ -58,6 +58,16 @@ public class TerraMixerContainer extends InventoryContainerBase<TerraMixerTile> 
             addSlot(new ReadOnlySlotItemHandler(w, 1, 55, 33));
         });
 
+        this.tileEntity.getAcidInputSlotInventory().ifPresent(w -> {
+            addSlot(new SlotItemHandler(w, 0, 75, 33));
+        });
+        this.tileEntity.getAcidResultSlotInventory().ifPresent(w -> {
+            addSlot(new SlotItemHandler(w, 0, 66, 75));
+        });
+        this.tileEntity.getOutputSlotInventory().ifPresent(w -> {
+            addSlot(new SlotItemHandler(w, 0, 152, 81));
+        });
+
         this.playerEntity = playerEntity;
         this.tracking = intArray;
 
@@ -106,6 +116,11 @@ public class TerraMixerContainer extends InventoryContainerBase<TerraMixerTile> 
     public void changeRedstoneActivationType(RedstoneActivationType type) {
         this.tileEntity.changeRedstoneActivationType(type);
     }
+
+    public RedstoneActivationType getRedstoneActivationType() {
+        return this.tileEntity.getRedstoneActivationType();
+    }
+
 
     public BlockPos currentPosition() {
         return tileEntity.getPos();

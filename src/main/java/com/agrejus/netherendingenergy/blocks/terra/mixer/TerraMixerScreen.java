@@ -1,6 +1,8 @@
 package com.agrejus.netherendingenergy.blocks.terra.mixer;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
+import com.agrejus.netherendingenergy.client.gui.button.NEEImageButton;
+import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
 import com.agrejus.netherendingenergy.common.models.MixerRecipe;
 import com.agrejus.netherendingenergy.common.rendering.Rect;
 import com.agrejus.netherendingenergy.common.rendering.RectProgression;
@@ -27,7 +29,7 @@ import java.util.List;
 public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
 
     private ResourceLocation GUI = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/terra_mixer_gui.png");
-    private static final ResourceLocation MIXER_BUTTONS = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/terra_mixer_buttons.png");
+    private static final ResourceLocation MIXER_BUTTONS = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/gui_buttons.png");
     private Rect inputFluidLocation;
     private Rect inputFluidMixingLocation;
     private Rect outputFluidLocation;
@@ -35,6 +37,10 @@ public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
 
     private RectProgression energySlice;
     private Rect energyDestination;
+
+    private NEEImageButton redstoneActiveWithSignal;
+    private NEEImageButton redstoneActibeWithoutSignal;
+    private NEEImageButton redstoneAlwaysActive;
 
     private RectProgression progressionSlice;
     private Rect progressionDestination;
@@ -61,28 +67,47 @@ public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
         energyDestination = createRectBasedOnGui(27, 152, 167, 67);
         energySlice = createProgressionSliceRect(44, this.defaultGuiScreenWidth + 1, 192, 84);
 
-        inputFluidLocation = createRectBasedOnGui(27, 120, 135, 59);
+        inputFluidLocation = createRectBasedOnGui(27, 120, 136, 59);
         inputFluidMixingLocation = createRectBasedOnGui(33, 75, 91, 49);
 
-        outputFluidLocation = createRectBasedOnGui(65, 120, 135, 97);
+        outputFluidLocation = createRectBasedOnGui(65, 120, 136, 97);
         outputFluidMixingLocation = createRectBasedOnGui(75, 66, 82, 91);
 
-        // Redstone button!
+        // Swap between redstone signals
+        RedstoneActivationType redstoneActivationType = this.container.getRedstoneActivationType();
+        this.redstoneActiveWithSignal = new NEEImageButton(redstoneActivationType == RedstoneActivationType.ACTIVE_WITH_SIGNAL, this.guiLeft + 178, this.guiTop + 20, 14, 14, 0, 106, 0, MIXER_BUTTONS, (button) -> {
+            ((NEEImageButton) button).setVisibility(false);
+            this.redstoneActibeWithoutSignal.setVisibility(true);
+            this.container.changeRedstoneActivationType(RedstoneActivationType.ACTIVE_WITHOUT_SIGNAL);
+        });
+        this.redstoneActibeWithoutSignal= new NEEImageButton(redstoneActivationType == RedstoneActivationType.ACTIVE_WITHOUT_SIGNAL, this.guiLeft + 178, this.guiTop + 20, 14, 14, 0, 136, 0, MIXER_BUTTONS, (button) -> {
+            ((NEEImageButton) button).setVisibility(false);
+            this.redstoneAlwaysActive.setVisibility(true);
+            this.container.changeRedstoneActivationType(RedstoneActivationType.ALWAYS_ACTIVE);
+        });
+        this.redstoneAlwaysActive = new NEEImageButton(redstoneActivationType == RedstoneActivationType.ALWAYS_ACTIVE, this.guiLeft + 178, this.guiTop + 20, 14, 14, 0, 166, 0, MIXER_BUTTONS, (button) -> {
+            ((NEEImageButton) button).setVisibility(false);
+            this.redstoneActiveWithSignal.setVisibility(true);
+            this.container.changeRedstoneActivationType(RedstoneActivationType.ACTIVE_WITH_SIGNAL);
+        });
 
-        //this.container.changeRedstoneActivationType();
+        // Redstone Always Active
+        this.addButton(this.redstoneAlwaysActive);
 
-        // Tab button
-        this.addButton((new ImageButton(this.guiLeft + 125, this.guiTop, 51, 22, 0, 60, 0, MIXER_BUTTONS, (p_214087_1_) -> {
-            // on click callback
-        })));
+        // Redstone Active With Signal
+        this.addButton(this.redstoneActiveWithSignal);
+
+        // Redstone Active Without Signal
+        this.addButton( this.redstoneActibeWithoutSignal);
 
         // Clear Input Tank
-        this.addButton((new ImageButton(this.guiLeft + 139, this.guiTop + 26, 9, 9, 0, 30, 0, MIXER_BUTTONS, (p_214087_1_) -> {
+        this.addButton((new ImageButton(this.guiLeft + 139, this.guiTop + 26, 9, 9, 0, 30, 0, MIXER_BUTTONS, (button) -> {
+            /*            ((ImageButton)button).*/
             this.container.voidInputTank();
         })));
 
         // Clear Output Tank
-        this.addButton((new ImageButton(this.guiLeft + 139, this.guiTop + 64, 9, 9, 0, 30, 0, MIXER_BUTTONS, (p_214087_1_) -> {
+        this.addButton((new ImageButton(this.guiLeft + 139, this.guiTop + 64, 9, 9, 0, 30, 0, MIXER_BUTTONS, (button) -> {
             this.container.voidOutputTank();
         })));
     }
@@ -165,12 +190,6 @@ public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         drawNoShadowString(Minecraft.getInstance().fontRenderer, "Terra Mixer", 6, 5, 0xffffff);
-
-        int destructibleItemTicks = this.container.getDestructibleItemTicks();
-        if (destructibleItemTicks > 0) {
-            drawShadowCenteredOverlayString(Minecraft.getInstance().fontRenderer, String.format("%s", destructibleItemTicks), 50, 32, 0xffffff);
-        }
-
         drawNoShadowString(Minecraft.getInstance().fontRenderer, "Spatial:", 7, 60, this.guiDefaultFontColor);
         drawNoShadowString(Minecraft.getInstance().fontRenderer, String.format("%s", this.container.currentPosition().getY()), 7, 70, this.guiDefaultFontColor);
     }
@@ -231,14 +250,69 @@ public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
 
         MixerRecipe currentRecipe = this.container.getCurrentRecipe();
 
-        int x0 = this.guiLeft + 68;
-        int y0 = this.guiTop + 45;
-        int x1 = this.guiLeft + 71;
-        int y1 = this.guiTop + 49;
-        drawGradientRect(x0, y0, x1, y1, 0xff4CE500,   0xffE84444);
+        int originHeight = 16;
+        int originWidth = 16;
+        int originLeft = 193;
+        int destinationTop = this.guiTop + 33;
+        int destinationLeft = this.guiLeft + 54;
+
+        int destructibleItemTotalTicks = this.container.getDestructibleItemTotalTicks();
+        int destructibleItemTicks = this.container.getDestructibleItemTotalTicks() - this.container.getDestructibleItemTicks();
+
+        if (destructibleItemTotalTicks > 0) {
+            int step = destructibleItemTotalTicks / 5;
+            int currentStep = Math.round(destructibleItemTicks / step) * step;
+            float stepAmount = 64f / (float) destructibleItemTotalTicks;
+            int currentHeight = Math.round(currentStep * stepAmount);
+            int height = Math.min(currentHeight, 64);
+
+            test(destinationLeft, destinationTop, originLeft, height, originWidth, originHeight);
+        }
 
         if (currentRecipe != null) {
             drawColoredRect(outputFluidMixingLocation.getLeft(), outputFluidMixingLocation.getTop(), outputFluidMixingLocation.getWidth(), outputFluidMixingLocation.getHeight(), currentRecipe.getResultFluid().getAttributes().getColor());
         }
     }
+
+    private void test(int p_blit_1_, int p_blit_2_, int p_blit_3_, int p_blit_4_, int p_blit_5_, int p_blit_6_) {
+        test2(p_blit_1_, p_blit_2_, this.blitOffset, (float) p_blit_3_, (float) p_blit_4_, p_blit_5_, p_blit_6_, 256, 256);
+    }
+
+    public void test2(int p_blit_0_, int p_blit_1_, int p_blit_2_, float p_blit_3_, float p_blit_4_, int p_blit_5_, int p_blit_6_, int p_blit_7_, int p_blit_8_) {
+        innerBlitx(p_blit_0_, p_blit_0_ + p_blit_5_, p_blit_1_, p_blit_1_ + p_blit_6_, p_blit_2_, p_blit_5_, p_blit_6_, p_blit_3_, p_blit_4_, p_blit_8_, p_blit_7_);
+    }
+
+    private void innerBlitx(int p_innerBlit_0_, int p_innerBlit_1_, int p_innerBlit_2_, int p_innerBlit_3_, int p_innerBlit_4_, int p_innerBlit_5_, int p_innerBlit_6_, float p_innerBlit_7_, float p_innerBlit_8_, int p_innerBlit_9_, int p_innerBlit_10_) {
+        innerBlit2(p_innerBlit_0_, p_innerBlit_1_, p_innerBlit_2_, p_innerBlit_3_, p_innerBlit_4_, (p_innerBlit_7_ + 0.0F) / (float) p_innerBlit_9_, (p_innerBlit_7_ + (float) p_innerBlit_5_) / (float) p_innerBlit_9_, (p_innerBlit_8_ + 0.0F) / (float) p_innerBlit_10_, (p_innerBlit_8_ + (float) p_innerBlit_6_) / (float) p_innerBlit_10_);
+    }
+
+    protected void innerBlit2(int p_innerBlit_0_, int p_innerBlit_1_, int p_innerBlit_2_, int p_innerBlit_3_, int p_innerBlit_4_, float p_innerBlit_5_, float p_innerBlit_6_, float p_innerBlit_7_, float p_innerBlit_8_) {
+
+        GlStateManager.disableRescaleNormal();
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableLighting();
+        GlStateManager.enableDepthTest();
+        GlStateManager.translatef(0, 0, 900);
+        this.blitOffset = 900;
+        this.itemRenderer.zLevel = 900;
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        bufferbuilder.pos((double) p_innerBlit_0_, (double) p_innerBlit_3_, (double) p_innerBlit_4_).tex((double) p_innerBlit_5_, (double) p_innerBlit_8_).endVertex();
+        bufferbuilder.pos((double) p_innerBlit_1_, (double) p_innerBlit_3_, (double) p_innerBlit_4_).tex((double) p_innerBlit_6_, (double) p_innerBlit_8_).endVertex();
+        bufferbuilder.pos((double) p_innerBlit_1_, (double) p_innerBlit_2_, (double) p_innerBlit_4_).tex((double) p_innerBlit_6_, (double) p_innerBlit_7_).endVertex();
+        bufferbuilder.pos((double) p_innerBlit_0_, (double) p_innerBlit_2_, (double) p_innerBlit_4_).tex((double) p_innerBlit_5_, (double) p_innerBlit_7_).endVertex();
+        tessellator.draw();
+
+        this.blitOffset = 0;
+        this.itemRenderer.zLevel = 0;
+        GlStateManager.translatef(0, 0, -300);
+        GlStateManager.enableLighting();
+        GlStateManager.disableDepthTest();
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.enableRescaleNormal();
+    }
+
+
 }

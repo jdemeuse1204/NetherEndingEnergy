@@ -65,6 +65,21 @@
                   "source": "activation",
                   "target": "BlockEntityTag.activation",
                   "op": "replace"
+                },
+                {
+                  "source": "acid_input_slot_inventory",
+                  "target": "BlockEntityTag.acid_input_slot_inventory",
+                  "op": "replace"
+                },
+                {
+                  "source": "acid_result_slot_inventory",
+                  "target": "BlockEntityTag.acid_result_slot_inventory",
+                  "op": "replace"
+                },
+                {
+                  "source": "output_slot_inventory",
+                  "target": "BlockEntityTag.output_slot_inventory",
+                  "op": "replace"
                 }
               ]
             },

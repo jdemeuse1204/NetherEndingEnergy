@@ -6,10 +6,12 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorReactorMultiBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorTile;
 import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
+import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
 import com.agrejus.netherendingenergy.common.handlers.NonExtractingItemUsageStackHandler;
 import com.agrejus.netherendingenergy.common.handlers.ReactorInventoryStackHandler;
 import com.agrejus.netherendingenergy.common.helpers.RedstoneHelpers;
+import com.agrejus.netherendingenergy.common.interfaces.IRedstoneActivatable;
 import com.agrejus.netherendingenergy.common.models.BlockInformation;
 import com.agrejus.netherendingenergy.common.reactor.InjectorPackage;
 import com.agrejus.netherendingenergy.common.reactor.ReactorBaseConfig;
@@ -58,7 +60,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TerraReactorCoreTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public class TerraReactorCoreTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider, IRedstoneActivatable {
 
     private int tick;
     private int generatedEnergyPerTick;
@@ -71,11 +73,11 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
     private final int fatalHeat = 2000;
     private float heatAbsorptionRate = .9f;
 
+    private RedstoneActivationType redstoneActivationType;
+
     private LazyOptional<IItemHandler> inventory = LazyOptional.of(this::createInventory);
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
 
-    // Change to Lazy Optional
-    // Create NBT helper to write lazy optionals to NBT
     private MixableAcidFluidTank acidTank = new MixableAcidFluidTank(5000) {
         @Override
         protected void onContentsChanged() {
@@ -228,6 +230,10 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
             return;
         }
 
+        if (this.redstoneActivationType != RedstoneActivationType.ALWAYS_ACTIVE) {
+
+        }
+
         // Set generated per tick to 0, we will set this later
         this.generatedEnergyPerTick = 0;
 
@@ -297,7 +303,7 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
 
                     // can we add energy?
                     energy.ifPresent(x -> {
-                        CustomEnergyStorage customEnergyStorage = (CustomEnergyStorage)x;
+                        CustomEnergyStorage customEnergyStorage = (CustomEnergyStorage) x;
                         int energyStored = x.getEnergyStored();
                         int energyMaxStored = x.getMaxEnergyStored();
                         int delta = energyMaxStored - energyStored;
@@ -436,7 +442,11 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
 
     @Override
     public void read(CompoundNBT tag) {
+        readNBT(tag);
+        super.read(tag);
+    }
 
+    private void readNBT(CompoundNBT tag) {
         this.currentBurnItemTotalTicks = tag.getInt("burntimetotal");
         this.currentBurnItemTicks = tag.getInt("burntime");
         this.heat = tag.getFloat("heat");
@@ -450,13 +460,9 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
         CompoundNBT energyTag = tag.getCompound("energy");
         // Save energy when block is broken
         energy.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(energyTag));
-
-        super.read(tag);
     }
 
-    @Override
-    public CompoundNBT write(CompoundNBT tag) {
-
+    private void writeNBT(CompoundNBT tag) {
         inventory.ifPresent(w -> {
             CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
             tag.put("inv", compound);
@@ -473,33 +479,18 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
         tag.putInt("burntime", this.currentBurnItemTicks);
         tag.putInt("burntimetotal", this.currentBurnItemTotalTicks);
         tag.putFloat("heat", this.heat);
+    }
 
+    @Override
+    public CompoundNBT write(CompoundNBT tag) {
+        this.writeNBT(tag);
         return super.write(tag);
     }
 
     @Override
     public CompoundNBT getUpdateTag() {
         CompoundNBT tag = super.getUpdateTag();
-        CompoundNBT acidTankNBT = new CompoundNBT();
-
-        acidTank.writeToNBT(acidTankNBT);
-
-        inventory.ifPresent(w -> {
-            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
-            tag.put("inv", compound);
-        });
-
-        energy.ifPresent(w -> {
-            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
-            tag.put("energy", compound);
-        });
-
-        tag.put("acid", acidTankNBT);
-
-        tag.putInt("burntime", this.currentBurnItemTicks);
-        tag.putInt("burntimetotal", this.currentBurnItemTotalTicks);
-        tag.putFloat("heat", this.heat);
-
+        this.writeNBT(tag);
         return tag;
     }
 
@@ -512,17 +503,7 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
         CompoundNBT nbt = packet.getNbtCompound();
-
-        acidTank.readFromNBT(nbt.getCompound("acid"));
-        CompoundNBT invTag = nbt.getCompound("inv");
-        CompoundNBT energyTag = nbt.getCompound("energy");
-
-        inventory.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(invTag));
-        energy.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(energyTag));
-
-        this.currentBurnItemTicks = nbt.getInt("burntime");
-        this.currentBurnItemTotalTicks = nbt.getInt("burntimetotal");
-        this.heat = nbt.getFloat("heat");
+        readNBT(nbt);
     }
 
     @Nonnull
@@ -585,5 +566,15 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
         TerraReactorInjectorTile injector = (TerraReactorInjectorTile) tileEntity;
 
         return injector.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).map(w -> ((NonExtractingItemUsageStackHandler) w).getUsagesLeftForSlot(0)).orElse(-1);
+    }
+
+    @Override
+    public RedstoneActivationType getRedstoneActivationType() {
+        return this.redstoneActivationType;
+    }
+
+    @Override
+    public void setRedstoneActivationType(RedstoneActivationType type) {
+        this.redstoneActivationType = type;
     }
 }

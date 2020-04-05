@@ -5,6 +5,7 @@ import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
 import com.agrejus.netherendingenergy.common.attributes.CustomFluidAttributes;
 import com.agrejus.netherendingenergy.common.blocks.EnergyBlock;
+import com.agrejus.netherendingenergy.common.blocks.RedstoneEnergyBlock;
 import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
 import com.agrejus.netherendingenergy.common.handlers.ReactorInventoryStackHandler;
@@ -23,8 +24,10 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -38,16 +41,18 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class TerraMixerTile extends EnergyBlock implements INamedContainerProvider, IRedstoneActivatable {
+public class TerraMixerTile extends RedstoneEnergyBlock implements INamedContainerProvider, IRedstoneActivatable {
 
     // Export Config
     public static class ExportConfig {
@@ -65,15 +70,109 @@ public class TerraMixerTile extends EnergyBlock implements INamedContainerProvid
     private MixerRecipe currentRecipe;
     private IntArraySupplierReferenceHolder referenceHolder;
 
+    private LazyOptional<IItemHandler> acidInputSlotInventory = LazyOptional.of(this::createAcidInputSlotInventory);
+    private LazyOptional<IItemHandler> acidResultSlotInventory = LazyOptional.of(this::createAcidResultSlotInventory);
+    private LazyOptional<IItemHandler> outputSlotInventory = LazyOptional.of(this::createOutputInventory);
     private LazyOptional<IItemHandler> destructibleItemInventory = LazyOptional.of(this::createInventory);
     private LazyOptional<NEEFluidTank> inputTank = LazyOptional.of(this::createInputTank);
     private LazyOptional<MixableAcidFluidTank> outputTank = LazyOptional.of(this::createOutputTank);
+
+    public LazyOptional<IItemHandler> getAcidInputSlotInventory() {
+        return this.acidInputSlotInventory;
+    }
+
+    public LazyOptional<IItemHandler> getAcidResultSlotInventory() {
+        return this.acidResultSlotInventory;
+    }
+
+    public LazyOptional<IItemHandler> getOutputSlotInventory() {
+        return this.outputSlotInventory;
+    }
 
     private static Map<Item, Integer> destructibleItems = NetherEndingEnergyConfig.Mixer().destructibleItems;
     private static ArrayList<MixerRecipe> recipes = NetherEndingEnergyConfig.Mixer().recipes;
     private static ArrayList<Direction> horizontalDirections = NetherEndingEnergyConfig.General().horizontalDirections;
 
-    private RedstoneActivationType redstoneActivationType;
+    private IItemHandler createAcidInputSlotInventory() {
+        return new ItemStackHandler(1) {
+
+            @Override
+            public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+
+                if (stack.getItem() instanceof BucketItem) {
+                    BucketItem bucketItem = (BucketItem) stack.getItem();
+                    int size = recipes.size();
+
+                    for (int i = 0; i < size; i++) {
+                        MixerRecipe recipe = recipes.get(i);
+                        if (recipe.getIngredientFluid() == bucketItem.getFluid()) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+            @Override
+            protected void onContentsChanged(int slot) {
+                markDirty();
+            }
+
+            @Nonnull
+            @Override
+            public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+
+                if (isItemValid(slot, stack) == false) {
+                    return stack;
+                }
+
+                return super.insertItem(slot, stack, simulate);
+            }
+        };
+    }
+
+    private IItemHandler createAcidResultSlotInventory() {
+        return new ItemStackHandler(1) {
+
+            @Override
+            public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+                return stack.getItem() == Items.BUCKET;
+            }
+
+            @Override
+            protected void onContentsChanged(int slot) {
+                markDirty();
+            }
+
+            @Nonnull
+            @Override
+            public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+
+                if (isItemValid(slot, stack) == false) {
+                    return stack;
+                }
+
+                return super.insertItem(slot, stack, simulate);
+            }
+        };
+    }
+
+    private IItemHandler createOutputInventory() {
+        return new ItemStackHandler(1) {
+
+            @Override
+            protected void onContentsChanged(int slot) {
+                markDirty();
+            }
+
+            @Nonnull
+            @Override
+            public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+                return super.insertItem(slot, stack, simulate);
+            }
+        };
+    }
 
     private IItemHandler createInventory() {
         return new ReactorInventoryStackHandler() {
@@ -176,17 +275,6 @@ public class TerraMixerTile extends EnergyBlock implements INamedContainerProvid
         return true;
     }*/
 
-    @Override
-    public RedstoneActivationType getRedstoneActivationType() {
-        return this.redstoneActivationType;
-    }
-
-    @Override
-    public void setRedstoneActivationType(RedstoneActivationType type) {
-        this.redstoneActivationType = type;
-        markDirty();
-    }
-
     public void voidInputTank() {
         this.inputTank.ifPresent(w -> {
             int amount = w.getFluidAmount();
@@ -209,7 +297,8 @@ public class TerraMixerTile extends EnergyBlock implements INamedContainerProvid
     }
 
     public void changeRedstoneActivationType(RedstoneActivationType type) {
-        this.redstoneActivationType = type;
+        this.setRedstoneActivationType(type);
+        markDirty();
 
         if (world.isRemote) {
             NetherEndingEnergyNetworking.INSTANCE.sendToServer(new PacketChangeRedstoneActivationType(pos, type));
@@ -266,6 +355,10 @@ public class TerraMixerTile extends EnergyBlock implements INamedContainerProvid
     public void tick() {
 
         if (world.isRemote) {
+            return;
+        }
+
+        if (this.canTick() == false) {
             return;
         }
 
@@ -330,6 +423,7 @@ public class TerraMixerTile extends EnergyBlock implements INamedContainerProvid
                                 this.destructibleItemTicks = destructibleTime;
                                 this.destructibleItemTotalTicks = destructibleTime;
 
+                                this.updateBlock();
                                 markDirty();
                             }
                         }
@@ -399,6 +493,81 @@ public class TerraMixerTile extends EnergyBlock implements INamedContainerProvid
         });
 
         this.sendOutFluid();
+        this.tryFillFromInputAcidSlot();
+        this.tryFillFromOutputTank();
+    }
+
+    private void tryFillFromOutputTank() {
+        acidResultSlotInventory.ifPresent(result -> {
+            ItemStack stack = result.getStackInSlot(0);
+
+            if (stack.isEmpty() == false) {
+                Item item = stack.getItem();
+                if (item == Items.BUCKET) {
+                    outputTank.ifPresent(tank -> {
+                        FluidStack fluidInTank = tank.getFluidInTank(0);
+                        if (fluidInTank.getAmount() >= 1000) {
+                            outputSlotInventory.ifPresent(output -> {
+
+                                FluidStack drained = tank.drain(1000, IFluidHandler.FluidAction.SIMULATE);
+
+                                if (drained.getAmount() == 1000) {
+
+                                    ItemStack outputItemStack = FluidUtil.getFilledBucket(drained);
+
+                                    ItemStack insertResult = output.insertItem(0, outputItemStack,true);
+
+                                    if (insertResult.isEmpty() == true) {
+                                        tank.drain(1000, IFluidHandler.FluidAction.EXECUTE);
+                                        output.insertItem(0, outputItemStack,false);
+                                        result.extractItem(0,1, false);
+                                        this.updateBlock();
+                                        markDirty();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void tryFillFromInputAcidSlot() {
+        this.acidInputSlotInventory.ifPresent(input -> {
+
+            ItemStack stack = input.getStackInSlot(0);
+            if (stack.isEmpty() == false) {
+                Item item = stack.getItem();
+                if (item instanceof BucketItem) {
+                    BucketItem bucketItem = (BucketItem)item;
+                    outputSlotInventory.ifPresent(output -> {
+
+                        inputTank.ifPresent(x -> {
+                            FluidStack fillStack = new FluidStack(bucketItem.getFluid(), 1000);
+                            int fillAmount = x.fill(fillStack, IFluidHandler.FluidAction.SIMULATE);
+
+                            if (fillAmount == 1000) {
+
+                                // Can we put item into output item stack?
+                                ItemStack bucketItemStack = new ItemStack(Items.BUCKET, 1);
+                                ItemStack insertStackResult = output.insertItem(0, bucketItemStack,true);
+
+                                // insertStackResult is the remaining items that were not inserted
+                                if (insertStackResult.isEmpty() == true) {
+                                    x.fill(fillStack, IFluidHandler.FluidAction.EXECUTE);
+
+                                    input.extractItem(0, 1, false);
+                                    output.insertItem(0, bucketItemStack,false);
+                                    this.updateBlock();
+                                    markDirty();
+                                }
+                            }
+                        });
+                    });
+                }
+            }
+        });
     }
 
     public void updateBlock() {
@@ -420,6 +589,8 @@ public class TerraMixerTile extends EnergyBlock implements INamedContainerProvid
                         if (amountToFill > 0) {
                             FluidStack fillFluidStack = w.drain(amountToFill, IFluidHandler.FluidAction.EXECUTE);
                             x.fill(fillFluidStack, IFluidHandler.FluidAction.EXECUTE);
+                            this.updateBlock();
+                            markDirty();
                         }
                     });
                 }
@@ -480,9 +651,16 @@ public class TerraMixerTile extends EnergyBlock implements INamedContainerProvid
         inputTank.ifPresent(w -> w.readFromNBT(tag.getCompound("input_tank")));
         outputTank.ifPresent(w -> w.readFromNBT(tag.getCompound("output_tank")));
 
+        CompoundNBT acidInputSlotInventoryTag = tag.getCompound("acid_input_slot_inventory");
+        CompoundNBT acidResultSlotInventoryTag = tag.getCompound("acid_result_slot_inventory");
+        CompoundNBT outputSlotInventoryTag = tag.getCompound("output_slot_inventory");
         CompoundNBT invTag = tag.getCompound("inventory");
 
         destructibleItemInventory.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(invTag));
+
+        acidInputSlotInventory.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(acidInputSlotInventoryTag));
+        acidResultSlotInventory.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(acidResultSlotInventoryTag));
+        outputSlotInventory.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(outputSlotInventoryTag));
 
         CompoundNBT energyTag = tag.getCompound("energy");
 
@@ -512,6 +690,21 @@ public class TerraMixerTile extends EnergyBlock implements INamedContainerProvid
 
         tag.put("input_tank", inputTankNBT);
         tag.put("output_tank", outputTankNBT);
+
+        acidInputSlotInventory.ifPresent(w -> {
+            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
+            tag.put("acid_input_slot_inventory", compound);
+        });
+
+        acidResultSlotInventory.ifPresent(w -> {
+            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
+            tag.put("acid_result_slot_inventory", compound);
+        });
+
+        outputSlotInventory.ifPresent(w -> {
+            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
+            tag.put("output_slot_inventory", compound);
+        });
 
         destructibleItemInventory.ifPresent(w -> {
             CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();

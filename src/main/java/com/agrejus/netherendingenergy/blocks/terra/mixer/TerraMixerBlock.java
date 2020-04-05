@@ -49,6 +49,8 @@ public class TerraMixerBlock extends Block {
         setRegistryName(RegistryNames.TERRA_MIXER);
     }
 
+
+
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.TRANSLUCENT;
     }

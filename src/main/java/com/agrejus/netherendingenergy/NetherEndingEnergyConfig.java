@@ -87,7 +87,7 @@ public class NetherEndingEnergyConfig {
 
         public Map<Item, Integer> destructibleItems = new HashMap<Item, Integer>() {
             {
-                put(Items.ROTTEN_FLESH, 500);
+                put(Items.ROTTEN_FLESH, 20);
                 put(Items.WITHER_SKELETON_SKULL, 2000);
                 put(Items.NETHER_STAR, 5000);
                 put(Items.CHICKEN, 750);
