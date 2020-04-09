@@ -4,18 +4,24 @@ import com.agrejus.netherendingenergy.common.enumeration.RootType;
 import com.agrejus.netherendingenergy.common.helpers.NBTHelpers;
 import com.agrejus.netherendingenergy.common.interfaces.IRoot;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 
-public class RootBud {
+public class RootBud implements INBTSerializable<CompoundNBT> {
 
     private RootType rootType;
-    private final Direction growthDirection;
+    private Direction growthDirection;
     private IRoot root;
-    private final Direction sideOfTrunkDirection;
-    private final BlockPos location;
+    private Direction sideOfTrunkDirection;
+    private BlockPos location;
+
+    public RootBud() {
+
+    }
 
     public RootBud(Direction growthDirection, BlockPos location, RootType rootType, @Nullable Direction sideOfTrunkDirection) {
         this.growthDirection = growthDirection;
@@ -48,17 +54,50 @@ public class RootBud {
         return this.location;
     }
 
-    public void writeAllButRootToNBT(CompoundNBT tag) {
+    @Override
+    public CompoundNBT serializeNBT() {
+        CompoundNBT tag = new CompoundNBT();
 
-        tag.putString("RootType", rootType.toString());
-        tag.putString("GrowthDirection", growthDirection.toString());
+        tag.putString("root_type", rootType.getName());
+        tag.putString("growth_direction", growthDirection.getName());
 
         if (sideOfTrunkDirection != null) {
-            tag.putString("SideOfTrunkDirection", sideOfTrunkDirection.toString());
+            tag.putString("side_of_trunk_direction", sideOfTrunkDirection.getName());
         }
 
         CompoundNBT locationNBT = new CompoundNBT();
         NBTHelpers.writeToNBT(locationNBT, location);
-        tag.put("Location", locationNBT);
+        tag.put("location", locationNBT);
+
+        if (root != null) {
+            tag.put("root", this.root.serializeNBT());
+        }
+
+        return tag;
+    }
+
+    @Override
+    public void deserializeNBT(CompoundNBT nbt) {
+
+        CompoundNBT locationNbt = (CompoundNBT)nbt.get("location");
+        this.location = NBTHelpers.readBlockPosFromNBT(locationNbt);
+        this.rootType = RootType.get(nbt.getString("root_type"));
+        this.growthDirection = Direction.byName(nbt.getString("growth_direction"));
+
+        if (nbt.contains("side_of_trunk_direction")) {
+            this.sideOfTrunkDirection = Direction.byName(nbt.getString("side_of_trunk_direction"));
+        }
+
+        if (nbt.contains("root")) {
+            CompoundNBT rootNbt = (CompoundNBT)nbt.get("root");
+
+            if (this.rootType == RootType.MAIN_TRUNK) {
+                this.root = new MainTrunkRoot();
+            } else {
+                this.root = new OffshootRoot();
+            }
+
+            this.root.deserializeNBT(rootNbt);
+        }
     }
 }

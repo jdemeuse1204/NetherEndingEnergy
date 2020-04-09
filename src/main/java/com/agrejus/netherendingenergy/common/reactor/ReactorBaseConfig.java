@@ -67,7 +67,7 @@ public class ReactorBaseConfig {
         if (dimensionType == DimensionType.THE_END) {
             // farthest x,z away from 0,0
             BlockPos startingPosition = new BlockPos(0,64,0);
-            level = BlockHelpers.getDistance(position, startingPosition);
+            level = BlockHelpers.getHorizontalDistance(position, startingPosition);
         }
 
         WorldFuelBase fuelBase = ReactorBaseConfig.getBaseFuel(dimensionType);

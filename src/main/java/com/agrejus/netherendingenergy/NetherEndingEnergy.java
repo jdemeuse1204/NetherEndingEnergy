@@ -18,6 +18,8 @@ import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCod
 import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorBlock;
 import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorContainer;
 import com.agrejus.netherendingenergy.blocks.general.generator.FurnaceGeneratorTile;
+import com.agrejus.netherendingenergy.blocks.general.wireless.fluid.WirelessFluidTransferModuleBlock;
+import com.agrejus.netherendingenergy.blocks.general.wireless.fluid.WirelessFluidTransferModuleTile;
 import com.agrejus.netherendingenergy.blocks.soil.CausticDirtBlock;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationBlock;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationContainer;
@@ -45,6 +47,7 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraR
 import com.agrejus.netherendingenergy.blocks.terra.reactor.stabilizer.TerraReactorItemStabilizerBlock;
 import com.agrejus.netherendingenergy.fluids.*;
 import com.agrejus.netherendingenergy.items.CausticMashItem;
+import com.agrejus.netherendingenergy.items.wireless.LinkingRemoteItem;
 import com.agrejus.netherendingenergy.network.NetherEndingEnergyNetworking;
 import com.agrejus.netherendingenergy.setup.ClientProxy;
 import com.agrejus.netherendingenergy.setup.IProxy;
@@ -215,6 +218,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new CausticDirtBlock());
             event.getRegistry().register(new ImbuingMachineBlock());
             event.getRegistry().register(new BotanistsCodexBlock());
+            event.getRegistry().register(new WirelessFluidTransferModuleBlock());
 
             // Terra
             event.getRegistry().register(new TerraReactorCasingBlock());
@@ -256,11 +260,14 @@ public class NetherEndingEnergy {
 
             // Register Items
             event.getRegistry().register(new CausticMashItem());
+            event.getRegistry().register(new LinkingRemoteItem());
 
             // New Stuff
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_VINES_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_VINES));
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_ROOTS_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_ROOTS));
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_DIRT_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_DIRT));
+
+            event.getRegistry().register(new BlockItem(ModBlocks.WIRELESS_FLUID_TRANSFER_MODULE_BLOCK, properties).setRegistryName(RegistryNames.WIRELESS_FLUID_TRANSFER_MODULE));
             event.getRegistry().register(new BlockItem(ModBlocks.IMBUING_MACHINE_BLOCK, properties).setRegistryName(RegistryNames.IMBUING_MACHINE));
 
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_BELL_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_BELL));
@@ -300,6 +307,7 @@ public class NetherEndingEnergy {
             // New Stuff
             event.getRegistry().register(TileEntityType.Builder.create(ImbuingMachineTile::new, ModBlocks.IMBUING_MACHINE_BLOCK).build(null).setRegistryName(RegistryNames.IMBUING_MACHINE));
 
+            event.getRegistry().register(TileEntityType.Builder.create(WirelessFluidTransferModuleTile::new, ModBlocks.WIRELESS_FLUID_TRANSFER_MODULE_BLOCK).build(null).setRegistryName(RegistryNames.WIRELESS_FLUID_TRANSFER_MODULE));
             event.getRegistry().register(TileEntityType.Builder.create(CausticBellTile::new, ModBlocks.CAUSTIC_BELL_BLOCK).build(null).setRegistryName(RegistryNames.CAUSTIC_BELL));
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorCoreTile::new, ModBlocks.TERRA_REACTOR_CORE_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));
             event.getRegistry().register(TileEntityType.Builder.create(TerraCollectingStationTile::new, ModBlocks.TERRA_COLLECTING_STATION_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_COLLECTING_STATION));

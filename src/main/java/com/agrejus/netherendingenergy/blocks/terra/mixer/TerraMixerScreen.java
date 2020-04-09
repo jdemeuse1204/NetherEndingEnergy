@@ -1,12 +1,10 @@
 package com.agrejus.netherendingenergy.blocks.terra.mixer;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
-import com.agrejus.netherendingenergy.client.gui.button.NEEImageButton;
-import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
+import com.agrejus.netherendingenergy.client.gui.screen.RedstoneActivatableScreen;
 import com.agrejus.netherendingenergy.common.models.MixerRecipe;
 import com.agrejus.netherendingenergy.common.rendering.Rect;
 import com.agrejus.netherendingenergy.common.rendering.RectProgression;
-import com.agrejus.netherendingenergy.common.screen.ContainerScreenBase;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.ImageButton;
@@ -15,7 +13,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -26,10 +23,9 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
+public class TerraMixerScreen extends RedstoneActivatableScreen<TerraMixerContainer> {
 
     private ResourceLocation GUI = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/terra_mixer_gui.png");
-    private static final ResourceLocation MIXER_BUTTONS = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/gui_buttons.png");
     private Rect inputFluidLocation;
     private Rect inputFluidMixingLocation;
     private Rect outputFluidLocation;
@@ -37,10 +33,6 @@ public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
 
     private RectProgression energySlice;
     private Rect energyDestination;
-
-    private NEEImageButton redstoneActiveWithSignal;
-    private NEEImageButton redstoneActibeWithoutSignal;
-    private NEEImageButton redstoneAlwaysActive;
 
     private RectProgression progressionSlice;
     private Rect progressionDestination;
@@ -73,41 +65,14 @@ public class TerraMixerScreen extends ContainerScreenBase<TerraMixerContainer> {
         outputFluidLocation = createRectBasedOnGui(65, 120, 136, 97);
         outputFluidMixingLocation = createRectBasedOnGui(75, 66, 82, 91);
 
-        // Swap between redstone signals
-        RedstoneActivationType redstoneActivationType = this.container.getRedstoneActivationType();
-        this.redstoneActiveWithSignal = new NEEImageButton(redstoneActivationType == RedstoneActivationType.ACTIVE_WITH_SIGNAL, this.guiLeft + 178, this.guiTop + 20, 14, 14, 0, 106, 0, MIXER_BUTTONS, (button) -> {
-            ((NEEImageButton) button).setVisibility(false);
-            this.redstoneActibeWithoutSignal.setVisibility(true);
-            this.container.changeRedstoneActivationType(RedstoneActivationType.ACTIVE_WITHOUT_SIGNAL);
-        });
-        this.redstoneActibeWithoutSignal= new NEEImageButton(redstoneActivationType == RedstoneActivationType.ACTIVE_WITHOUT_SIGNAL, this.guiLeft + 178, this.guiTop + 20, 14, 14, 0, 136, 0, MIXER_BUTTONS, (button) -> {
-            ((NEEImageButton) button).setVisibility(false);
-            this.redstoneAlwaysActive.setVisibility(true);
-            this.container.changeRedstoneActivationType(RedstoneActivationType.ALWAYS_ACTIVE);
-        });
-        this.redstoneAlwaysActive = new NEEImageButton(redstoneActivationType == RedstoneActivationType.ALWAYS_ACTIVE, this.guiLeft + 178, this.guiTop + 20, 14, 14, 0, 166, 0, MIXER_BUTTONS, (button) -> {
-            ((NEEImageButton) button).setVisibility(false);
-            this.redstoneActiveWithSignal.setVisibility(true);
-            this.container.changeRedstoneActivationType(RedstoneActivationType.ACTIVE_WITH_SIGNAL);
-        });
-
-        // Redstone Always Active
-        this.addButton(this.redstoneAlwaysActive);
-
-        // Redstone Active With Signal
-        this.addButton(this.redstoneActiveWithSignal);
-
-        // Redstone Active Without Signal
-        this.addButton( this.redstoneActibeWithoutSignal);
-
         // Clear Input Tank
-        this.addButton((new ImageButton(this.guiLeft + 139, this.guiTop + 26, 9, 9, 0, 30, 0, MIXER_BUTTONS, (button) -> {
+        this.addButton((new ImageButton(this.guiLeft + 139, this.guiTop + 26, 9, 9, 0, 30, 0, GUI_BUTTONS, (button) -> {
             /*            ((ImageButton)button).*/
             this.container.voidInputTank();
         })));
 
         // Clear Output Tank
-        this.addButton((new ImageButton(this.guiLeft + 139, this.guiTop + 64, 9, 9, 0, 30, 0, MIXER_BUTTONS, (button) -> {
+        this.addButton((new ImageButton(this.guiLeft + 139, this.guiTop + 64, 9, 9, 0, 30, 0, GUI_BUTTONS, (button) -> {
             this.container.voidOutputTank();
         })));
     }

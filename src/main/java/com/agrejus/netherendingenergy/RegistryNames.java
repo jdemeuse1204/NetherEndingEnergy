@@ -28,7 +28,8 @@ public class RegistryNames {
 
     /* General */
     public static final String TERRA_REACTOR_ENERGY_PORT = "terra_reactor_energy_port";
-
+    public static final String WIRELESS_FLUID_TRANSFER_MODULE = "wireless_fluid_transfer_module";
+    public static final String LINKING_REMOTE = "linking_remote";
     public static final String BOTANISTS_CODEX = "botanists_codex";
 
 

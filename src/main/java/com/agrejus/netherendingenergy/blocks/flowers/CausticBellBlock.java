@@ -33,6 +33,8 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.IShearable;
+import net.minecraftforge.common.ToolType;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
@@ -48,7 +50,7 @@ public class CausticBellBlock extends FlowerBlock {
         super(Effects.POISON, 8, Properties.create(Material.PLANTS)
                 .sound(SoundType.PLANT)
                 .doesNotBlockMovement()
-                .hardnessAndResistance(0)
+                .hardnessAndResistance(0) // bell is not dropping for some reason
                 .lightValue(0));
         setRegistryName(RegistryNames.CAUSTIC_BELL);
     }

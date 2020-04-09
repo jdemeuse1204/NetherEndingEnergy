@@ -4,7 +4,6 @@ import com.agrejus.netherendingenergy.NetherEndingEnergyConfig;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
 import com.agrejus.netherendingenergy.common.attributes.CustomFluidAttributes;
-import com.agrejus.netherendingenergy.common.blocks.EnergyBlock;
 import com.agrejus.netherendingenergy.common.blocks.RedstoneEnergyBlock;
 import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
@@ -74,7 +73,7 @@ public class TerraMixerTile extends RedstoneEnergyBlock implements INamedContain
     private LazyOptional<IItemHandler> acidResultSlotInventory = LazyOptional.of(this::createAcidResultSlotInventory);
     private LazyOptional<IItemHandler> outputSlotInventory = LazyOptional.of(this::createOutputInventory);
     private LazyOptional<IItemHandler> destructibleItemInventory = LazyOptional.of(this::createInventory);
-    private LazyOptional<NEEFluidTank> inputTank = LazyOptional.of(this::createInputTank);
+    private LazyOptional<MixableAcidFluidTank> inputTank = LazyOptional.of(this::createInputTank);
     private LazyOptional<MixableAcidFluidTank> outputTank = LazyOptional.of(this::createOutputTank);
 
     public LazyOptional<IItemHandler> getAcidInputSlotInventory() {
@@ -220,8 +219,8 @@ public class TerraMixerTile extends RedstoneEnergyBlock implements INamedContain
         };
     }
 
-    private NEEFluidTank createInputTank() {
-        return new NEEFluidTank(32000) {
+    private MixableAcidFluidTank createInputTank() {
+        return new MixableAcidFluidTank(32000) {
             @Override
             protected void onContentsChanged() {
                 BlockState state = world.getBlockState(pos);
@@ -359,6 +358,7 @@ public class TerraMixerTile extends RedstoneEnergyBlock implements INamedContain
         }
 
         if (this.canTick() == false) {
+            super.tick();
             return;
         }
 
@@ -576,7 +576,7 @@ public class TerraMixerTile extends RedstoneEnergyBlock implements INamedContain
     }
 
     private void sendOutFluid() {
-        this.outputTank.ifPresent(w -> {
+/*        this.outputTank.ifPresent(w -> {
             if (w.getFluidAmount() > 0) {
 
                 TileEntity tileEntity = world.getTileEntity(pos.offset(Direction.DOWN));
@@ -595,7 +595,7 @@ public class TerraMixerTile extends RedstoneEnergyBlock implements INamedContain
                     });
                 }
             }
-        });
+        });*/
     }
 
     private FluidStack getFillStack(int amount, Fluid fluid) {
@@ -752,7 +752,7 @@ public class TerraMixerTile extends RedstoneEnergyBlock implements INamedContain
             return this.destructibleItemInventory.cast();
         }
 
-        if (cap == CapabilityEnergy.ENERGY && side != null && side == Direction.DOWN) {
+        if (cap == CapabilityEnergy.ENERGY) {
             return this.energy.cast();
         }
 

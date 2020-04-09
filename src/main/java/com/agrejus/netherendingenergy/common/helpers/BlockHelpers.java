@@ -6,11 +6,19 @@ import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
 
 public class BlockHelpers {
-    public static int getDistance(BlockPos origin, BlockPos destination) {
+    public static int getHorizontalDistance(BlockPos origin, BlockPos destination) {
         double x = Math.pow(destination.getX() - origin.getX(), 2);
         double z = Math.pow(destination.getZ() - origin.getZ(), 2);
 
         return (int) Math.sqrt(x + z);
+    }
+
+    public static int getThreeDimensionalDistance(BlockPos origin, BlockPos destination) {
+        double x = Math.pow(destination.getX() - origin.getX(), 2);
+        double y = Math.pow(destination.getY() - origin.getY(), 2);
+        double z = Math.pow(destination.getZ() - origin.getZ(), 2);
+
+        return (int) Math.sqrt(x + y + z);
     }
 
     public static int getDeviation(BlockPos startingBlockPosition, BlockPos nextBlockPosition, Direction travelingDirection) {

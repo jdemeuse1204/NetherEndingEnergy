@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "netherendingenergy:abyssal_heat_sink"
+          "name": "netherendingenergy:wireless_fluid_transfer_module"
         }
       ],
       "conditions": [

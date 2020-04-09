@@ -168,7 +168,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
             Map.Entry<BlockPos, AbsorbableBlock> entry = this.absorbableBlocks.entrySet().iterator().next();
 
-            while(entry != null) {
+            while (entry != null) {
                 AbsorbableBlock absorbableBlock = this.absorbableBlocks.remove(entry.getKey());
                 this.tryAbsorbBlock(absorbableBlock);
 
@@ -687,6 +687,12 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
                 this.recessiveTrait = trait;
             }
         }
+
+        if (tag.contains("root_system")) {
+            CompoundNBT rootSystemNbt = (CompoundNBT) tag.get("root_system");
+            this.rootSystem = new RootSystem();
+            this.rootSystem.deserializeNBT(rootSystemNbt);
+        }
     }
 
     @Override
@@ -705,6 +711,9 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         tag.putString("superior", this.superiorTrait.getName());
         tag.putString("inferior", this.inferiorTrait.getName());
         tag.putString("recessive", this.recessiveTrait.getName());
+        if (this.rootSystem != null) {
+            tag.put("root_system", this.rootSystem.serializeNBT());
+        }
     }
 
     @Override

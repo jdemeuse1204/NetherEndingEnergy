@@ -13,11 +13,15 @@ import java.util.ArrayList;
 
 public class MainTrunkRoot implements IRoot {
 
-    private final BlockPos origin;
-    private final Direction travelingDirection;
-    private final RootPoint[] rootPoints;
+    private BlockPos origin;
+    private Direction travelingDirection;
+    private RootPoint[] rootPoints;
+    private int size;
+
+    public MainTrunkRoot(){}
 
     public MainTrunkRoot(BlockPos origin, Direction travelingDirection, int size) {
+        this.size = size;
         this.origin = origin;
         this.travelingDirection = travelingDirection;
         rootPoints = new RootPoint[size];
@@ -99,5 +103,45 @@ public class MainTrunkRoot implements IRoot {
     public BlockPos getNextPosition(int lastIndex) {
         BlockPos pos = rootPoints[lastIndex].getPosition();
         return pos.offset(travelingDirection);
+    }
+
+    @Override
+    public CompoundNBT serializeNBT() {
+        CompoundNBT tag = new CompoundNBT();
+
+        CompoundNBT originTag = new CompoundNBT();
+        NBTHelpers.writeToNBT(originTag, this.origin);
+        tag.put("origin", originTag);
+        tag.putString("traveling_direction", travelingDirection.getName());
+        tag.putInt("size", this.size);
+
+        for (int i = 0; i < this.size; i++) {
+            RootPoint point = this.rootPoints[i];
+            CompoundNBT pointNbt = point.serializeNBT();
+            tag.put("root_point" + i, pointNbt);
+        }
+
+        return tag;
+    }
+
+    @Override
+    public void deserializeNBT(CompoundNBT nbt) {
+        this.travelingDirection = Direction.byName(nbt.getString("traveling_direction"));
+
+        CompoundNBT originTag = (CompoundNBT)nbt.get("origin");
+        this.origin = NBTHelpers.readBlockPosFromNBT(originTag);
+        this.size = nbt.getInt("size");
+        this.rootPoints = new RootPoint[this.size];
+
+        for (int i = 0; i < this.size; i++) {
+            String key = "root_point" + i;
+
+            if (nbt.contains(key)) {
+                RootPoint point = new RootPoint();
+                CompoundNBT pointNbt = (CompoundNBT)nbt.get(key);
+                point.deserializeNBT(pointNbt);
+                this.rootPoints[i] = point;
+            }
+        }
     }
 }

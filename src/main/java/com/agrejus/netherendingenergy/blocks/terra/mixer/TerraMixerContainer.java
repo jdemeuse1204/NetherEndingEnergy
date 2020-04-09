@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.terra.mixer;
 
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
+import com.agrejus.netherendingenergy.client.gui.container.RedstoneActivatableContainer;
 import com.agrejus.netherendingenergy.common.container.InventoryContainerBase;
 import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
 import com.agrejus.netherendingenergy.common.handlers.ReactorInventoryStackHandler;
@@ -27,7 +28,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class TerraMixerContainer extends InventoryContainerBase<TerraMixerTile> {
+public class TerraMixerContainer extends RedstoneActivatableContainer<TerraMixerTile> {
 
     private TerraMixerTile tileEntity;
     private PlayerEntity playerEntity;

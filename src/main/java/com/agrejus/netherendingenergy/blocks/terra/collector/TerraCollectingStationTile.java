@@ -268,9 +268,14 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                                 drainAmount = outputTank.getFluidAmount();
                             }
 
-                            FluidStack drained = outputTank.drain(new FluidStack(ModFluids.ACID_OF_THE_ORDINARY, drainAmount), IFluidHandler.FluidAction.EXECUTE);;
+                            FluidStack drainedStack = outputTank.drain(drainAmount, IFluidHandler.FluidAction.SIMULATE);
+                            int fillAmount = handler.fill(drainedStack, IFluidHandler.FluidAction.SIMULATE);
 
-                            handler.fill(drained, IFluidHandler.FluidAction.EXECUTE);
+                            if (fillAmount > 0) {
+                                drainedStack.setAmount(fillAmount);
+                                handler.fill(drainedStack, IFluidHandler.FluidAction.EXECUTE);
+                                outputTank.drain(drainedStack, IFluidHandler.FluidAction.EXECUTE);
+                            }
 
                             markDirty();
                         }

@@ -9,6 +9,8 @@ import com.agrejus.netherendingenergy.blocks.flowers.vines.CausticBellVineBlock;
 import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexBlock;
 import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexContainer;
 import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexTile;
+import com.agrejus.netherendingenergy.blocks.general.wireless.fluid.WirelessFluidTransferModuleBlock;
+import com.agrejus.netherendingenergy.blocks.general.wireless.fluid.WirelessFluidTransferModuleTile;
 import com.agrejus.netherendingenergy.blocks.soil.CausticDirtBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorTile;
@@ -63,6 +65,11 @@ public class ModBlocks {
     /* General */
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_CASING)
     public static TerraReactorCasingBlock TERRA_REACTOR_CASING_BLOCK;
+
+    @ObjectHolder("netherendingenergy:" + RegistryNames.WIRELESS_FLUID_TRANSFER_MODULE)
+    public static WirelessFluidTransferModuleBlock WIRELESS_FLUID_TRANSFER_MODULE_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.WIRELESS_FLUID_TRANSFER_MODULE)
+    public static TileEntityType<WirelessFluidTransferModuleTile> WIRELESS_FLUID_TRANSFER_MODULE_TILE;
 
     @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_DIRT)
     public static CausticDirtBlock CAUSTIC_DIRT_BLOCK;

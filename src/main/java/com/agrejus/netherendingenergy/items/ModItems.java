@@ -48,6 +48,12 @@ public class ModItems {
     @ObjectHolder("netherendingenergy:caustic_bell")
     public static Item CAUSTIC_BELL;
 
+    @ObjectHolder("netherendingenergy:wireless_fluid_transfer_module")
+    public static Item WIRELESS_FLUID_TRANSFER_MODULE;
+
+    @ObjectHolder("netherendingenergy:linking_remote")
+    public static Item LINKING_REMOTE;
+
     @ObjectHolder("netherendingenergy:caustic_mash")
     public static Item CAUSTIC_MASH;
 }

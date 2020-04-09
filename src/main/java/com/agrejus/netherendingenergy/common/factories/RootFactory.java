@@ -143,7 +143,7 @@ public class RootFactory {
         RootBud bud = null;
 
         // no growth beyond 32 blocks
-        if (offshootCount > 0 && BlockHelpers.getDistance(plotPosition, startingPosition) < sourceRoot.getMaxSpread()) {
+        if (offshootCount > 0 && BlockHelpers.getHorizontalDistance(plotPosition, startingPosition) < sourceRoot.getMaxSpread()) {
             bud = getOffshootRootBud(offshootCount, index, plotPosition, mainTravelingDirection, lastBudGrowthDirection, isTwoIndicesAwayFromEnd, configuration);
         }
 
