@@ -1,13 +1,14 @@
 package com.agrejus.netherendingenergy.blocks.general.wireless;
 
+import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.common.helpers.BlockHelpers;
 import com.agrejus.netherendingenergy.common.helpers.NBTHelpers;
-import com.agrejus.netherendingenergy.particle.ModParticles;
+import com.agrejus.netherendingenergy.common.interfaces.ILocationDiscoverable;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -25,14 +26,16 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public abstract class ModuleTileBase extends TileEntity implements ITickableTileEntity {
+public abstract class ModuleTileBase extends TileEntity implements ITickableTileEntity, ILocationDiscoverable {
 
     private final int maxRange = 12;
     private BlockPos linkedBlockPosition;
     private boolean isSource;
     private boolean isOutOfRange;
+
     private int tick;
     private int tickTransfer;
+    private int tickLocationParticles;
 
     public ModuleTileBase(TileEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
@@ -53,6 +56,11 @@ public abstract class ModuleTileBase extends TileEntity implements ITickableTile
     public void clear() {
         this.isSource = false;
         this.setLinkedBlockPosition(null);
+    }
+
+    public void showLocationParticles() {
+        // user packets to send to client from server
+        this.tickLocationParticles = 200;
     }
 
     public void setLinkedBlockPosition(BlockPos pos) {
@@ -76,6 +84,42 @@ public abstract class ModuleTileBase extends TileEntity implements ITickableTile
 
     public boolean isSource() {
         return isSource;
+    }
+
+    protected final boolean isLinked() {
+        BlockPos linkedPosition = this.getLinkedBlockPosition();
+        if (linkedPosition == null) {
+            return false;
+        }
+
+        TileEntity tileEntity = world.getTileEntity(linkedPosition);
+
+        if (tileEntity instanceof ModuleTileBase) {
+            ModuleTileBase module = (ModuleTileBase) tileEntity;
+
+            return pos.equals(module.getLinkedBlockPosition());
+        }
+
+        return false;
+    }
+
+    protected ModuleTileBase getLinkedModule() {
+        BlockPos linkedPosition = this.getLinkedBlockPosition();
+        if (linkedPosition == null) {
+            return null;
+        }
+
+        TileEntity tileEntity = world.getTileEntity(linkedPosition);
+
+        if (tileEntity == null) {
+            return null;
+        }
+
+        if (tileEntity instanceof ModuleTileBase) {
+            return (ModuleTileBase) tileEntity;
+        }
+
+        return null;
     }
 
     @Override
@@ -138,6 +182,17 @@ public abstract class ModuleTileBase extends TileEntity implements ITickableTile
     public void tick() {
 
         if (world.isRemote) {
+
+            // Show particle effects for location of module
+            if (this.tickLocationParticles > 0) {
+
+                if (this.tickLocationParticles % 5 == 0) {
+                    BlockState state = world.getBlockState(pos);
+                    this.animateTick(state, world, pos);
+                }
+                this.tickLocationParticles--;
+            }
+
             return;
         }
 
@@ -163,7 +218,8 @@ public abstract class ModuleTileBase extends TileEntity implements ITickableTile
                 BlockState newState = state.with(BlockStateProperties.POWERED, Boolean.valueOf(false));
                 world.setBlockState(pos, newState);
                 world.notifyBlockUpdate(pos, state, newState, 3);
-            } if (powered == true && this.linkedBlockPosition == null) {
+            }
+            if (powered == true && this.linkedBlockPosition == null) {
                 BlockState newState = state.with(BlockStateProperties.POWERED, Boolean.valueOf(false));
                 world.setBlockState(pos, newState);
                 world.notifyBlockUpdate(pos, state, newState, 3);
@@ -180,18 +236,21 @@ public abstract class ModuleTileBase extends TileEntity implements ITickableTile
             this.tick = 0;
         }
 
-        int transferTickRate =  this.getTransferTickRate();
-        if (this.tickTransfer % transferTickRate == 0) {
-            this.onProcess(isOutOfRange);
-        }
+        int transferTickRate = this.getTransferTickRate();
+        if (transferTickRate > 0){
+            if (this.tickTransfer % transferTickRate == 0) {
+                this.onProcess(isOutOfRange);
+            }
 
-        int maxTickTransfer = transferTickRate * 50;
-        if(this.tickTransfer > maxTickTransfer) {
-            this.tickTransfer = 0;
+            int maxTickTransfer = transferTickRate * 50;
+            if (this.tickTransfer > maxTickTransfer) {
+                this.tickTransfer = 0;
+            }
+
+            tickTransfer++;
         }
 
         tick++;
-        tickTransfer++;
     }
 
     protected boolean isOutOfRange() {
@@ -200,26 +259,23 @@ public abstract class ModuleTileBase extends TileEntity implements ITickableTile
         return distance > this.maxRange;
     }
 
-    // show ender particles to show location
-/*    @OnlyIn(Dist.CLIENT)
-// tick randomly between 1-10
-    public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand) {
-        VoxelShape voxelshape = this.getShape(stateIn, worldIn, pos, ISelectionContext.dummy());
+    @OnlyIn(Dist.CLIENT)
+    public void animateTick(BlockState stateIn, World worldIn, BlockPos pos) {
+        Random rand = NetherEndingEnergy.random;
+        Block block = stateIn.getBlock();
+        VoxelShape voxelshape = block.getShape(stateIn, worldIn, pos, ISelectionContext.dummy());
         Vec3d vec3d = voxelshape.getBoundingBox().getCenter();
         double d0 = (double) pos.getX() + vec3d.x;
         double d1 = (double) pos.getZ() + vec3d.z;
 
-        BasicParticleType particleType = this.isNoxious(pos, worldIn) ? ParticleTypes.DAMAGE_INDICATOR: ParticleTypes.WITCH;
-
         for (int i = 0; i < 3; ++i) {
             if (rand.nextBoolean()) {
-                worldIn.addParticle(ModParticles.CAUSTIC_CLOUD, d0 + (double) (rand.nextFloat() / 5.0F), (double) pos.getY() + (0.5D - (double) rand.nextFloat()), d1 + (double) (rand.nextFloat() / 5.0F), 0.0D, 0.0D, 0.0D);
+                worldIn.addParticle(ParticleTypes.PORTAL, d0 + (double) (rand.nextFloat() / 5.0F), (double) pos.getY() + (0.5D - (double) rand.nextFloat()), d1 + (double) (rand.nextFloat() / 5.0F), 0.0D, 0.0D, 0.0D);
             }
         }
 
-    }*/
+    }
 
-    protected abstract boolean isLinked();
     protected int getTransferTickRate() {
         return 1;
     }

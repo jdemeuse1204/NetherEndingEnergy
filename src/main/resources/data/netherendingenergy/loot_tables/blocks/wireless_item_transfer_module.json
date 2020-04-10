@@ -30,6 +30,11 @@
                   "source": "is_out_of_range",
                   "target": "BlockEntityTag.is_out_of_range",
                   "op": "replace"
+                },
+                {
+                  "source": "tick_location_particles",
+                  "target": "BlockEntityTag.tick_location_particles",
+                  "op": "replace"
                 }
               ]
             },

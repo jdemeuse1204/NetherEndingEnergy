@@ -15,6 +15,8 @@ import com.agrejus.netherendingenergy.blocks.general.wireless.fluid.WirelessFlui
 import com.agrejus.netherendingenergy.blocks.general.wireless.fluid.WirelessFluidTransferModuleTile;
 import com.agrejus.netherendingenergy.blocks.general.wireless.item.WirelessItemTransferModuleBlock;
 import com.agrejus.netherendingenergy.blocks.general.wireless.item.WirelessItemTransferModuleTile;
+import com.agrejus.netherendingenergy.blocks.general.wireless.redstone.WirelessRedstoneTransferModuleBlock;
+import com.agrejus.netherendingenergy.blocks.general.wireless.redstone.WirelessRedstoneTransferModuleTile;
 import com.agrejus.netherendingenergy.blocks.soil.CausticDirtBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorTile;
@@ -84,6 +86,11 @@ public class ModBlocks {
     public static WirelessItemTransferModuleBlock WIRELESS_ITEM_TRANSFER_MODULE_BLOCK;
     @ObjectHolder("netherendingenergy:" + RegistryNames.WIRELESS_ITEM_TRANSFER_MODULE)
     public static TileEntityType<WirelessItemTransferModuleTile> WIRELESS_ITEM_TRANSFER_MODULE_TILE;
+
+    @ObjectHolder("netherendingenergy:" + RegistryNames.WIRELESS_REDSTONE_TRANSFER_MODULE)
+    public static WirelessRedstoneTransferModuleBlock WIRELESS_REDSTONE_TRANSFER_MODULE_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.WIRELESS_REDSTONE_TRANSFER_MODULE)
+    public static TileEntityType<WirelessRedstoneTransferModuleTile> WIRELESS_REDSTONE_TRANSFER_MODULE_TILE;
 
     @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_DIRT)
     public static CausticDirtBlock CAUSTIC_DIRT_BLOCK;

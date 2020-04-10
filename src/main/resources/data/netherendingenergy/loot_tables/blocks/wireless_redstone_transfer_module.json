@@ -48,7 +48,7 @@
               ]
             }
           ],
-          "name": "netherendingenergy:wireless_fluid_transfer_module"
+          "name": "netherendingenergy:wireless_redstone_transfer_module"
         }
       ],
       "conditions": [

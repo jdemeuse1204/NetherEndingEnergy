@@ -15,42 +15,6 @@ public abstract class ModuleTile<C> extends ModuleTileBase {
         this.capability = capability;
     }
 
-    protected final boolean isLinked() {
-        BlockPos linkedPosition = this.getLinkedBlockPosition();
-        if (linkedPosition == null) {
-            return false;
-        }
-
-        TileEntity tileEntity = world.getTileEntity(linkedPosition);
-
-        if (tileEntity instanceof ModuleTileBase) {
-            ModuleTileBase module = (ModuleTileBase) tileEntity;
-
-            return pos.equals(module.getLinkedBlockPosition());
-        }
-
-        return false;
-    }
-
-    private ModuleTileBase getLinkedModule() {
-        BlockPos linkedPosition = this.getLinkedBlockPosition();
-        if (linkedPosition == null) {
-            return null;
-        }
-
-        TileEntity tileEntity = world.getTileEntity(linkedPosition);
-
-        if (tileEntity == null) {
-            return null;
-        }
-
-        if (tileEntity instanceof ModuleTileBase) {
-            return (ModuleTileBase) tileEntity;
-        }
-
-        return null;
-    }
-
     @Override
     protected void onProcess(boolean isOutOfRange) {
 

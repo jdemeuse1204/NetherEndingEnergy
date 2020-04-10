@@ -31,6 +31,8 @@ public class RegistryNames {
     public static final String WIRELESS_FLUID_TRANSFER_MODULE = "wireless_fluid_transfer_module";
     public static final String WIRELESS_ENERGY_TRANSFER_MODULE = "wireless_energy_transfer_module";
     public static final String WIRELESS_ITEM_TRANSFER_MODULE = "wireless_item_transfer_module";
+    public static final String WIRELESS_REDSTONE_TRANSFER_MODULE = "wireless_redstone_transfer_module";
+
     public static final String LINKING_REMOTE = "linking_remote";
     public static final String BOTANISTS_CODEX = "botanists_codex";
 

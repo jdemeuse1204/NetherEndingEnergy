@@ -24,6 +24,8 @@ import com.agrejus.netherendingenergy.blocks.general.wireless.fluid.WirelessFlui
 import com.agrejus.netherendingenergy.blocks.general.wireless.fluid.WirelessFluidTransferModuleTile;
 import com.agrejus.netherendingenergy.blocks.general.wireless.item.WirelessItemTransferModuleBlock;
 import com.agrejus.netherendingenergy.blocks.general.wireless.item.WirelessItemTransferModuleTile;
+import com.agrejus.netherendingenergy.blocks.general.wireless.redstone.WirelessRedstoneTransferModuleBlock;
+import com.agrejus.netherendingenergy.blocks.general.wireless.redstone.WirelessRedstoneTransferModuleTile;
 import com.agrejus.netherendingenergy.blocks.soil.CausticDirtBlock;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationBlock;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationContainer;
@@ -225,6 +227,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new WirelessFluidTransferModuleBlock());
             event.getRegistry().register(new WirelessEnergyTransferModuleBlock());
             event.getRegistry().register(new WirelessItemTransferModuleBlock());
+            event.getRegistry().register(new WirelessRedstoneTransferModuleBlock());
 
             // Terra
             event.getRegistry().register(new TerraReactorCasingBlock());
@@ -276,6 +279,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new BlockItem(ModBlocks.WIRELESS_FLUID_TRANSFER_MODULE_BLOCK, properties).setRegistryName(RegistryNames.WIRELESS_FLUID_TRANSFER_MODULE));
             event.getRegistry().register(new BlockItem(ModBlocks.WIRELESS_ENERGY_TRANSFER_MODULE_BLOCK, properties).setRegistryName(RegistryNames.WIRELESS_ENERGY_TRANSFER_MODULE));
             event.getRegistry().register(new BlockItem(ModBlocks.WIRELESS_ITEM_TRANSFER_MODULE_BLOCK, properties).setRegistryName(RegistryNames.WIRELESS_ITEM_TRANSFER_MODULE));
+            event.getRegistry().register(new BlockItem(ModBlocks.WIRELESS_REDSTONE_TRANSFER_MODULE_BLOCK, properties).setRegistryName(RegistryNames.WIRELESS_REDSTONE_TRANSFER_MODULE));
 
             event.getRegistry().register(new BlockItem(ModBlocks.IMBUING_MACHINE_BLOCK, properties).setRegistryName(RegistryNames.IMBUING_MACHINE));
 
@@ -319,6 +323,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(TileEntityType.Builder.create(WirelessFluidTransferModuleTile::new, ModBlocks.WIRELESS_FLUID_TRANSFER_MODULE_BLOCK).build(null).setRegistryName(RegistryNames.WIRELESS_FLUID_TRANSFER_MODULE));
             event.getRegistry().register(TileEntityType.Builder.create(WirelessEnergyTransferModuleTile::new, ModBlocks.WIRELESS_ENERGY_TRANSFER_MODULE_BLOCK).build(null).setRegistryName(RegistryNames.WIRELESS_ENERGY_TRANSFER_MODULE));
             event.getRegistry().register(TileEntityType.Builder.create(WirelessItemTransferModuleTile::new, ModBlocks.WIRELESS_ITEM_TRANSFER_MODULE_BLOCK).build(null).setRegistryName(RegistryNames.WIRELESS_ITEM_TRANSFER_MODULE));
+            event.getRegistry().register(TileEntityType.Builder.create(WirelessRedstoneTransferModuleTile::new, ModBlocks.WIRELESS_REDSTONE_TRANSFER_MODULE_BLOCK).build(null).setRegistryName(RegistryNames.WIRELESS_REDSTONE_TRANSFER_MODULE));
 
             event.getRegistry().register(TileEntityType.Builder.create(CausticBellTile::new, ModBlocks.CAUSTIC_BELL_BLOCK).build(null).setRegistryName(RegistryNames.CAUSTIC_BELL));
             event.getRegistry().register(TileEntityType.Builder.create(TerraReactorCoreTile::new, ModBlocks.TERRA_REACTOR_CORE_BLOCK).build(null).setRegistryName(RegistryNames.TERRA_REACTOR_CORE));

@@ -1,7 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.general.wireless;
 
-import com.agrejus.netherendingenergy.items.ModItems;
-import com.agrejus.netherendingenergy.items.wireless.LinkingRemoteItem;
+import com.agrejus.netherendingenergy.network.NetherEndingEnergyNetworking;
+import com.agrejus.netherendingenergy.network.PacketShowLocationParticles;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -9,7 +9,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -23,12 +23,10 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public abstract class ModuleBlock extends Block {
 
@@ -142,13 +140,13 @@ public abstract class ModuleBlock extends Block {
             return false;
         }
 
-        ModuleTileBase linkedModule = (ModuleTileBase) tileEntity;
+        ModuleTileBase linkedModule = (ModuleTileBase) linkedTileEntity;
         BlockPos linkedBlockPosition = linkedModule.getDestination();
         Block linkedBlock = worldIn.getBlockState(linkedBlockPosition).getBlock();
 
-        // Add particle effects for 5 seconds too
-
         String blockName = linkedBlock.getNameTextComponent().getFormattedText();
+
+        NetherEndingEnergyNetworking.sendToPlayer(new PacketShowLocationParticles(linkedModule.getPos()), (ServerPlayerEntity) player);
         player.sendStatusMessage(new StringTextComponent(String.format("Linked to %s @ x:%s, y:%s, z:%s", blockName, linkedBlockPosition.getX(), linkedBlockPosition.getY(), linkedBlockPosition.getZ())), false);
         return true;
     }
@@ -177,8 +175,18 @@ public abstract class ModuleBlock extends Block {
     @Override
     public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
 
-        BlockState newBlockState = worldIn.getBlockState(fromPos);
-        if (newBlockState.getBlock() == Blocks.AIR && blockIn != Blocks.AIR) {
+        BlockState moduleBlockState = worldIn.getBlockState(pos);
+
+        if (moduleBlockState == null || moduleBlockState.has(BlockStateProperties.FACING) == false) {
+            super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
+            return;
+        }
+
+        Direction facing = moduleBlockState.get(BlockStateProperties.FACING);
+        BlockPos attachedBlockPosition = pos.offset(facing);
+        Block attachedBlock = worldIn.getBlockState(attachedBlockPosition).getBlock();
+
+        if (attachedBlock == Blocks.AIR) {
             worldIn.destroyBlock(pos, true);
         }
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);

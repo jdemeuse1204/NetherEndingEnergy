@@ -280,7 +280,7 @@ public class TerraMixerTile extends RedstoneEnergyBlock implements INamedContain
             w.drain(amount, IFluidHandler.FluidAction.EXECUTE);
             markDirty();
         });
-        NetherEndingEnergyNetworking.INSTANCE.sendToServer(new PacketEmptyTank(pos, Direction.DOWN));
+        NetherEndingEnergyNetworking.sendToServer(new PacketEmptyTank(pos, Direction.DOWN));
     }
 
     public void voidOutputTank() {
@@ -291,7 +291,7 @@ public class TerraMixerTile extends RedstoneEnergyBlock implements INamedContain
         });
 
         if (world.isRemote) {
-            NetherEndingEnergyNetworking.INSTANCE.sendToServer(new PacketEmptyTank(pos, Direction.EAST));
+            NetherEndingEnergyNetworking.sendToServer(new PacketEmptyTank(pos, Direction.EAST));
         }
     }
 
@@ -300,7 +300,7 @@ public class TerraMixerTile extends RedstoneEnergyBlock implements INamedContain
         markDirty();
 
         if (world.isRemote) {
-            NetherEndingEnergyNetworking.INSTANCE.sendToServer(new PacketChangeRedstoneActivationType(pos, type));
+            NetherEndingEnergyNetworking.sendToServer(new PacketChangeRedstoneActivationType(pos, type));
         }
     }
 
