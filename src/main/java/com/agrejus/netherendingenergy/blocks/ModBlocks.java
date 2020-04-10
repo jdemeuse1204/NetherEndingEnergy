@@ -9,8 +9,12 @@ import com.agrejus.netherendingenergy.blocks.flowers.vines.CausticBellVineBlock;
 import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexBlock;
 import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexContainer;
 import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexTile;
+import com.agrejus.netherendingenergy.blocks.general.wireless.energy.WirelessEnergyTransferModuleBlock;
+import com.agrejus.netherendingenergy.blocks.general.wireless.energy.WirelessEnergyTransferModuleTile;
 import com.agrejus.netherendingenergy.blocks.general.wireless.fluid.WirelessFluidTransferModuleBlock;
 import com.agrejus.netherendingenergy.blocks.general.wireless.fluid.WirelessFluidTransferModuleTile;
+import com.agrejus.netherendingenergy.blocks.general.wireless.item.WirelessItemTransferModuleBlock;
+import com.agrejus.netherendingenergy.blocks.general.wireless.item.WirelessItemTransferModuleTile;
 import com.agrejus.netherendingenergy.blocks.soil.CausticDirtBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorTile;
@@ -70,6 +74,16 @@ public class ModBlocks {
     public static WirelessFluidTransferModuleBlock WIRELESS_FLUID_TRANSFER_MODULE_BLOCK;
     @ObjectHolder("netherendingenergy:" + RegistryNames.WIRELESS_FLUID_TRANSFER_MODULE)
     public static TileEntityType<WirelessFluidTransferModuleTile> WIRELESS_FLUID_TRANSFER_MODULE_TILE;
+
+    @ObjectHolder("netherendingenergy:" + RegistryNames.WIRELESS_ENERGY_TRANSFER_MODULE)
+    public static WirelessEnergyTransferModuleBlock WIRELESS_ENERGY_TRANSFER_MODULE_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.WIRELESS_ENERGY_TRANSFER_MODULE)
+    public static TileEntityType<WirelessEnergyTransferModuleTile> WIRELESS_ENERGY_TRANSFER_MODULE_TILE;
+
+    @ObjectHolder("netherendingenergy:" + RegistryNames.WIRELESS_ITEM_TRANSFER_MODULE)
+    public static WirelessItemTransferModuleBlock WIRELESS_ITEM_TRANSFER_MODULE_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.WIRELESS_ITEM_TRANSFER_MODULE)
+    public static TileEntityType<WirelessItemTransferModuleTile> WIRELESS_ITEM_TRANSFER_MODULE_TILE;
 
     @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_DIRT)
     public static CausticDirtBlock CAUSTIC_DIRT_BLOCK;

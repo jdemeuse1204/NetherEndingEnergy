@@ -46,10 +46,12 @@ public class CreativeEnergyStoreTile extends TileEntity implements ITickableTile
 
             CustomEnergyStorage energyStore = (CustomEnergyStorage) w;
 
-            // Its Creative!
-            energyStore.addEnergy(10000000);
-
             for (Direction direction : Direction.values()) {
+
+                if (energyStore.getEnergyStored() <= 0) {
+                    energyStore.addEnergy(10000000);
+                }
+
                 if (energyStore.getEnergyStored() > 0) {
 
                     TileEntity tileEntity = world.getTileEntity(pos.offset(direction));
@@ -60,10 +62,8 @@ public class CreativeEnergyStoreTile extends TileEntity implements ITickableTile
                                 return;
                             }
 
-                            x.receiveEnergy(1000, false);
-
-                            // Add Back Energy Received
-                            energyStore.addEnergy(1000);
+                            int amountReceived = x.receiveEnergy(1000, true);
+                            x.receiveEnergy(amountReceived, false);
                         });
                     }
                 }

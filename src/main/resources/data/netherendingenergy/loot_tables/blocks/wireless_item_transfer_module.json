@@ -43,7 +43,7 @@
               ]
             }
           ],
-          "name": "netherendingenergy:wireless_fluid_transfer_module"
+          "name": "netherendingenergy:wireless_item_transfer_module"
         }
       ],
       "conditions": [

@@ -576,7 +576,7 @@ public class TerraMixerTile extends RedstoneEnergyBlock implements INamedContain
     }
 
     private void sendOutFluid() {
-/*        this.outputTank.ifPresent(w -> {
+        this.outputTank.ifPresent(w -> {
             if (w.getFluidAmount() > 0) {
 
                 TileEntity tileEntity = world.getTileEntity(pos.offset(Direction.DOWN));
@@ -595,7 +595,7 @@ public class TerraMixerTile extends RedstoneEnergyBlock implements INamedContain
                     });
                 }
             }
-        });*/
+        });
     }
 
     private FluidStack getFillStack(int amount, Fluid fluid) {
