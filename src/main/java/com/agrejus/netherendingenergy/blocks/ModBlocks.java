@@ -2,6 +2,8 @@ package com.agrejus.netherendingenergy.blocks;
 
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.abyssal.link.AbyssalLinkBlock;
+import com.agrejus.netherendingenergy.blocks.abyssal.link.AbyssalLinkTile;
 import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStoreBlock;
 import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStoreTile;
 import com.agrejus.netherendingenergy.blocks.flowers.roots.CausticBellRootBlock;
@@ -18,6 +20,8 @@ import com.agrejus.netherendingenergy.blocks.general.wireless.item.WirelessItemT
 import com.agrejus.netherendingenergy.blocks.general.wireless.redstone.WirelessRedstoneTransferModuleBlock;
 import com.agrejus.netherendingenergy.blocks.general.wireless.redstone.WirelessRedstoneTransferModuleTile;
 import com.agrejus.netherendingenergy.blocks.soil.CausticDirtBlock;
+import com.agrejus.netherendingenergy.blocks.terra.link.TerraLinkBlock;
+import com.agrejus.netherendingenergy.blocks.terra.link.TerraLinkTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortBlock;
@@ -57,10 +61,6 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
 public class ModBlocks {
-
-    /* Acids */
-    @ObjectHolder("netherendingenergy:acid_of_the_tearful_fluid")
-    public static AcidOfTheTearfulFluid.AcidOfTheTearfulBlock ACID_OF_THE_TEARFUL_BLOCK;
 
     /* Flowers */
     @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_BELL)
@@ -190,6 +190,16 @@ public class ModBlocks {
     public static TerraReactorEnergyPortBlock TERRA_REACTOR_ENERGY_PORT_BLOCK;
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_ENERGY_PORT)
     public static TileEntityType<TerraReactorEnergyPortTile> TERRA_REACTOR_ENERGY_PORT_TILE;
+
+    @ObjectHolder("netherendingenergy:" + RegistryNames.ABYSSAL_LINK)
+    public static AbyssalLinkBlock ABYSSAL_LINK_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.ABYSSAL_LINK)
+    public static TileEntityType<AbyssalLinkTile> ABYSSAL_LINK_TILE;
+
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_LINK)
+    public static TerraLinkBlock TERRA_LINK_BLOCK;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_LINK)
+    public static TileEntityType<TerraLinkTile> TERRA_LINK_TILE;
 
     public static class Creative {
 

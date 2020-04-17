@@ -20,8 +20,11 @@ public class RegistryNames {
     public static final String TERRA_REACTOR_INJECTOR = "terra_reactor_injector";
     public static final String TERRA_REACTOR_ITEM_STABILIZER = "terra_reactor_item_stabilizer";
 
+    public static final String TERRA_LINK = "terra_link";
+
     /* Abyssal */
     public static final String ABYSS_HEAT_SINK = "abyssal_heat_sink";
+    public static final String ABYSSAL_LINK = "abyssal_link";
 
     /* Chaotic */
     public static final String CHAOTIC_HEAT_SINK = "chaotic_heat_sink";

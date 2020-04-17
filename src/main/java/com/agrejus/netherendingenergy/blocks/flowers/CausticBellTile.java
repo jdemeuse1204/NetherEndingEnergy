@@ -149,16 +149,14 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
             counter = 20;
         }
 
-        //this.stageAdvanceTimeTicks
         // stageAdvanceTime is also the time it takes to eat a block, better flowers = faster eating
-        if (spreadCounter >= 2) {
+        if (spreadCounter >= this.spreadAdvanceTicks) {
             spreadCounter = 0; // reset
             this.trySpread();
         }
 
         // Enqueue blocks to be absorbed
-        //this.absorbTicks
-        if (this.absorbCounter >= 5) {
+        if (this.absorbCounter >= this.absorbTicks) {
             this.absorbCounter = 0;
             this.enqueueAbsorbableBlocks();
         }

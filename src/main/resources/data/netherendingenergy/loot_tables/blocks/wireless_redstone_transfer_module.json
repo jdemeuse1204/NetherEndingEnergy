@@ -35,6 +35,11 @@
                   "source": "tick_location_particles",
                   "target": "BlockEntityTag.tick_location_particles",
                   "op": "replace"
+                },
+                {
+                  "source": "redstone_power",
+                  "target": "BlockEntityTag.redstone_power",
+                  "op": "replace"
                 }
               ]
             },

@@ -4,18 +4,20 @@ import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.general.wireless.ModuleBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class WirelessRedstoneTransferModuleBlock  extends ModuleBlock {
+public class WirelessRedstoneTransferModuleBlock extends ModuleBlock {
 
     public WirelessRedstoneTransferModuleBlock() {
         super(RegistryNames.WIRELESS_REDSTONE_TRANSFER_MODULE);
+        setDefaultState(getStateContainer().getBaseState().with(BlockStateProperties.FACING, Direction.NORTH).with(BlockStateProperties.POWERED, Boolean.valueOf(false)).with(BlockStateProperties.POWER_0_15, 0));
     }
 
     @Nullable
@@ -24,46 +26,26 @@ public class WirelessRedstoneTransferModuleBlock  extends ModuleBlock {
         return new WirelessRedstoneTransferModuleTile();
     }
 
-    public void onRedstoneSignalChanged(@Nullable Direction directionChanged, boolean isPowered, int power, BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
-
+    @Override
+    public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side) {
+        return side != null && side == state.get(BlockStateProperties.FACING);
     }
 
     @Override
+    public boolean canProvidePower(BlockState state) {
+        return true;
+    }
+
     public int getStrongPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        return super.getStrongPower(blockState, blockAccess, pos, side);
+        return this.getWeakPower(blockState, blockAccess, pos, side);
+    }
+
+    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
+        return blockState.get(BlockStateProperties.POWER_0_15);
     }
 
     @Override
-    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        return super.getWeakPower(blockState, blockAccess, pos, side);
-    }
-
-    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-
-        if (worldIn.isRemote) {
-            return;
-        }
-
-        Direction changingBlockDirection = getDirectionOfChangingBlock(pos, fromPos);
-        int power = worldIn.getRedstonePower(fromPos, changingBlockDirection);
-
-        this.onRedstoneSignalChanged(changingBlockDirection, power > 0, power, state, worldIn, pos, blockIn, fromPos);
-    }
-
-    private @Nullable
-    Direction getDirectionOfChangingBlock(BlockPos pos, BlockPos fromPos) {
-        int x = fromPos.getX();
-        int y = fromPos.getY();
-        int z = fromPos.getZ();
-
-        for (Direction direction : Direction.values()) {
-            BlockPos offset = pos.offset(direction);
-
-            if (x == offset.getX() && y == offset.getY() && z == offset.getZ()) {
-                return direction;
-            }
-        }
-
-        return null;
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        builder.add(BlockStateProperties.FACING, BlockStateProperties.POWERED, BlockStateProperties.POWER_0_15);
     }
 }

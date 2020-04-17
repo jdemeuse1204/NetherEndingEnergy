@@ -3,6 +3,7 @@ package com.agrejus.netherendingenergy.items.wireless;
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.general.wireless.ModuleTileBase;
+import com.agrejus.netherendingenergy.items.ModItems;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -110,7 +111,7 @@ public class LinkingRemoteItem extends Item {
             return super.onItemRightClick(worldIn, playerIn, handIn);
         }
 
-        if (playerIn.isSneaking()) {
+        if (playerIn.isSneaking() && playerIn.getHeldItemMainhand().getItem() == ModItems.LINKING_REMOTE) {
             this.clear();
             playerIn.sendStatusMessage(new StringTextComponent("Linking Cleared"), false);
             return super.onItemRightClick(worldIn, playerIn, handIn);

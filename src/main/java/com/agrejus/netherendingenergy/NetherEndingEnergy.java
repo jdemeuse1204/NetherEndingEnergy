@@ -2,6 +2,8 @@ package com.agrejus.netherendingenergy;
 
 import com.agrejus.netherendingenergy.blocks.*;
 import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.abyssal.link.AbyssalLinkBlock;
+import com.agrejus.netherendingenergy.blocks.abyssal.link.AbyssalLinkTile;
 import com.agrejus.netherendingenergy.blocks.chaotic.heatsink.ChaoticHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStoreBlock;
 import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStoreTile;
@@ -243,6 +245,7 @@ public class NetherEndingEnergy {
 
             // Abyssal
             event.getRegistry().register(new AbyssHeatSinkBlock());
+            event.getRegistry().register(new AbyssalLinkBlock());
 
             /* Reactor General */
             event.getRegistry().register(new TerraReactorRedstoneInputPortBlock());
@@ -293,6 +296,7 @@ public class NetherEndingEnergy {
 
             /* Abyss */
             event.getRegistry().register(new BlockItem(ModBlocks.ABYSS_HEAT_SINK_BLOCK, properties).setRegistryName(RegistryNames.ABYSS_HEAT_SINK));
+            event.getRegistry().register(new BlockItem(ModBlocks.ABYSSAL_LINK_BLOCK, properties).setRegistryName(RegistryNames.ABYSSAL_LINK));
 
             /* Chaotic */
             event.getRegistry().register(new BlockItem(ModBlocks.CHAOTIC_HEAT_SINK_BLOCK, properties).setRegistryName(RegistryNames.CHAOTIC_HEAT_SINK));
@@ -315,6 +319,9 @@ public class NetherEndingEnergy {
 
             /* CREATIVE */
             event.getRegistry().register(TileEntityType.Builder.create(CreativeEnergyStoreTile::new, ModBlocks.Creative.CREATIVE_ENERGY_STORE_BLOCK).build(null).setRegistryName(RegistryNames.Creative.CREATIVE_ENERGY_STORE));
+
+            /* ABYSSAL */
+            event.getRegistry().register(TileEntityType.Builder.create(AbyssalLinkTile::new, ModBlocks.ABYSSAL_LINK_BLOCK).build(null).setRegistryName(RegistryNames.ABYSSAL_LINK));
 
 
             // New Stuff
