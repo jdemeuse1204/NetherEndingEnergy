@@ -2,20 +2,21 @@ package com.agrejus.netherendingenergy.common.tank;
 
 import com.agrejus.netherendingenergy.common.attributes.AcidAttributes;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
+import com.agrejus.netherendingenergy.fluids.AcidFluid;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
+import java.util.Set;
 
 public class MixableAcidFluidTank extends NEEFluidTank {
     public MixableAcidFluidTank(int capacity) {
         super(capacity);
     }
 
-    private FluidStack drainOverride(FluidStack resource, FluidAction action)
-    {
-        if (resource.isEmpty() || fluid.getFluid() != resource.getFluid())
-        {
+    private FluidStack drainOverride(FluidStack resource, FluidAction action) {
+        if (resource.isEmpty() || fluid.getFluid() != resource.getFluid()) {
             return FluidStack.EMPTY;
         }
         return drain(resource.getAmount(), action);
@@ -104,34 +105,51 @@ public class MixableAcidFluidTank extends NEEFluidTank {
             return 0;
         }
 
-        float weightedStrength;
-        float weightedEfficiency;
-        float weightedStability;
-        float weightedResponse;
-        float weightedDecayRate;
-        float weightedSpatial;
-        AcidAttributes newAcidAttributes = FluidHelpers.deserializeAttributes(resource.getTag());
+        CompoundNBT resourceTag = resource.getTag();
 
-        if (this.fluid.isEmpty()) {
-            weightedStrength = newAcidAttributes.getStrength();
-            weightedEfficiency = newAcidAttributes.getEfficiency();
-            weightedStability = newAcidAttributes.getStability();
-            weightedResponse = newAcidAttributes.getResponse();
-            weightedDecayRate = newAcidAttributes.getDecayRate();
-            weightedSpatial = newAcidAttributes.getSpatialAmount();
-        } else {
-            AcidAttributes currentAcidAttributes = FluidHelpers.deserializeAttributes(this.fluid.getTag());
+        if (this.fluid.isEmpty() == true) {
+            int filled = super.fill(resource, action);
 
-            int newAcidAmount = resource.getAmount();
-            int currentAcidAmount = this.fluid.getAmount();
+            if (filled > 0 && resourceTag != null) {
+                fluid.setTag(resourceTag);
+            }
 
-            // Compute Weighted Averages
-            weightedStrength = this.getWeightedAverageStrength(newAcidAttributes, newAcidAmount, currentAcidAttributes, currentAcidAmount);
-            weightedEfficiency = this.getWeightedAverageEfficiency(newAcidAttributes, newAcidAmount, currentAcidAttributes, currentAcidAmount);
-            weightedStability = this.getWeightedAverageStability(newAcidAttributes, newAcidAmount, currentAcidAttributes, currentAcidAmount);
-            weightedResponse = this.getWeightedAverageResponse(newAcidAttributes, newAcidAmount, currentAcidAttributes, currentAcidAmount);
-            weightedDecayRate = this.getWeightedAverageDecayRate(newAcidAttributes, newAcidAmount, currentAcidAttributes, currentAcidAmount);
-            weightedSpatial = this.getWeightedAverageSpatial(newAcidAttributes, newAcidAmount, currentAcidAttributes, currentAcidAmount);
+            return filled;
+        }
+
+        float weightedStrength = 0;
+        float weightedEfficiency = 0;
+        float weightedStability = 0;
+        float weightedResponse = 0;
+        float weightedDecayRate = 0;
+        float weightedSpatial = 0;
+
+        if (resourceTag != null) {
+
+            CompoundNBT sourceTag = this.fluid.getTag();
+            AcidAttributes newAcidAttributes = FluidHelpers.deserializeAttributes(resourceTag);
+
+            if (this.fluid.isEmpty()) {
+                weightedStrength = newAcidAttributes.getStrength();
+                weightedEfficiency = newAcidAttributes.getEfficiency();
+                weightedStability = newAcidAttributes.getStability();
+                weightedResponse = newAcidAttributes.getResponse();
+                weightedDecayRate = newAcidAttributes.getDecayRate();
+                weightedSpatial = newAcidAttributes.getSpatialAmount();
+            } else {
+                AcidAttributes currentAcidAttributes = FluidHelpers.deserializeAttributes(sourceTag);
+
+                int newAcidAmount = resource.getAmount();
+                int currentAcidAmount = this.fluid.getAmount();
+
+                // Compute Weighted Averages
+                weightedStrength = this.getWeightedAverageStrength(newAcidAttributes, newAcidAmount, currentAcidAttributes, currentAcidAmount);
+                weightedEfficiency = this.getWeightedAverageEfficiency(newAcidAttributes, newAcidAmount, currentAcidAttributes, currentAcidAmount);
+                weightedStability = this.getWeightedAverageStability(newAcidAttributes, newAcidAmount, currentAcidAttributes, currentAcidAmount);
+                weightedResponse = this.getWeightedAverageResponse(newAcidAttributes, newAcidAmount, currentAcidAttributes, currentAcidAmount);
+                weightedDecayRate = this.getWeightedAverageDecayRate(newAcidAttributes, newAcidAmount, currentAcidAttributes, currentAcidAmount);
+                weightedSpatial = this.getWeightedAverageSpatial(newAcidAttributes, newAcidAmount, currentAcidAttributes, currentAcidAmount);
+            }
         }
 
         // Set the fluid stack first

@@ -17,8 +17,8 @@
               "source": "block_entity",
               "ops": [
                 {
-                  "source": "linked_position",
-                  "target": "BlockEntityTag.linked_position",
+                  "source": "linked_positions",
+                  "target": "BlockEntityTag.linked_positions",
                   "op": "replace"
                 },
                 {
@@ -32,8 +32,13 @@
                   "op": "replace"
                 },
                 {
-                  "source": "tick_location_particles",
-                  "target": "BlockEntityTag.tick_location_particles",
+                  "source": "buffer",
+                  "target": "BlockEntityTag.buffer",
+                  "op": "replace"
+                },
+                {
+                  "source": "size",
+                  "target": "BlockEntityTag.size",
                   "op": "replace"
                 }
               ]
@@ -48,7 +53,7 @@
               ]
             }
           ],
-          "name": "netherendingenergy:wireless_item_transfer_module"
+          "name": "netherendingenergy:terra_link"
         }
       ],
       "conditions": [

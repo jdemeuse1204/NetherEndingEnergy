@@ -15,7 +15,7 @@ public enum TransferMode implements IStringSerializable {
         this.name = name;
     }
 
-    public static TransferMode get(String name) {
+    public static TransferMode byName(String name) {
         int size = VALUES.length;
         for (int i = 0; i < size; i++) {
             TransferMode activation = VALUES[i];

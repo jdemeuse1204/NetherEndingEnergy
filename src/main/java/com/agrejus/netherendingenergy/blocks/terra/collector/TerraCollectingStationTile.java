@@ -272,11 +272,13 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
                             int fillAmount = handler.fill(drainedStack, IFluidHandler.FluidAction.SIMULATE);
 
                             if (fillAmount > 0) {
-                                drainedStack.setAmount(fillAmount);
-                                handler.fill(drainedStack, IFluidHandler.FluidAction.EXECUTE);
-                                outputTank.drain(drainedStack, IFluidHandler.FluidAction.EXECUTE);
+                                FluidStack drain = drainedStack.copy();
+                                drain.setAmount(fillAmount);
+                                handler.fill(drain, IFluidHandler.FluidAction.EXECUTE);
+                                outputTank.drain(fillAmount, IFluidHandler.FluidAction.EXECUTE);
                             }
 
+                            updateBlock();
                             markDirty();
                         }
                     });
@@ -346,6 +348,11 @@ public class TerraCollectingStationTile extends TileEntity implements ITickableT
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
         CompoundNBT tag = packet.getNbtCompound();
         readNBT(tag);
+    }
+
+    public void updateBlock() {
+        BlockState state = world.getBlockState(getPos());
+        world.notifyBlockUpdate(getPos(), state, state, 3);
     }
 
     @Nonnull

@@ -19,7 +19,7 @@ public abstract class ServerMessage implements INetworkMessage {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerWorld serverWorld = ctx.get().getSender().getServerWorld();
+            World serverWorld = ctx.get().getSender().getEntityWorld();
             handleWork(ctx, serverWorld);
         });
         ctx.get().setPacketHandled(true);

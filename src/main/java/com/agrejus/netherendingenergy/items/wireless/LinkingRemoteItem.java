@@ -2,14 +2,13 @@ package com.agrejus.netherendingenergy.items.wireless;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.RegistryNames;
-import com.agrejus.netherendingenergy.blocks.general.wireless.ModuleTileBase;
+import com.agrejus.netherendingenergy.common.enumeration.TransferMode;
+import com.agrejus.netherendingenergy.common.interfaces.ILinkableTile;
 import com.agrejus.netherendingenergy.items.ModItems;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
@@ -18,11 +17,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.WorldSavedData;
 
 public class LinkingRemoteItem extends Item {
 
-    private TileEntity source;
+    private ILinkableTile source;
 
     public LinkingRemoteItem() {
         super(new Item.Properties()
@@ -48,22 +46,24 @@ public class LinkingRemoteItem extends Item {
         BlockPos position = context.getPos();
         TileEntity tileEntity = context.getWorld().getTileEntity(position);
 
-        if (tileEntity == null || (tileEntity instanceof ModuleTileBase) == false) {
+        if (tileEntity == null || (tileEntity instanceof ILinkableTile) == false) {
             return ActionResultType.FAIL;
         }
 
+        ILinkableTile linkableTileEntity = (ILinkableTile) tileEntity;
+
         if (hand == Hand.OFF_HAND) {
-            ((ModuleTileBase) tileEntity).setLinkedBlockPosition(null);
-            ((ModuleTileBase) tileEntity).setSource(false);
-            ((ModuleTileBase) tileEntity).updateBlock();
+            linkableTileEntity.clearLinks();
+            linkableTileEntity.setLinkMode(TransferMode.NONE);
+            linkableTileEntity.updateTile();
             player.sendStatusMessage(new StringTextComponent("Module link cleared"), false);
             return ActionResultType.FAIL;
         }
 
         if (this.source == null) {
-            this.source = tileEntity;
+            this.source = linkableTileEntity;
 
-            if (((ModuleTileBase) this.source).getLinkedBlockPosition() != null) {
+            if (this.source.totalLinks() > 0) {
                 player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "Source block is already linked"), false);
                 return ActionResultType.FAIL;
             }
@@ -72,31 +72,32 @@ public class LinkingRemoteItem extends Item {
             return ActionResultType.PASS;
         }
 
-        if (tileEntity.getClass().equals(this.source.getClass()) == false) {
+        // Make sure modules are the same
+        if (linkableTileEntity.getClass().equals(this.source.getClass()) == false) {
             player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + String.format("Cannot link two different types", position.getX(), position.getY(), position.getZ())), false);
             return ActionResultType.FAIL;
         }
 
-        ModuleTileBase source = (ModuleTileBase) this.source;
-        ModuleTileBase destination = (ModuleTileBase) tileEntity;
+        ILinkableTile destination = linkableTileEntity;
 
-        if (position.equals(source.getPos())) {
+        BlockPos sourcePosition = this.source.getPos();
+        if (position.equals(sourcePosition)) {
             player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + String.format("Cannot link to itself", position.getX(), position.getY(), position.getZ())), false);
             return ActionResultType.FAIL;
         }
 
-        if (destination.getLinkedBlockPosition() != null) {
+        if (destination.totalLinks() > 0) {
             player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "Destination block is already linked"), false);
             return ActionResultType.FAIL;
         }
 
-        source.setLinkedBlockPosition(destination.getPos());
-        source.setSource(true);
-        source.updateBlock();
+        source.addLink(destination.getPos());
+        source.setLinkMode(TransferMode.SEND);
+        source.updateTile();
 
-        destination.setLinkedBlockPosition(source.getPos());
-        destination.setSource(false);
-        destination.updateBlock();
+        destination.addLink(source.getPos());
+        destination.setLinkMode(TransferMode.RECEIVE);
+        destination.updateTile();
 
         this.source = null;
 
@@ -108,15 +109,15 @@ public class LinkingRemoteItem extends Item {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
 
         if (worldIn.isRemote) {
-            return super.onItemRightClick(worldIn, playerIn, handIn);
+            return new ActionResult<>(ActionResultType.FAIL, playerIn.getHeldItem(handIn));
         }
 
         if (playerIn.isSneaking() && playerIn.getHeldItemMainhand().getItem() == ModItems.LINKING_REMOTE) {
             this.clear();
             playerIn.sendStatusMessage(new StringTextComponent("Linking Cleared"), false);
-            return super.onItemRightClick(worldIn, playerIn, handIn);
+            return new ActionResult<>(ActionResultType.FAIL, playerIn.getHeldItem(handIn));
         }
 
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+        return new ActionResult<>(ActionResultType.FAIL, playerIn.getHeldItem(handIn));
     }
 }

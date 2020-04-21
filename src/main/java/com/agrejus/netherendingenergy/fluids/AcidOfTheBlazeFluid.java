@@ -71,9 +71,7 @@ public class AcidOfTheBlazeFluid extends AcidFluid {
             if (!worldIn.isRemote && worldIn.getDifficulty() != Difficulty.PEACEFUL) {
                 if (entityIn instanceof LivingEntity) {
                     LivingEntity livingentity = (LivingEntity) entityIn;
-                    if (!livingentity.isInvulnerableTo(DamageSource.WITHER)) {
-                        livingentity.setFire(2);
-                    }
+                    livingentity.setFire(2);
                 }
             }
         }

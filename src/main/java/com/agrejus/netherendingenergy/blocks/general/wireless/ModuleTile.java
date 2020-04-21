@@ -3,7 +3,6 @@ package com.agrejus.netherendingenergy.blocks.general.wireless;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 
 public abstract class ModuleTile<C> extends ModuleTileBase {
@@ -27,7 +26,7 @@ public abstract class ModuleTile<C> extends ModuleTileBase {
 
             ModuleTileBase linkedModule = this.getLinkedModule();
 
-            if (linkedModule != null) {
+            if (linkedModule != null && linkedModule.isConnectedTo(this)) {
 
                 TileEntity pullingTileEntity = world.getTileEntity(this.getDestination());
                 TileEntity receivingTileEntity = world.getTileEntity(linkedModule.getDestination());

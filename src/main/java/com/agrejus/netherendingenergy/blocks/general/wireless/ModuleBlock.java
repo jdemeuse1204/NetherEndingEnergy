@@ -1,5 +1,6 @@
 package com.agrejus.netherendingenergy.blocks.general.wireless;
 
+import com.agrejus.netherendingenergy.common.interfaces.ILinkableTile;
 import com.agrejus.netherendingenergy.network.NetherEndingEnergyNetworking;
 import com.agrejus.netherendingenergy.network.PacketShowLocationParticles;
 import net.minecraft.block.Block;
@@ -23,6 +24,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -94,9 +96,9 @@ public abstract class ModuleBlock extends Block {
 
         // remove linking data
         if (te != null && te instanceof ModuleTileBase) {
-            ModuleTileBase module = (ModuleTileBase) te;
-            module.setLinkedBlockPosition(null);
-            module.updateBlock();
+            ILinkableTile module = (ILinkableTile) te;
+            module.clearLinks();
+            module.updateTile();
             module.markDirty();
         }
 
@@ -114,7 +116,7 @@ public abstract class ModuleBlock extends Block {
             return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
         }
 
-        if (player.getHeldItemMainhand().isEmpty() == false) {
+        if (player.getHeldItemMainhand().isEmpty() == false || player.getHeldItemOffhand().isEmpty() == false) {
             return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
         }
 
@@ -141,6 +143,12 @@ public abstract class ModuleBlock extends Block {
         }
 
         ModuleTileBase linkedModule = (ModuleTileBase) linkedTileEntity;
+
+        if (module.isConnectedTo(linkedModule) == false) {
+            player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "Module contains broken link, please clear and relink"), false);
+            return false;
+        }
+
         BlockPos linkedBlockPosition = linkedModule.getDestination();
         Block linkedBlock = worldIn.getBlockState(linkedBlockPosition).getBlock();
 

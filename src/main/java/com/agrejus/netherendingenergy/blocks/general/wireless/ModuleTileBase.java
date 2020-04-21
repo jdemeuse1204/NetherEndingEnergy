@@ -1,14 +1,15 @@
 package com.agrejus.netherendingenergy.blocks.general.wireless;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
+import com.agrejus.netherendingenergy.blocks.base.tile.NEETileEntity;
+import com.agrejus.netherendingenergy.common.enumeration.TransferMode;
 import com.agrejus.netherendingenergy.common.helpers.BlockHelpers;
 import com.agrejus.netherendingenergy.common.helpers.NBTHelpers;
+import com.agrejus.netherendingenergy.common.interfaces.ILinkableTile;
 import com.agrejus.netherendingenergy.common.interfaces.ILocationDiscoverable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -23,14 +24,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
 import java.util.Random;
 
-public abstract class ModuleTileBase extends TileEntity implements ITickableTileEntity, ILocationDiscoverable {
+public abstract class ModuleTileBase extends NEETileEntity implements ITickableTileEntity, ILocationDiscoverable, ILinkableTile {
 
     private final int maxRange = 12;
     private BlockPos linkedBlockPosition;
-    private boolean isSource;
+    private TransferMode transferMode = TransferMode.NONE;
     private boolean isOutOfRange;
 
     private int tick;
@@ -48,25 +48,18 @@ public abstract class ModuleTileBase extends TileEntity implements ITickableTile
         return pos.offset(facing);
     }
 
+    protected boolean isSource() {
+        return this.transferMode != null && this.transferMode == TransferMode.SEND;
+    }
+
     public Direction getAttachedFace() {
         BlockState state = world.getBlockState(pos);
         return state.get(BlockStateProperties.FACING).getOpposite();
     }
 
-    public void clear() {
-        this.isSource = false;
-        this.setLinkedBlockPosition(null);
-    }
-
     public void showLocationParticles() {
         // user packets to send to client from server
         this.tickLocationParticles = 200;
-    }
-
-    public void setLinkedBlockPosition(BlockPos pos) {
-        this.linkedBlockPosition = pos;
-        this.updateBlock();
-        markDirty();
     }
 
     public BlockPos getLinkedBlockPosition() {
@@ -76,14 +69,6 @@ public abstract class ModuleTileBase extends TileEntity implements ITickableTile
     public void updateBlock() {
         BlockState state = world.getBlockState(getPos());
         world.notifyBlockUpdate(getPos(), state, state, 3);
-    }
-
-    public void setSource(boolean source) {
-        isSource = source;
-    }
-
-    public boolean isSource() {
-        return isSource;
     }
 
     protected final boolean isLinked() {
@@ -101,6 +86,16 @@ public abstract class ModuleTileBase extends TileEntity implements ITickableTile
         }
 
         return false;
+    }
+
+    public final boolean isConnectedTo(ModuleTileBase linkedModule) {
+
+        // Ensure blocks are connected to each other
+        BlockPos otherLinkedPos = linkedModule.getLinkedBlockPosition();
+        BlockPos otherPos = linkedModule.getPos();
+        BlockPos linkedPos = this.getLinkedBlockPosition();
+        return this.pos != null && otherLinkedPos != null && this.pos.equals(otherLinkedPos) &&
+                otherPos != null && otherPos.equals(linkedPos);
     }
 
     protected ModuleTileBase getLinkedModule() {
@@ -123,55 +118,26 @@ public abstract class ModuleTileBase extends TileEntity implements ITickableTile
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        readNBT(tag);
-        super.read(tag);
-    }
-
-    @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        writeNBT(tag);
-        return super.write(tag);
-    }
-
-    @Override
-    public CompoundNBT getUpdateTag() {
-        CompoundNBT tag = super.getUpdateTag();
-        writeNBT(tag);
-        return tag;
-    }
-
-    @Nullable
-    @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
-        CompoundNBT nbt = packet.getNbtCompound();
-
-        readNBT(nbt);
-    }
-
-    private void readNBT(CompoundNBT tag) {
+    protected void readNBT(CompoundNBT tag) {
         if (tag.contains("linked_position")) {
             CompoundNBT linkedPositionNbt = (CompoundNBT) tag.get("linked_position");
             this.linkedBlockPosition = NBTHelpers.readBlockPosFromNBT(linkedPositionNbt);
         }
 
-        this.isSource = tag.getBoolean("is_source");
+        String transferMode = tag.getString("transfer_mode");
+        this.transferMode = TransferMode.byName(transferMode);
         this.isOutOfRange = tag.getBoolean("is_out_of_range");
     }
 
-    private void writeNBT(CompoundNBT tag) {
+    @Override
+    protected void writeNBT(CompoundNBT tag) {
         if (this.linkedBlockPosition != null) {
             CompoundNBT linkedPositionNbt = new CompoundNBT();
             NBTHelpers.writeToNBT(linkedPositionNbt, this.linkedBlockPosition);
             tag.put("linked_position", linkedPositionNbt);
         }
 
-        tag.putBoolean("is_source", this.isSource);
+        tag.putString("transfer_mode", this.transferMode.getName());
         tag.putBoolean("is_out_of_range", this.isOutOfRange);
     }
 
@@ -179,23 +145,20 @@ public abstract class ModuleTileBase extends TileEntity implements ITickableTile
     }
 
     @Override
-    public void tick() {
+    protected void clientTick() {
+        // Show particle effects for location of module
+        if (this.tickLocationParticles > 0) {
 
-        if (world.isRemote) {
-
-            // Show particle effects for location of module
-            if (this.tickLocationParticles > 0) {
-
-                if (this.tickLocationParticles % 5 == 0) {
-                    BlockState state = world.getBlockState(pos);
-                    this.animateTick(state, world, pos);
-                }
-                this.tickLocationParticles--;
+            if (this.tickLocationParticles % 5 == 0) {
+                BlockState state = world.getBlockState(pos);
+                this.animateTick(state, world, pos);
             }
-
-            return;
+            this.tickLocationParticles--;
         }
+    }
 
+    @Override
+    protected void serverTick() {
         if (this.isOutOfRange == true) {
 
             if (this.isLinked()) {
@@ -237,7 +200,7 @@ public abstract class ModuleTileBase extends TileEntity implements ITickableTile
         }
 
         int transferTickRate = this.getTransferTickRate();
-        if (transferTickRate > 0){
+        if (transferTickRate > 0) {
             if (this.tickTransfer % transferTickRate == 0) {
                 this.onProcess(isOutOfRange);
             }
@@ -278,5 +241,76 @@ public abstract class ModuleTileBase extends TileEntity implements ITickableTile
 
     protected int getTransferTickRate() {
         return 1;
+    }
+
+    @Override
+    public boolean addLink(BlockPos pos) {
+        this.linkedBlockPosition = pos;
+        this.updateBlock();
+        markDirty();
+        return true;
+    }
+
+    @Override
+    public boolean removeLink(BlockPos pos) {
+        this.linkedBlockPosition = null;
+        this.transferMode = TransferMode.NONE;
+        this.updateBlock();
+        markDirty();
+        return true;
+    }
+
+    @Override
+    public void setLinkMode(TransferMode mode) {
+        this.transferMode = mode;
+        this.updateBlock();
+        markDirty();
+    }
+
+    @Override
+    public TransferMode getLinkMode() {
+        return this.transferMode;
+    }
+
+    @Override
+    public int clearLinks() {
+        int linksCleared = 0;
+        if (this.linkedBlockPosition != null) {
+            linksCleared = 1;
+        }
+        this.linkedBlockPosition = null;
+        this.transferMode = TransferMode.NONE;
+        return linksCleared;
+    }
+
+    @Override
+    public int maxAllowedLinks() {
+        return 1;
+    }
+
+    @Override
+    public BlockPos[] getLinks() {
+
+        if (this.linkedBlockPosition == null) {
+            return new BlockPos[0];
+        }
+
+        return new BlockPos[]{
+                this.linkedBlockPosition
+        };
+    }
+
+    @Override
+    public int totalLinks() {
+        int totalLinks = 0;
+        if (this.linkedBlockPosition != null) {
+            totalLinks = 1;
+        }
+        return totalLinks;
+    }
+
+    @Override
+    public void updateTile() {
+        this.updateBlock();
     }
 }

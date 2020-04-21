@@ -3,11 +3,13 @@ package com.agrejus.netherendingenergy.blocks.general.wireless.energy;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.general.wireless.ModuleTile;
 import com.agrejus.netherendingenergy.blocks.general.wireless.ModuleTileBase;
+import com.agrejus.netherendingenergy.common.enumeration.TransferMode;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
-public class WirelessEnergyTransferModuleTile  extends ModuleTile<IEnergyStorage> {
+public class WirelessEnergyTransferModuleTile extends ModuleTile<IEnergyStorage> {
 
     private int transferRate = 200;
 

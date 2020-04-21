@@ -19,6 +19,7 @@ public class WirelessFluidTransferModuleTile extends ModuleTile<IFluidHandler> {
     @Override
     protected void onTransfer(TileEntity pullingTileEntity, TileEntity receivingTileEntity, ModuleTileBase linkedModule, IFluidHandler pulling, IFluidHandler receiving) {
 
+        // Doing push and pull right now, need a setting for 1 or the other
         FluidStack sourceTank = pulling.getFluidInTank(0);
 
         if (sourceTank.getAmount() > 0) {
@@ -29,6 +30,8 @@ public class WirelessFluidTransferModuleTile extends ModuleTile<IFluidHandler> {
             int fillAmount = receiving.fill(drainedStack, IFluidHandler.FluidAction.SIMULATE);
 
             if (fillAmount > 0) {
+                FluidStack drained = drainedStack.copy();
+                drained.setAmount(fillAmount);
                 receiving.fill(drainedStack, IFluidHandler.FluidAction.EXECUTE);
                 pulling.drain(drainedStack, IFluidHandler.FluidAction.EXECUTE);
 

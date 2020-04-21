@@ -22,8 +22,8 @@
                   "op": "replace"
                 },
                 {
-                  "source": "is_source",
-                  "target": "BlockEntityTag.is_source",
+                  "source": "transfer_mode",
+                  "target": "BlockEntityTag.transfer_mode",
                   "op": "replace"
                 },
                 {
