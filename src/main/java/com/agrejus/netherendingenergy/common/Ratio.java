@@ -61,6 +61,11 @@ public class Ratio implements INBTSerializable<CompoundNBT> {
     }
 
     @Override
+    public String toString() {
+        return String.format("%s:%s", this.antecedent,this.consequent);
+    }
+
+    @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();
         nbt.putInt("Antecedent", this.antecedent);

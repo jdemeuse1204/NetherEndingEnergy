@@ -1,37 +1,36 @@
 package com.agrejus.netherendingenergy.common.tank;
 
+import net.minecraft.fluid.Fluid;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 public class NEEFluidTank extends FluidTank {
-
-    private final String name;
-
-    public NEEFluidTank(String name, int capacity) {
+    public NEEFluidTank(int capacity) {
         super(capacity);
-        this.name = name;
     }
 
-    public boolean canFill() {
-        return getFluidAmount() < getCapacity();
+    public boolean hasRoom() {
+        return this.getCapacity() > this.getFluidAmount();
     }
 
-    public String getName() {
-        return name;
-    }
+    public int simulateFillAmount(int amount) {
 
-    public int resolveDrainAmount(int amount) {
-        int fillAmount = getFluidAmount();
-        if (amount > fillAmount) {
-            return fillAmount;
+        if (this.getFluidAmount() == 0 && this.getCapacity() > amount) {
+            return amount;
         }
-        return amount;
+
+        Fluid fluid = this.fluid.getFluid();
+        return this.fill(new FluidStack(fluid, amount), FluidAction.SIMULATE);
     }
 
-    public int resolveFillAmount(int amount) {
-        int space = getSpace();
-        if (amount > space) {
-            return space;
+    public FluidStack simulateDrainAmount(int amount) {
+        if (this.getFluidAmount() == 0) {
+            return FluidStack.EMPTY;
         }
-        return amount;
+
+        Fluid fluid = this.fluid.getFluid();
+        return this.drain(new FluidStack(fluid, amount), FluidAction.SIMULATE);
     }
 }

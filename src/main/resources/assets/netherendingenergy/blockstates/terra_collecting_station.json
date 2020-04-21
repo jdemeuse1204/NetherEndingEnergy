@@ -1,4 +1,9 @@
 {
+  "defaults": {
+    "particle": {
+      "all": "netherendingenergy:block/terra_reactor_casing"
+    }
+  },
   "variants" : {
     "": { "model": "netherendingenergy:block/terra_collecting_station" }
   }

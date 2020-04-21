@@ -3,14 +3,17 @@ package com.agrejus.netherendingenergy.blocks.flowers;
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.common.flowers.CausticBellTrait;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FlowerBlock;
-import net.minecraft.block.SoundType;
+import com.agrejus.netherendingenergy.items.ModItems;
+import com.agrejus.netherendingenergy.particle.ModParticles;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
@@ -30,6 +33,9 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.IShearable;
+import net.minecraftforge.common.ToolType;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -44,7 +50,7 @@ public class CausticBellBlock extends FlowerBlock {
         super(Effects.POISON, 8, Properties.create(Material.PLANTS)
                 .sound(SoundType.PLANT)
                 .doesNotBlockMovement()
-                .hardnessAndResistance(0)
+                .hardnessAndResistance(0) // bell is not dropping for some reason
                 .lightValue(0));
         setRegistryName(RegistryNames.CAUSTIC_BELL);
     }
@@ -68,7 +74,22 @@ public class CausticBellBlock extends FlowerBlock {
     protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
         Block block = state.getBlock();
         Material material = block.getMaterial(state);
-        return block == ModBlocks.TERRA_COLLECTING_STATION_BLOCK || material == Material.EARTH;
+
+        if (material == Material.EARTH || block == ModBlocks.CAUSTIC_ROOTS_BLOCK) {
+            return true;
+        }
+
+        if (block == ModBlocks.TERRA_COLLECTING_STATION_BLOCK) {
+            TileEntity tileEntity = worldIn.getTileEntity(pos);
+
+            if (tileEntity != null) {
+                ItemStack stack = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).map(w -> w.getStackInSlot(0)).orElse(ItemStack.EMPTY);
+
+                return stack.getItem() == Items.DIRT;
+            }
+        }
+
+        return false;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -82,10 +103,25 @@ public class CausticBellBlock extends FlowerBlock {
 
         for (int i = 0; i < 3; ++i) {
             if (rand.nextBoolean()) {
-                worldIn.addParticle(particleType, d0 + (double) (rand.nextFloat() / 5.0F), (double) pos.getY() + (0.5D - (double) rand.nextFloat()), d1 + (double) (rand.nextFloat() / 5.0F), 0.0D, 0.0D, 0.0D);
+                worldIn.addParticle(ModParticles.CAUSTIC_CLOUD, d0 + (double) (rand.nextFloat() / 5.0F), (double) pos.getY() + (0.5D - (double) rand.nextFloat()), d1 + (double) (rand.nextFloat() / 5.0F), 0.0D, 0.0D, 0.0D);
             }
         }
 
+    }
+
+    @Override
+    public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
+
+        if(world.isRemote) {
+            return;
+        }
+
+        if (player.getHeldItemMainhand().getItem() != Items.SHEARS) {
+            spawnAsEntity(world, pos, new ItemStack(ModItems.CAUSTIC_MASH, 1));
+            return;
+        }
+
+        super.harvestBlock(world, player, pos, state, te, stack);
     }
 
     public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
@@ -108,11 +144,13 @@ public class CausticBellBlock extends FlowerBlock {
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (!worldIn.isRemote) {
             CausticBellTile tile = (CausticBellTile)worldIn.getTileEntity(pos);
-            System.out.println("SUPERIOR: " +  tile.getSuperiorTrait());
-            System.out.println("INFERIOR: " +  tile.getInferiorTrait());
-            System.out.println("RECESSIVE: " +  tile.getRecessiveTrait());
+            System.out.println("Tile SUPERIOR: " +  tile.getSuperiorTrait());
+            System.out.println("Tile INFERIOR: " +  tile.getInferiorTrait());
+            System.out.println("Tile RECESSIVE: " +  tile.getRecessiveTrait());
             System.out.println("YIELD: " +  tile.getYield());
-            //world.setBlockState(pos, state.with(TerraReactorCoreBlock.FORMED, TerraReactorPartIndex.UNFORMED), 3);
+            System.out.println("PURITY: " +  tile.getPurity());
+            System.out.println("STRENGTH: " +  tile.getStrength());
+
         }
 
         return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);

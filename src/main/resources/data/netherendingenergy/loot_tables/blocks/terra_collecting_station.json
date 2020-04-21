@@ -20,35 +20,17 @@
                   "source": "input_tank",
                   "target": "BlockEntityTag.input_tank",
                   "op": "replace"
-                }
-              ]
-            },
-            {
-              "function": "minecraft:copy_nbt",
-              "source": "block_entity",
-              "ops": [
+                },
                 {
                   "source": "output_tank",
                   "target": "BlockEntityTag.output_tank",
                   "op": "replace"
-                }
-              ]
-            },
-            {
-              "function": "minecraft:copy_nbt",
-              "source": "block_entity",
-              "ops": [
+                },
                 {
                   "source": "inv",
                   "target": "BlockEntityTag.inv",
                   "op": "replace"
-                }
-              ]
-            },
-            {
-              "function": "minecraft:copy_nbt",
-              "source": "block_entity",
-              "ops": [
+                },
                 {
                   "source": "energy",
                   "target": "BlockEntityTag.energy",

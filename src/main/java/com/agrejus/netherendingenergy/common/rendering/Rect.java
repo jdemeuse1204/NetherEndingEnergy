@@ -14,6 +14,10 @@ public class Rect {
     private int right;
     private int bottom;
 
+    public void setTop(int top) {
+        this.top = top;
+    }
+
     public void setRight(int right) {
         this.right = right;
     }

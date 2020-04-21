@@ -1,0 +1,61 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "name": "pool1",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_name",
+              "source": "block_entity"
+            },
+            {
+              "function": "minecraft:copy_nbt",
+              "source": "block_entity",
+              "ops": [
+                {
+                  "source": "linked_position",
+                  "target": "BlockEntityTag.linked_position",
+                  "op": "replace"
+                },
+                {
+                  "source": "transfer_mode",
+                  "target": "BlockEntityTag.transfer_mode",
+                  "op": "replace"
+                },
+                {
+                  "source": "is_out_of_range",
+                  "target": "BlockEntityTag.is_out_of_range",
+                  "op": "replace"
+                },
+                {
+                  "source": "tick_location_particles",
+                  "target": "BlockEntityTag.tick_location_particles",
+                  "op": "replace"
+                }
+              ]
+            },
+            {
+              "function": "minecraft:set_contents",
+              "entries": [
+                {
+                  "type": "minecraft:dynamic",
+                  "name": "minecraft:contents"
+                }
+              ]
+            }
+          ],
+          "name": "netherendingenergy:wireless_fluid_transfer_module"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
+    }
+  ]
+}

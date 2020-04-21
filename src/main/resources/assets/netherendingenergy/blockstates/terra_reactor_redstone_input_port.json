@@ -1,0 +1,10 @@
+{
+  "variants" : {
+    "facing=north": { "model": "netherendingenergy:block/terra_reactor_redstone_input_port_front" },
+    "facing=south": { "model": "netherendingenergy:block/terra_reactor_redstone_input_port_front", "y": 180 },
+    "facing=east": { "model": "netherendingenergy:block/terra_reactor_redstone_input_port_front", "y": 90 },
+    "facing=west": { "model": "netherendingenergy:block/terra_reactor_redstone_input_port_front", "y": 270 },
+    "facing=up": { "model": "netherendingenergy:block/terra_reactor_redstone_input_port_front", "x": -90 },
+    "facing=down": { "model": "netherendingenergy:block/terra_reactor_redstone_input_port_front", "x": 90 }
+  }
+}

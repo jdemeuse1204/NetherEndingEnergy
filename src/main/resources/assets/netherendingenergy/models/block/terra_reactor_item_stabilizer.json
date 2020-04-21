@@ -1,0 +1,389 @@
+{
+  "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+  "textures": {
+    "Collector2": "netherendingenergy:block/terra_collecting_station_2",
+    "Collector": "netherendingenergy:block/terra_collecting_station",
+    "Casing2": "netherendingenergy:block/terra_reactor_casing"
+  },
+  "display": {
+    "gui": {
+      "rotation": [ 30, 45, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.625, 0.625, 0.625 ]
+    },
+    "ground": {
+      "rotation": [ 0, 0, 0 ],
+      "translation": [ 0, 2, 0 ],
+      "scale": [ 0.5, 0.5, 0.5 ]
+    },
+    "fixed": {
+      "rotation": [ 0, 180, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 1, 1, 1 ]
+    },
+    "head": {
+      "rotation": [ 0, 180, 0 ],
+      "translation": [ 0, 13, 7 ],
+      "scale": [ 1, 1, 1 ]
+    },
+    "firstperson_righthand": {
+      "rotation": [ 0, 0, 25 ],
+      "translation": [ 1.13, 3.2, 1.13 ],
+      "scale": [ 0.68, 0.68, 0.68 ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [ 0, 0, 0 ],
+      "translation": [ 0, 3, 1 ],
+      "scale": [ 0.55, 0.55, 0.55 ]
+    }
+  },
+  "elements": [
+    {
+      "name": "Center",
+      "from": [ 7, 0, 7 ],
+      "to": [ 9, 16, 9 ],
+      "faces": {
+        "north": { "texture": "#Collector", "uv": [ 13, 0, 15, 16 ] },
+        "east": { "texture": "#Collector", "uv": [ 13, 0, 15, 16 ] },
+        "south": { "texture": "#Collector", "uv": [ 13, 0, 15, 16 ] },
+        "west": { "texture": "#Collector", "uv": [ 13, 0, 15, 16 ] },
+        "up": { "texture": "#Collector", "uv": [ 0, 0, 2, 2 ] }
+      }
+    },
+    {
+      "name": "UpperBand",
+      "from": [ 6, 11, 6 ],
+      "to": [ 10, 12, 10 ],
+      "faces": {
+        "north": { "texture": "#Casing2", "uv": [ 3, 1, 7, 2 ] },
+        "east": { "texture": "#Casing2", "uv": [ 3, 1, 7, 2 ] },
+        "south": { "texture": "#Casing2", "uv": [ 3, 1, 7, 2 ] },
+        "west": { "texture": "#Casing2", "uv": [ 3, 1, 7, 2 ] },
+        "up": { "texture": "#Casing2", "uv": [ 3, 2, 7, 6 ] },
+        "down": { "texture": "#Casing2", "uv": [ 3, 2, 7, 6 ] }
+      }
+    },
+    {
+      "name": "MiddleBand",
+      "from": [ 5, 9, 5 ],
+      "to": [ 11, 10, 11 ],
+      "faces": {
+        "north": { "texture": "#Casing2", "uv": [ 1, 1, 7, 2 ] },
+        "east": { "texture": "#Casing2", "uv": [ 1, 1, 7, 2 ] },
+        "south": { "texture": "#Casing2", "uv": [ 1, 1, 7, 2 ] },
+        "west": { "texture": "#Casing2", "uv": [ 1, 1, 7, 2 ] },
+        "up": { "texture": "#Casing2", "uv": [ 1, 2, 7, 8 ] },
+        "down": { "texture": "#Casing2", "uv": [ 1, 2, 7, 8 ] }
+      }
+    },
+    {
+      "name": "LowerBand",
+      "from": [ 4, 7, 4 ],
+      "to": [ 12, 8, 12 ],
+      "faces": {
+        "north": { "texture": "#Casing2", "uv": [ 0, 0, 8, 1 ] },
+        "east": { "texture": "#Casing2", "uv": [ 0, 0, 8, 1 ] },
+        "south": { "texture": "#Casing2", "uv": [ 0, 0, 8, 1 ] },
+        "west": { "texture": "#Casing2", "uv": [ 0, 0, 8, 1 ] },
+        "up": { "texture": "#Casing2", "uv": [ 1, 1, 9, 9 ] }
+      }
+    },
+    {
+      "name": "BaseSlopeN",
+      "from": [ 4, 0, 0 ],
+      "to": [ 12, 6, 1 ],
+      "rotation": { "origin": [ 8, -3, 7 ], "axis": "x", "angle": 22.5 },
+      "faces": {
+        "north": { "texture": "#Casing2", "uv": [ 1, 0, 9, 6 ] },
+        "east": { "texture": "#Casing2", "uv": [ 0, 0, 1, 6 ] },
+        "west": { "texture": "#Casing2", "uv": [ 0, 0, 1, 6 ] }
+      }
+    },
+    {
+      "name": "Base",
+      "from": [ 0, 0, 0 ],
+      "to": [ 16, 3, 16 ],
+      "faces": {
+        "north": { "texture": "#Casing2", "uv": [ 0, 0, 16, 3 ] },
+        "east": { "texture": "#Casing2", "uv": [ 0, 0, 16, 3 ] },
+        "south": { "texture": "#Casing2", "uv": [ 0, 0, 16, 3 ] },
+        "west": { "texture": "#Casing2", "uv": [ 0, 0, 16, 3 ] },
+        "up": { "texture": "#Casing2", "uv": [ 0, 0, 16, 16 ] },
+        "down": { "texture": "#Casing2", "uv": [ 0, 0, 16, 16 ] }
+      }
+    },
+    {
+      "name": "StrutS",
+      "from": [ 7, 0, 16 ],
+      "to": [ 9, 16, 17 ],
+      "rotation": { "origin": [ 8, -3, 9 ], "axis": "x", "angle": -22.5 },
+      "faces": {
+        "north": { "texture": "#Collector", "uv": [ 13, 0, 15, 16 ] },
+        "east": { "texture": "#Collector", "uv": [ 14, 0, 15, 16 ] },
+        "south": { "texture": "#Collector", "uv": [ 13, 0, 15, 16 ] },
+        "west": { "texture": "#Collector", "uv": [ 13, 0, 14, 16 ] },
+        "up": { "texture": "#Collector", "uv": [ 0, 0, 2, 1 ] }
+      }
+    },
+    {
+      "name": "StrutW",
+      "from": [ 3, 0, 7 ],
+      "to": [ 4, 16, 9 ],
+      "rotation": { "origin": [ 9, 7, 8 ], "axis": "z", "angle": -22.5 },
+      "faces": {
+        "north": { "texture": "#Collector", "uv": [ 13, 0, 14, 16 ] },
+        "east": { "texture": "#Collector", "uv": [ 13, 0, 15, 16 ] },
+        "south": { "texture": "#Collector", "uv": [ 14, 0, 15, 16 ] },
+        "west": { "texture": "#Collector", "uv": [ 13, 0, 15, 16 ] },
+        "up": { "texture": "#Collector", "uv": [ 13, 4, 14, 6 ] }
+      }
+    },
+    {
+      "name": "StrutN",
+      "from": [ 7, 1, 4 ],
+      "to": [ 9, 17, 5 ],
+      "rotation": { "origin": [ 8, 10, 7 ], "axis": "x", "angle": 22.5 },
+      "faces": {
+        "north": { "texture": "#Collector", "uv": [ 13, 0, 15, 16 ] },
+        "east": { "texture": "#Collector", "uv": [ 13, 0, 14, 16 ] },
+        "south": { "texture": "#Collector", "uv": [ 13, 0, 15, 16 ] },
+        "west": { "texture": "#Collector", "uv": [ 14, 0, 15, 16 ] },
+        "up": { "texture": "#Collector", "uv": [ 7, 3, 9, 4 ] }
+      }
+    },
+    {
+      "name": "StrutE",
+      "from": [ 12, 0, 7 ],
+      "to": [ 13, 16, 9 ],
+      "rotation": { "origin": [ 7, 7, 8 ], "axis": "z", "angle": 22.5 },
+      "faces": {
+        "north": { "texture": "#Collector", "uv": [ 14, 0, 15, 16 ] },
+        "east": { "texture": "#Collector", "uv": [ 13, 0, 15, 16 ] },
+        "south": { "texture": "#Collector", "uv": [ 13, 0, 14, 16 ] },
+        "west": { "texture": "#Collector", "uv": [ 13, 0, 15, 16 ] },
+        "up": { "texture": "#Collector", "uv": [ 12, 9, 13, 11 ] }
+      }
+    },
+    {
+      "name": "BaseSlopeS",
+      "from": [ 4, 0, 15 ],
+      "to": [ 12, 6, 16 ],
+      "rotation": { "origin": [ 8, -3, 9 ], "axis": "x", "angle": -22.5 },
+      "faces": {
+        "east": { "texture": "#Casing2", "uv": [ 0, 0, 1, 6 ] },
+        "south": { "texture": "#Casing2", "uv": [ 1, 0, 9, 6 ] },
+        "west": { "texture": "#Casing2", "uv": [ 0, 0, 1, 6 ] }
+      }
+    },
+    {
+      "name": "BaseSlopeW",
+      "from": [ 4, 0, 4 ],
+      "to": [ 5, 6, 12 ],
+      "rotation": { "origin": [ 9, 7, 8 ], "axis": "z", "angle": -22.5 },
+      "faces": {
+        "north": { "texture": "#Casing2", "uv": [ 0, 0, 1, 6 ] },
+        "south": { "texture": "#Casing2", "uv": [ 0, 0, 1, 6 ] },
+        "west": { "texture": "#Casing2", "uv": [ 1, 0, 9, 6 ] }
+      }
+    },
+    {
+      "name": "BaseSlopeE",
+      "from": [ 11, 0, 4 ],
+      "to": [ 12, 6, 12 ],
+      "rotation": { "origin": [ 7, 7, 8 ], "axis": "z", "angle": 22.5 },
+      "faces": {
+        "north": { "texture": "#Casing2", "uv": [ 0, 0, 1, 6 ] },
+        "east": { "texture": "#Casing2", "uv": [ 1, 0, 9, 6 ] },
+        "south": { "texture": "#Casing2", "uv": [ 0, 0, 1, 6 ] }
+      }
+    },
+    {
+      "name": "CrownPillarNW",
+      "from": [ 3, 5, 3 ],
+      "to": [ 4, 10, 4 ],
+      "faces": {
+        "north": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] },
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] },
+        "south": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] }
+      }
+    },
+    {
+      "name": "CrownBaseNW",
+      "from": [ 2, 3, 2 ],
+      "to": [ 4, 5, 4 ],
+      "faces": {
+        "north": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "south": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "up": { "texture": "#Collector", "uv": [ 14, 0, 16, 2 ] }
+      }
+    },
+    {
+      "name": "CrownBaseNE",
+      "from": [ 12, 3, 2 ],
+      "to": [ 14, 5, 4 ],
+      "faces": {
+        "north": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "south": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "up": { "texture": "#Collector", "uv": [ 14, 1, 16, 3 ] }
+      }
+    },
+    {
+      "name": "CrownBaseSE",
+      "from": [ 12, 3, 12 ],
+      "to": [ 14, 5, 14 ],
+      "faces": {
+        "north": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "south": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "up": { "texture": "#Collector", "uv": [ 14, 0, 16, 2 ] }
+      }
+    },
+    {
+      "name": "CrownBaseSW",
+      "from": [ 2, 3, 12 ],
+      "to": [ 4, 5, 14 ],
+      "faces": {
+        "north": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "south": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 2, 2 ] },
+        "up": { "texture": "#Collector", "uv": [ 14, 1, 16, 3 ] }
+      }
+    },
+    {
+      "name": "CrownPillarSW",
+      "from": [ 3, 5, 12 ],
+      "to": [ 4, 10, 13 ],
+      "faces": {
+        "north": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] },
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] },
+        "south": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] }
+      }
+    },
+    {
+      "name": "CrownPillarSE",
+      "from": [ 12, 5, 12 ],
+      "to": [ 13, 10, 13 ],
+      "faces": {
+        "north": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] },
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] },
+        "south": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] }
+      }
+    },
+    {
+      "name": "CrownPillarNE",
+      "from": [ 12, 5, 3 ],
+      "to": [ 13, 10, 4 ],
+      "faces": {
+        "north": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] },
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] },
+        "south": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 1, 5 ] }
+      }
+    },
+    {
+      "name": "CrownSsideWslope",
+      "from": [ 1, 5, 12 ],
+      "to": [ 2, 12, 13 ],
+      "rotation": { "origin": [ 8, 5, 1 ], "axis": "z", "angle": -45.0 },
+      "faces": {
+        "north": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "south": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] }
+      }
+    },
+    {
+      "name": "CrownNsideEslope",
+      "from": [ 14, 5, 3 ],
+      "to": [ 15, 12, 4 ],
+      "rotation": { "origin": [ 8, 5, 15 ], "axis": "z", "angle": 45.0 },
+      "faces": {
+        "north": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "south": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] }
+      }
+    },
+    {
+      "name": "CrownSsideEslope",
+      "from": [ 14, 5, 12 ],
+      "to": [ 15, 12, 13 ],
+      "rotation": { "origin": [ 8, 5, 15 ], "axis": "z", "angle": 45.0 },
+      "faces": {
+        "north": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "south": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] }
+      }
+    },
+    {
+      "name": "CrownNsideWslope",
+      "from": [ 1, 5, 3 ],
+      "to": [ 2, 12, 4 ],
+      "rotation": { "origin": [ 8, 5, 1 ], "axis": "z", "angle": -45.0 },
+      "faces": {
+        "north": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "south": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] }
+      }
+    },
+    {
+      "name": "CrownWsideNslope",
+      "from": [ 3, 10, 3 ],
+      "to": [ 4, 17, 4 ],
+      "rotation": { "origin": [ 8, 10, 3 ], "axis": "x", "angle": 45.0 },
+      "faces": {
+        "north": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "south": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] }
+      }
+    },
+    {
+      "name": "CrownWsideSslope",
+      "from": [ 3, 16, 3 ],
+      "to": [ 4, 17, 10 ],
+      "rotation": { "origin": [ 8, 10, 3 ], "axis": "x", "angle": 45.0 },
+      "faces": {
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 7, 1 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 7, 1 ] },
+        "up": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "down": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] }
+      }
+    },
+    {
+      "name": "CrownEsideNslope",
+      "from": [ 12, 10, 3 ],
+      "to": [ 13, 17, 4 ],
+      "rotation": { "origin": [ 8, 10, 3 ], "axis": "x", "angle": 45.0 },
+      "faces": {
+        "north": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "south": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] }
+      }
+    },
+    {
+      "name": "CrownEsideSslope",
+      "from": [ 12, 16, 3 ],
+      "to": [ 13, 17, 10 ],
+      "rotation": { "origin": [ 8, 10, 3 ], "axis": "x", "angle": 45.0 },
+      "faces": {
+        "east": { "texture": "#Collector2", "uv": [ 0, 0, 7, 1 ] },
+        "west": { "texture": "#Collector2", "uv": [ 0, 0, 7, 1 ] },
+        "up": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] },
+        "down": { "texture": "#Collector2", "uv": [ 0, 0, 1, 7 ] }
+      }
+    }
+  ]
+}

@@ -1,4 +1,3 @@
-
 package com.agrejus.netherendingenergy.fluids;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
@@ -9,9 +8,7 @@ import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.fluid.FlowingFluid;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.*;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -24,6 +21,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -37,58 +35,53 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class RawAcidFluid {
-    protected RegistryObject<FlowingFluid> stillFluid;
-    protected RegistryObject<FlowingFluid> flowingFluid;
+public class RawAcidFluid extends AcidFluid {
 
-    protected RegistryObject<FlowingFluidBlock> block;
-    protected RegistryObject<Item> bucket;
-
-    protected ForgeFlowingFluid.Properties properties;
-
-    protected RawAcidFluid(String key, String stillTexture, String flowTexture) {
-
-        stillFluid = NetherEndingEnergy.FLUIDS.register(key, () -> new ForgeFlowingFluid.Source(properties));
-        flowingFluid = NetherEndingEnergy.FLUIDS.register(flowing(key), () -> new ForgeFlowingFluid.Flowing(properties));
-
-        block = NetherEndingEnergy.BLOCKS.register(key, () -> new RawAcidBlock(stillFluid, Block.Properties.create(Material.WATER)));
-        bucket = NetherEndingEnergy.ITEMS.register(bucket(key), () -> new BucketItem(stillFluid, new Item.Properties().containerItem(Items.BUCKET).maxStackSize(1).group(ModSetup.itemGroup).rarity(Rarity.UNCOMMON)));
-
-        properties = new ForgeFlowingFluid.Properties(stillFluid, flowingFluid, FluidAttributes.builder(new ResourceLocation(stillTexture), new ResourceLocation(flowTexture)).rarity(Rarity.UNCOMMON)).bucket(bucket).block(block).levelDecreasePerBlock(2);
+    public RawAcidFluid() {
+        super("raw_acid_fluid", NetherEndingEnergy.MODID + ":block/fluids/raw_acid_still", NetherEndingEnergy.MODID + ":block/fluids/raw_acid_flow", 0xffB200DE);
     }
 
-    public static RawAcidFluid create(String key) {
+    @Override
+    protected int getBaseEnergyPerTick() { return 0; }
 
-        return new RawAcidFluid(key, NetherEndingEnergy.MODID + ":block/fluids/raw_acid_still", NetherEndingEnergy.MODID + ":block/fluids/raw_acid_flow");
+    @Override
+    protected float getSpatial() {
+        return 0;
     }
 
-    public static String flowing(String fluid) {
-
-        return fluid + "_flowing";
+    @Override
+    protected float getStrength() {
+        return 0;
     }
 
-    public static String bucket(String fluid) {
-
-        return fluid + "_bucket";
+    @Override
+    protected float getEfficiency() {
+        return 0;
     }
 
-    public static class RawAcidBlock extends FlowingFluidBlock {
+    @Override
+    protected float getStability() {
+        return 0;
+    }
 
+    @Override
+    protected float getResponse() {
+        return 0;
+    }
+
+    @Override
+    protected FlowingFluidBlock createBlock(RegistryObject<FlowingFluid> stillFluid) {
+        return new RawAcidBlock(stillFluid, Block.Properties.create(Material.WATER));
+    }
+
+    @Override
+    protected float getDecayRate() {
+        return 0;
+    }
+
+    public static class RawAcidBlock extends AcidFluid.AcidBlock {
         public RawAcidBlock(Supplier<? extends FlowingFluid> supplier, Properties properties) {
-
             super(supplier, properties);
-        }
-
-        @Override
-        public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
-            if (!worldIn.isRemote && worldIn.getDifficulty() != Difficulty.PEACEFUL) {
-                if (entityIn instanceof LivingEntity) {
-                    LivingEntity livingentity = (LivingEntity) entityIn;
-                    if (!livingentity.isInvulnerableTo(DamageSource.WITHER)) {
-                        livingentity.addPotionEffect(new EffectInstance(Effects.POISON, 40));
-                    }
-                }
-            }
         }
     }
 }

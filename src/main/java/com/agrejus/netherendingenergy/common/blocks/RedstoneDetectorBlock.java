@@ -15,7 +15,7 @@ public class RedstoneDetectorBlock extends Block {
         super(properties);
     }
 
-    public void onRedstoneSignalChanged(@Nullable Direction poweredDirection, boolean isPowered, BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
+    public void onRedstoneSignalChanged(@Nullable Direction directionChanged, boolean isPowered, int power, BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
 
     }
 
@@ -25,30 +25,22 @@ public class RedstoneDetectorBlock extends Block {
             return;
         }
 
-        Direction direction = state.get(BlockStateProperties.FACING);
-        Direction redstoneSignalDirection = getRedstoneSignalDirection(worldIn, pos, direction);
-        boolean isPowered = redstoneSignalDirection != null;
+        Direction changingBlockDirection = getDirectionOfChangingBlock(pos, fromPos);
+        int power = worldIn.getRedstonePower(fromPos, changingBlockDirection);
 
-        this.onRedstoneSignalChanged(redstoneSignalDirection, isPowered, state, worldIn, pos, blockIn, fromPos);
+        this.onRedstoneSignalChanged(changingBlockDirection, power > 0, power, state, worldIn, pos, blockIn, fromPos);
     }
 
-    private @Nullable
-    Direction getRedstoneSignalDirection(World worldIn, BlockPos pos, Direction facing) {
+    private @Nullable Direction getDirectionOfChangingBlock(BlockPos pos, BlockPos fromPos) {
+        int x = fromPos.getX();
+        int y = fromPos.getY();
+        int z = fromPos.getZ();
+
         for (Direction direction : Direction.values()) {
-            if (direction != facing && worldIn.isSidePowered(pos.offset(direction), direction)) {
+            BlockPos offset = pos.offset(direction);
+
+            if (x == offset.getX() && y == offset.getY() && z == offset.getZ()) {
                 return direction;
-            }
-        }
-
-        if (worldIn.isSidePowered(pos, Direction.DOWN)) {
-            return Direction.DOWN;
-        }
-
-        BlockPos blockpos = pos.up();
-
-        for (Direction direction1 : Direction.values()) {
-            if (direction1 != Direction.DOWN && worldIn.isSidePowered(blockpos.offset(direction1), direction1)) {
-                return direction1;
             }
         }
 

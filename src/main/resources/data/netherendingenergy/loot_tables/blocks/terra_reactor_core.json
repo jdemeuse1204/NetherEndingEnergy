@@ -22,8 +22,28 @@
                   "op": "replace"
                 },
                 {
+                  "source": "acid",
+                  "target": "BlockEntityTag.acid",
+                  "op": "replace"
+                },
+                {
                   "source": "energy",
                   "target": "BlockEntityTag.energy",
+                  "op": "replace"
+                },
+                {
+                  "source": "burntime",
+                  "target": "BlockEntityTag.burntime",
+                  "op": "replace"
+                },
+                {
+                  "source": "burntimetotal",
+                  "target": "BlockEntityTag.burntimetotal",
+                  "op": "replace"
+                },
+                {
+                  "source": "heat",
+                  "target": "BlockEntityTag.heat",
                   "op": "replace"
                 }
               ]

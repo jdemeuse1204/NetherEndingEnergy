@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "netherendingenergy:block/terra_reactor_item_stabilizer",
+    "particle": {
+      "all": "netherendingenergy:block/terra_reactor_casing"
+    }
+  },
+  "variants" : {
+    "facing": {
+      "north": {},
+      "south": { "y": 180 },
+      "west": { "y": 270 },
+      "east": { "y": 90 },
+      "down": { "x": 180 },
+      "up": {}
+    }
+  }
+}

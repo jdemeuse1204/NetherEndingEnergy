@@ -1,0 +1,10 @@
+{
+  "variants" : {
+    "caustic=0": { "model": "netherendingenergy:block/caustic_roots_0" },
+    "caustic=1": { "model": "netherendingenergy:block/caustic_roots_1" },
+    "caustic=2": { "model": "netherendingenergy:block/caustic_roots_2" },
+    "caustic=3": { "model": "netherendingenergy:block/caustic_roots_3" },
+    "caustic=4": { "model": "netherendingenergy:block/caustic_roots_4" },
+    "caustic=5": { "model": "netherendingenergy:block/caustic_roots_5" }
+  }
+}

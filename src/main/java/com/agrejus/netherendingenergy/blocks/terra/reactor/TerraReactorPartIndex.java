@@ -1,17 +1,159 @@
 package com.agrejus.netherendingenergy.blocks.terra.reactor;
 
+import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.energy.TerraReactorEnergyPortBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneInputPortBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.heatsink.TerraHeatSinkBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.casing.TerraReactorCasingBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.item.TerraReactorItemPortBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.liquid.TerraReactorAcidPortBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneOutputPortBlock;
+import net.minecraft.block.AirBlock;
 import net.minecraft.util.IStringSerializable;
 
-public enum TerraReactorPartIndex  implements IStringSerializable {
+import java.util.Arrays;
+import java.util.List;
+
+public enum TerraReactorPartIndex implements IStringSerializable {
     UNFORMED("unformed", 0, 0, 0),
-    P000("p000", 0, 0, 0),
-    P001("p001", 0, 0, 1),
-    P010("p010", 0, 1, 0),
-    P011("p011", 0, 1, 1),
-    P100("p100", 1, 0, 0),
-    P101("p101", 1, 0, 1),
-    P110("p110", 1, 1, 0),
-    P111("p111", 1, 1, 1);
+
+    // 55 Total Blocks
+
+    /* Middle Columns */
+    P_n2_n2_0("p_n2_n2_0", -2, -2, 0),
+    P_n2_n1_0("p_n2_n1_0", -2, -1, 0),
+    P_n2_0_0("p_n2_0_0", -2, 0, 0),
+    P_n2_1_0("p_n2_1_0", -2, 1, 0),
+    P_n2_2_0("p_n2_2_0", -2, 2, 0),
+
+    P_n1_n2_0("p_n1_n2_0", -1, -2, 0),
+    P_n1_n1_0("p_n1_n1_0", -1, -1, 0),
+    P_n1_0_0("p_n1_0_0", -1, 0, 0),
+    P_n1_1_0("p_n1_1_0", -1, 1, 0),
+    P_n1_2_0("p_n1_2_0", -1, 2, 0),
+
+    //  Center Column
+    P_0_n2_0("p_0_n2_0", 0, -2, 0),
+    P_0_n1_0("p_0_n1_0", 0, -1, 0),
+    P_0_0_0("p_0_0_0", 0, 0, 0),
+    P_0_1_0("p_0_1_0", 0, 1, 0),
+    P_0_2_0("p_0_2_0", 0, 2, 0),
+    //
+    P_1_n2_0("p_1_n2_0", 1, -2, 0),
+    P_1_n1_0("p_1_n1_0", 1, -1, 0),
+    P_1_0_0("p_1_0_0", 1, 0, 0),
+    P_1_1_0("p_1_1_0", 1, 1, 0),
+    P_1_2_0("p_1_2_0", 1, 2, 0),
+    //
+    P_2_n2_0("p_2_n2_0", 2, -2, 0),
+    P_2_n1_0("p_2_n1_0", 2, -1, 0),
+    P_2_0_0("p_2_0_0", 2, 0, 0),
+    P_2_1_0("p_2_1_0", 2, 1, 0),
+    P_2_2_0("p_2_2_0", 2, 2, 0),
+    //
+    /* Offset 1 */
+    P_n2_n2_1("p_n2_n2_1", -2, -2, 1),
+    P_n2_n1_1("p_n2_n1_1", -2, -1, 1),
+    P_n2_0_1("p_n2_0_1", -2, 0, 1),
+    P_n2_1_1("p_n2_1_1", -2, 1, 1),
+    P_n2_2_1("p_n2_2_1", -2, 2, 1),
+
+    P_n1_n2_1("p_n1_n2_1", -1, -2, 1),
+    P_n1_n1_1("p_n1_n1_1", -1, -1, 1),
+    P_n1_0_1("p_n1_0_1", -1, 0, 1),
+    P_n1_1_1("p_n1_1_1", -1, 1, 1),
+    P_n1_2_1("p_n1_2_1", -1, 2, 1),
+
+    P_0_n2_1("p_0_n2_1", 0, -2, 1),
+    P_0_n1_1("p_0_n1_1", 0, -1, 1),
+    P_0_0_1("p_0_0_1", 0, 0, 1),
+    P_0_1_1("p_0_1_1", 0, 1, 1),
+    P_0_2_1("p_0_2_1", 0, 2, 1),
+
+    P_1_n2_1("p_1_n2_1", 1, -2, 1),
+    P_1_n1_1("p_1_n1_1", 1, -1, 1),
+    P_1_0_1("p_1_0_1", 1, 0, 1),
+    P_1_1_1("p_1_1_1", 1, 1, 1),
+    P_1_2_1("p_1_2_1", 1, 2, 1),
+
+    P_2_n2_1("p_2_n2_1", 2, -2, 1),
+    P_2_n1_1("p_2_n1_1", 2, -1, 1),
+    P_2_0_1("p_2_0_1", 2, 0, 1),
+    P_2_1_1("p_2_1_1", 2, 1, 1),
+    P_2_2_1("p_2_2_1", 2, 2, 1),
+
+    /* Offset 2 */
+    // Column of air
+
+    P_n1_n2_2("p_n1_n2_2", -1, -2, 2),
+    P_n1_n1_2("p_n1_n1_2", -1, -1, 2),
+    P_n1_0_2("p_n1_0_2", -1, 0, 2),
+    P_n1_1_2("p_n1_1_2", -1, 1, 2),
+    P_n1_2_2("p_n1_2_2", -1, 2, 2),
+
+    P_0_n2_2("p_0_n2_2", 0, -2, 2),
+    P_0_n1_2("p_0_n1_2", 0, -1, 2),
+    P_0_0_2("p_0_0_2", 0, 0, 2),
+    P_0_1_2("p_0_1_2", 0, 1, 2),
+    P_0_2_2("p_0_2_2", 0, 2, 2),
+
+    P_1_n2_2("p_1_n2_2", 1, -2, 2),
+    P_1_n1_2("p_1_n1_2", 1, -1, 2),
+    P_1_0_2("p_1_0_2", 1, 0, 2),
+    P_1_1_2("p_1_1_2", 1, 1, 2),
+    P_1_2_2("p_1_2_2", 1, 2, 2),
+
+    // Column of air
+
+    /* Offset -1 */
+    P_n2_n2_n1("p_n2_n2_n1", -2, -2, -1),
+    P_n2_n1_n1("p_n2_n1_n1", -2, -1, -1),
+    P_n2_0_n1("p_n2_0_n1", -2, 0, -1),
+    P_n2_1_n1("p_n2_1_n1", -2, 1, -1),
+    P_n2_2_n1("p_n2_2_n1", -2, 2, -1),
+
+    P_n1_n2_n1("p_n1_n2_n1", -1, -2, -1),
+    P_n1_n1_n1("p_n1_n1_n1", -1, -1, -1),
+    P_n1_0_n1("p_n1_0_n1", -1, 0, -1),
+    P_n1_1_n1("p_n1_1_n1", -1, 1, -1),
+    P_n1_2_n1("p_n1_2_n1", -1, 2, -1),
+
+    P_0_n2_n1("p_0_n2_n1", 0, -2, -1),
+    P_0_n1_n1("p_0_n1_n1", 0, -1, -1),
+    P_0_0_n1("p_0_0_n1", 0, 0, -1),
+    P_0_1_n1("p_0_1_n1", 0, 1, -1),
+    P_0_2_n1("p_0_2_n1", 0, 2, -1),
+
+    P_1_n2_n1("p_1_n2_n1", 1, -2, -1),
+    P_1_n1_n1("p_1_n1_n1", 1, -1, -1),
+    P_1_0_n1("p_1_0_n1", 1, 0, -1),
+    P_1_1_n1("p_1_1_n1", 1, 1, -1),
+    P_1_2_n1("p_1_2_n1", 1, 2, -1),
+
+    P_2_n2_n1("p_2_n2_n1", 2, -2, -1),
+    P_2_n1_n1("p_2_n1_n1", 2, -1, -1),
+    P_2_0_n1("p_2_0_n1", 2, 0, -1),
+    P_2_1_n1("p_2_1_n1", 2, 1, -1),
+    P_2_2_n1("p_2_2_n1", 2, 2, -1),
+
+    /* Offset -2 */
+    P_n1_n2_n2("p_n1_n2_n2", -1, -2, -2),
+    P_n1_n1_n2("p_n1_n1_n2", -1, -1, -2),
+    P_n1_0_n2("p_n1_0_n2", -1, 0, -2),
+    P_n1_1_n2("p_n1_1_n2", -1, 1, -2),
+    P_n1_2_n2("p_n1_2_n2", -1, 2, -2),
+
+    P_0_n2_n2("p_0_n2_n2", 0, -2, -2),
+    P_0_n1_n2("p_0_n1_n2", 0, -1, -2),
+    P_0_0_n2("p_0_0_n2", 0, 0, -2),
+    P_0_1_n2("p_0_1_n2", 0, 1, -2),
+    P_0_2_n2("p_0_2_n2", 0, 2, -2),
+
+    P_1_n2_n2("p_1_n2_n2", 1, -2, -2),
+    P_1_n1_n2("p_1_n1_n2", 1, -1, -2),
+    P_1_0_n2("p_1_0_n2", 1, 0, -2),
+    P_1_1_n2("p_1_1_n2", 1, 1, -2),
+    P_1_2_n2("p_1_2_n2", 1, 2, -2);
 
     // Optimization
     public static final TerraReactorPartIndex[] VALUES = TerraReactorPartIndex.values();
@@ -20,16 +162,14 @@ public enum TerraReactorPartIndex  implements IStringSerializable {
     private final int dx;
     private final int dy;
     private final int dz;
+    private final Class[] blockTypes;
 
-    TerraReactorPartIndex(String name, int dx, int dy, int dz) {
+    TerraReactorPartIndex(String name, int dx, int dy, int dz, Class... blockTypes) {
         this.name = name;
         this.dx = dx;
         this.dy = dy;
         this.dz = dz;
-    }
-
-    public static TerraReactorPartIndex getIndex(int dx, int dy, int dz) {
-        return VALUES[dx*4 + dy*2 + dz + 1];
+        this.blockTypes = blockTypes;
     }
 
     @Override

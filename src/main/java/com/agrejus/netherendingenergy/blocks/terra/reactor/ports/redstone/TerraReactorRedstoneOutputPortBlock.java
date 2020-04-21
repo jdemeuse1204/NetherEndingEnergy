@@ -1,0 +1,82 @@
+package com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone;
+
+import com.agrejus.netherendingenergy.RegistryNames;
+import com.agrejus.netherendingenergy.blocks.base.reactor.DirectionalReactorPartBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorReactorMultiBlock;
+import net.minecraft.block.*;
+import net.minecraft.block.material.Material;
+import net.minecraft.state.IProperty;
+import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
+
+import java.util.List;
+
+public class TerraReactorRedstoneOutputPortBlock extends DirectionalReactorPartBlock {
+    public TerraReactorRedstoneOutputPortBlock() {
+        super(Properties.create(Material.IRON)
+                .sound(SoundType.WOOD)
+                .hardnessAndResistance(2.0f)
+                .lightValue(0), RegistryNames.TERRA_REACTOR_REDSTONE_OUTPUT_PORT, TerraReactorReactorMultiBlock.INSTANCE);
+    }
+
+    @Override
+    public boolean hasTileEntity(BlockState state) {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return new TerraReactorRedstoneOutputPortTile();
+    }
+
+    @Override
+    protected List<IProperty<?>> getFillStateProperties() {
+        List<IProperty<?>> result = super.getFillStateProperties();
+        result.add(BlockStateProperties.POWERED);
+        result.add(BlockStateProperties.POWER_0_15);
+        return result;
+    }
+
+    @Override
+    protected BlockState getDefaultReactorState() {
+        return super.getDefaultReactorState().with(BlockStateProperties.POWERED, Boolean.valueOf(false)).with(BlockStateProperties.POWER_0_15, 0);
+    }
+
+    @Override
+    public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side) {
+        return side != null && side == state.get(BlockStateProperties.FACING);
+    }
+
+    @Override
+    public boolean canProvidePower(BlockState state) {
+        return true;
+    }
+
+    public int getStrongPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
+        return this.getWeakPower(blockState,blockAccess, pos, side);
+    }
+
+    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
+        if (side == blockState.get(BlockStateProperties.FACING).getOpposite()) {
+            return blockState.get(BlockStateProperties.POWER_0_15);
+        }
+        return 0;
+    }
+
+    // call when power changes
+    protected void notifyNeighbors(World worldIn, BlockPos pos, BlockState state) {
+        Direction direction = state.get(BlockStateProperties.FACING);
+        BlockPos blockpos = pos.offset(direction.getOpposite());
+        if (net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(worldIn, pos, worldIn.getBlockState(pos), java.util.EnumSet.of(direction.getOpposite()), false).isCanceled())
+            return;
+        worldIn.neighborChanged(blockpos, this, pos);
+        worldIn.notifyNeighborsOfStateExcept(blockpos, this, direction);
+    }
+}

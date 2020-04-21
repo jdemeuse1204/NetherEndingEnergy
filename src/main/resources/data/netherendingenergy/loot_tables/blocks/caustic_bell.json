@@ -20,60 +20,45 @@
                   "source": "strength",
                   "target": "BlockEntityTag.strength",
                   "op": "replace"
-                }
-              ]
-            },
-            {
-              "function": "minecraft:copy_nbt",
-              "source": "block_entity",
-              "ops": [
+                },
                 {
                   "source": "purity",
                   "target": "BlockEntityTag.purity",
                   "op": "replace"
-                }
-              ]
-            },
-            {
-              "function": "minecraft:copy_nbt",
-              "source": "block_entity",
-              "ops": [
+                },
                 {
                   "source": "yield",
                   "target": "BlockEntityTag.yield",
                   "op": "replace"
-                }
-              ]
-            },
-            {
-              "function": "minecraft:copy_nbt",
-              "source": "block_entity",
-              "ops": [
+                },
                 {
-                  "source": "superior_trait",
-                  "target": "BlockEntityTag.superior_trait",
+                  "source": "superior",
+                  "target": "BlockEntityTag.superior",
                   "op": "replace"
-                }
-              ]
-            },
-            {
-              "function": "minecraft:copy_nbt",
-              "source": "block_entity",
-              "ops": [
+                },
                 {
-                  "source": "inferior_trait",
-                  "target": "BlockEntityTag.inferior_trait",
+                  "source": "inferior",
+                  "target": "BlockEntityTag.inferior",
                   "op": "replace"
-                }
-              ]
-            },
-            {
-              "function": "minecraft:copy_nbt",
-              "source": "block_entity",
-              "ops": [
+                },
                 {
-                  "source": "recessive_trait",
-                  "target": "BlockEntityTag.recessive_trait",
+                  "source": "recessive",
+                  "target": "BlockEntityTag.recessive",
+                  "op": "replace"
+                },
+                {
+                  "source": "ph_level",
+                  "target": "BlockEntityTag.ph_level",
+                  "op": "replace"
+                },
+                {
+                  "source": "stage_advance",
+                  "target": "BlockEntityTag.stage_advance",
+                  "op": "replace"
+                },
+                {
+                  "source": "root_system",
+                  "target": "BlockEntityTag.root_system",
                   "op": "replace"
                 }
               ]

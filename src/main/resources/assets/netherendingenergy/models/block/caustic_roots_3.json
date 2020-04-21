@@ -1,0 +1,268 @@
+{
+  "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+  "textures": {
+    "CausticRoot4": "netherendingenergy:block/caustic_roots_3",
+    "causticroots": "netherendingenergy:block/caustic_roots_only"
+  },
+  "display": {
+    "gui": {
+      "rotation": [ 30, 45, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.625, 0.625, 0.625 ]
+    },
+    "ground": {
+      "rotation": [ 0, 0, 0 ],
+      "translation": [ 0, 3, 0 ],
+      "scale": [ 0.25, 0.25, 0.25 ]
+    },
+    "fixed": {
+      "rotation": [ 0, 180, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 1, 1, 1 ]
+    },
+    "head": {
+      "rotation": [ 0, 180, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 1, 1, 1 ]
+    },
+    "firstperson_righthand": {
+      "rotation": [ 0, 315, 0 ],
+      "translation": [ 0, 2.5, 0 ],
+      "scale": [ 0.4, 0.4, 0.4 ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [ 75, 315, 0 ],
+      "translation": [ 0, 2.5, 0 ],
+      "scale": [ 0.375, 0.375, 0.375 ]
+    }
+  },
+  "elements": [
+    {
+      "name": "Base",
+      "from": [ 0, 0, 0 ],
+      "to": [ 16, 16, 16 ],
+      "faces": {
+        "north": { "texture": "#CausticRoot4", "uv": [ 0, 0, 16, 16 ], "cullface": "north" },
+        "east": { "texture": "#CausticRoot4", "uv": [ 0, 0, 16, 16 ], "cullface": "east" },
+        "south": { "texture": "#CausticRoot4", "uv": [ 0, 0, 16, 16 ], "cullface": "south" },
+        "west": { "texture": "#CausticRoot4", "uv": [ 0, 0, 16, 16 ], "cullface": "west" },
+        "up": { "texture": "#CausticRoot4", "uv": [ 0, 0, 16, 16 ], "cullface": "up" },
+        "down": { "texture": "#CausticRoot4", "uv": [ 0, 0, 16, 16 ], "cullface": "down" }
+      }
+    },
+    {
+      "name": "Nroot1",
+      "from": [ 6, 16, 3 ],
+      "to": [ 9, 16, 9 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "x", "angle": -45.0 },
+      "faces": {
+        "up": { "texture": "#causticroots", "uv": [ 3, 6, 6, 12 ], "cullface": "up" },
+        "down": { "texture": "#causticroots", "uv": [ 0, 6, 3, 12 ], "cullface": "down" }
+      }
+    },
+    {
+      "name": "Nroot2",
+      "from": [ 9, 15, 2 ],
+      "to": [ 13, 15, 6 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "x", "angle": -45.0 },
+      "faces": {
+        "up": { "texture": "#causticroots", "uv": [ 0, 12, 4, 16 ], "cullface": "up" },
+        "down": { "texture": "#causticroots", "uv": [ 12, 0, 16, 4 ], "cullface": "down" }
+      }
+    },
+    {
+      "name": "Nroot3",
+      "from": [ 2, 14, 1 ],
+      "to": [ 5, 14, 7 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "x", "angle": -45.0 },
+      "faces": {
+        "up": { "texture": "#causticroots", "uv": [ 3, 0, 6, 6 ] },
+        "down": { "texture": "#causticroots", "uv": [ 0, 0, 3, 6 ] }
+      }
+    },
+    {
+      "name": "Nroot4",
+      "from": [ 7, 11, -2 ],
+      "to": [ 11, 11, 2 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "x", "angle": -45.0 },
+      "faces": {
+        "up": { "texture": "#causticroots", "uv": [ 4, 12, 8, 16 ] },
+        "down": { "texture": "#causticroots", "uv": [ 12, 4, 16, 8 ] }
+      }
+    },
+    {
+      "name": "Wroot1",
+      "from": [ 1, 2, 3 ],
+      "to": [ 1, 6, 7 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "z", "angle": -45.0 },
+      "faces": {
+        "east": { "texture": "#causticroots", "uv": [ 12, 0, 16, 4 ] },
+        "west": { "texture": "#causticroots", "uv": [ 12, 4, 16, 8 ] }
+      }
+    },
+    {
+      "name": "Wroot2",
+      "from": [ 0, 3, 7 ],
+      "to": [ 0, 9, 10 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "z", "angle": -45.0 },
+      "faces": {
+        "east": { "texture": "#causticroots", "uv": [ 0, 6, 3, 12 ], "cullface": "east" },
+        "west": { "texture": "#causticroots", "uv": [ 0, 0, 3, 6 ], "cullface": "west" }
+      }
+    },
+    {
+      "name": "Wroot3",
+      "from": [ 2, 1, 11 ],
+      "to": [ 2, 7, 14 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "z", "angle": -45.0 },
+      "faces": {
+        "east": { "texture": "#causticroots", "uv": [ 0, 0, 3, 6 ], "cullface": "east" },
+        "west": { "texture": "#causticroots", "uv": [ 0, 6, 3, 12 ], "cullface": "west" }
+      }
+    },
+    {
+      "name": "Wroot4",
+      "from": [ 5, -2, 5 ],
+      "to": [ 5, 2, 9 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "z", "angle": -45.0 },
+      "faces": {
+        "east": { "texture": "#causticroots", "uv": [ 12, 4, 16, 8 ], "cullface": "east" },
+        "west": { "texture": "#causticroots", "uv": [ 12, 0, 16, 4 ], "cullface": "west" }
+      }
+    },
+    {
+      "name": "Sroot1",
+      "from": [ 7, 16, 7 ],
+      "to": [ 10, 16, 13 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "x", "angle": 45.0 },
+      "faces": {
+        "up": { "texture": "#causticroots", "uv": [ 0, 0, 3, 6 ], "cullface": "up" },
+        "down": { "texture": "#causticroots", "uv": [ 3, 0, 6, 6 ], "cullface": "down" }
+      }
+    },
+    {
+      "name": "Sroot2",
+      "from": [ 3, 15, 10 ],
+      "to": [ 7, 15, 14 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "x", "angle": 45.0 },
+      "faces": {
+        "up": { "texture": "#causticroots", "uv": [ 12, 4, 16, 8 ], "cullface": "up" },
+        "down": { "texture": "#causticroots", "uv": [ 4, 12, 8, 16 ], "cullface": "down" }
+      }
+    },
+    {
+      "name": "Sroot3",
+      "from": [ 11, 14, 9 ],
+      "to": [ 14, 14, 15 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "x", "angle": 45.0 },
+      "faces": {
+        "up": { "texture": "#causticroots", "uv": [ 0, 6, 3, 12 ], "cullface": "up" },
+        "down": { "texture": "#causticroots", "uv": [ 3, 6, 6, 12 ], "cullface": "down" }
+      }
+    },
+    {
+      "name": "Sroot4",
+      "from": [ 5, 11, 14 ],
+      "to": [ 9, 11, 18 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "x", "angle": 45.0 },
+      "faces": {
+        "up": { "texture": "#causticroots", "uv": [ 12, 0, 16, 4 ], "cullface": "up" },
+        "down": { "texture": "#causticroots", "uv": [ 0, 12, 4, 16 ], "cullface": "down" }
+      }
+    },
+    {
+      "name": "Eroot1",
+      "from": [ 15, 2, 9 ],
+      "to": [ 15, 6, 13 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "z", "angle": 45.0 },
+      "faces": {
+        "east": { "texture": "#causticroots", "uv": [ 12, 4, 16, 8 ], "cullface": "east" },
+        "west": { "texture": "#causticroots", "uv": [ 12, 0, 16, 4 ], "cullface": "west" }
+      }
+    },
+    {
+      "name": "Eroot2",
+      "from": [ 16, 3, 6 ],
+      "to": [ 16, 9, 9 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "z", "angle": 45.0 },
+      "faces": {
+        "east": { "texture": "#causticroots", "uv": [ 0, 0, 3, 6 ], "cullface": "east" },
+        "west": { "texture": "#causticroots", "uv": [ 0, 6, 3, 12 ] }
+      }
+    },
+    {
+      "name": "Eroot3",
+      "from": [ 14, 1, 2 ],
+      "to": [ 14, 7, 5 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "z", "angle": 45.0 },
+      "faces": {
+        "east": { "texture": "#causticroots", "uv": [ 0, 6, 3, 12 ], "cullface": "east" },
+        "west": { "texture": "#causticroots", "uv": [ 0, 0, 3, 6 ], "cullface": "west" }
+      }
+    },
+    {
+      "name": "Eroot4",
+      "from": [ 11, -2, 5 ],
+      "to": [ 11, 2, 9 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "z", "angle": 45.0 },
+      "faces": {
+        "east": { "texture": "#causticroots", "uv": [ 12, 0, 16, 4 ], "cullface": "east" },
+        "west": { "texture": "#causticroots", "uv": [ 12, 4, 16, 8 ], "cullface": "west" }
+      }
+    },
+    {
+      "name": "Troot1",
+      "from": [ 3, 14, 5 ],
+      "to": [ 9, 17, 5 ],
+      "faces": {
+        "north": { "texture": "#causticroots", "uv": [ 0, 13, 6, 16 ], "cullface": "north" },
+        "south": { "texture": "#causticroots", "uv": [ 2, 13, 8, 16 ], "cullface": "south" }
+      }
+    },
+    {
+      "name": "Troot2",
+      "from": [ 13, 14, 4 ],
+      "to": [ 13, 17, 10 ],
+      "faces": {
+        "east": { "texture": "#causticroots", "uv": [ 6, 0, 12, 3 ], "cullface": "east" },
+        "west": { "texture": "#causticroots", "uv": [ 6, 3, 12, 6 ], "cullface": "west" }
+      }
+    },
+    {
+      "name": "Troot3",
+      "from": [ 7, 13, 10 ],
+      "to": [ 7, 17, 14 ],
+      "faces": {
+        "east": { "texture": "#causticroots", "uv": [ 12, 8, 16, 12 ], "cullface": "east" },
+        "west": { "texture": "#causticroots", "uv": [ 8, 12, 12, 16 ], "cullface": "west" }
+      }
+    },
+    {
+      "name": "Broot1",
+      "from": [ 3, -1, 11 ],
+      "to": [ 9, 2, 11 ],
+      "faces": {
+        "north": { "texture": "#causticroots", "uv": [ 6, 9, 12, 12 ], "cullface": "north" },
+        "south": { "texture": "#causticroots", "uv": [ 6, 6, 12, 9 ], "cullface": "south" }
+      }
+    },
+    {
+      "name": "Broot2",
+      "from": [ 13, -1, 6 ],
+      "to": [ 13, 2, 12 ],
+      "faces": {
+        "east": { "texture": "#causticroots", "uv": [ 6, 9, 12, 12 ] },
+        "west": { "texture": "#causticroots", "uv": [ 6, 6, 12, 9 ] }
+      }
+    },
+    {
+      "name": "Broot3",
+      "from": [ 7, -2, 2 ],
+      "to": [ 7, 2, 6 ],
+      "faces": {
+        "east": { "texture": "#causticroots", "uv": [ 12, 0, 16, 4 ], "cullface": "east" },
+        "west": { "texture": "#causticroots", "uv": [ 12, 4, 16, 8 ], "cullface": "west" }
+      }
+    }
+  ]
+}

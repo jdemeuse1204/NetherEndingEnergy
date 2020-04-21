@@ -17,8 +17,68 @@
               "source": "block_entity",
               "ops": [
                 {
-                  "source": "vapor",
-                  "target": "BlockEntityTag.vapor",
+                  "source": "input_tank",
+                  "target": "BlockEntityTag.input_tank",
+                  "op": "replace"
+                },
+                {
+                  "source": "output_tank",
+                  "target": "BlockEntityTag.output_tank",
+                  "op": "replace"
+                },
+                {
+                  "source": "energy",
+                  "target": "BlockEntityTag.energy",
+                  "op": "replace"
+                },
+                {
+                  "source": "inventory",
+                  "target": "BlockEntityTag.inventory",
+                  "op": "replace"
+                },
+                {
+                  "source": "destructible_item_ticks",
+                  "target": "BlockEntityTag.destructible_item_ticks",
+                  "op": "replace"
+                },
+                {
+                  "source": "destructible_item_total_ticks",
+                  "target": "BlockEntityTag.destructible_total_item_ticks",
+                  "op": "replace"
+                },
+                {
+                  "source": "processing_unit_ticks",
+                  "target": "BlockEntityTag.processing_unit_ticks",
+                  "op": "replace"
+                },
+                {
+                  "source": "processing_unit_total_ticks",
+                  "target": "BlockEntityTag.processing_total_ticks",
+                  "op": "replace"
+                },
+                {
+                  "source": "current_recipe",
+                  "target": "BlockEntityTag.current_recipe",
+                  "op": "replace"
+                },
+                {
+                  "source": "activation",
+                  "target": "BlockEntityTag.activation",
+                  "op": "replace"
+                },
+                {
+                  "source": "acid_input_slot_inventory",
+                  "target": "BlockEntityTag.acid_input_slot_inventory",
+                  "op": "replace"
+                },
+                {
+                  "source": "acid_result_slot_inventory",
+                  "target": "BlockEntityTag.acid_result_slot_inventory",
+                  "op": "replace"
+                },
+                {
+                  "source": "output_slot_inventory",
+                  "target": "BlockEntityTag.output_slot_inventory",
                   "op": "replace"
                 }
               ]

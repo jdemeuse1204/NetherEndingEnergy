@@ -1,0 +1,16 @@
+{
+  "variants" : {
+    "facing=north,powered=false": { "model": "netherendingenergy:block/wireless_item_transfer_module_unlinked" },
+    "facing=south,powered=false": { "model": "netherendingenergy:block/wireless_item_transfer_module_unlinked", "y": 180 },
+    "facing=east,powered=false": { "model": "netherendingenergy:block/wireless_item_transfer_module_unlinked", "y": 90 },
+    "facing=west,powered=false": { "model": "netherendingenergy:block/wireless_item_transfer_module_unlinked", "y": 270 },
+    "facing=up,powered=false": { "model": "netherendingenergy:block/wireless_item_transfer_module_unlinked", "x": -90 },
+    "facing=down,powered=false": { "model": "netherendingenergy:block/wireless_item_transfer_module_unlinked", "x": 90 },
+    "facing=north,powered=true": { "model": "netherendingenergy:block/wireless_item_transfer_module_linked" },
+    "facing=south,powered=true": { "model": "netherendingenergy:block/wireless_item_transfer_module_linked", "y": 180 },
+    "facing=east,powered=true": { "model": "netherendingenergy:block/wireless_item_transfer_module_linked", "y": 90 },
+    "facing=west,powered=true": { "model": "netherendingenergy:block/wireless_item_transfer_module_linked", "y": 270 },
+    "facing=up,powered=true": { "model": "netherendingenergy:block/wireless_item_transfer_module_linked", "x": -90 },
+    "facing=down,powered=true": { "model": "netherendingenergy:block/wireless_item_transfer_module_linked", "x": 90 }
+  }
+}

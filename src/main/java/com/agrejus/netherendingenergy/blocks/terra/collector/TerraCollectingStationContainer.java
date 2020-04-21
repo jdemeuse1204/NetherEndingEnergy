@@ -41,8 +41,6 @@ public class TerraCollectingStationContainer extends Container {
         this.playerEntity = playerEntity;
         this.playerInventory = new InvWrapper(playerInventory);
 
-        //addSlot(new SlotItemHandler(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, 0, 44, 39));
-
         tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(w -> {
             addSlot(new SlotItemHandler(w, 0, 44, 39));
         });

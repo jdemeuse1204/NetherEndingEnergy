@@ -1,0 +1,16 @@
+{
+  "variants" : {
+    "facing=north,powered=false": { "model": "netherendingenergy:block/terra_reactor_redstone_output_port_front" },
+    "facing=south,powered=false": { "model": "netherendingenergy:block/terra_reactor_redstone_output_port_front", "y": 180 },
+    "facing=east,powered=false": { "model": "netherendingenergy:block/terra_reactor_redstone_output_port_front", "y": 90 },
+    "facing=west,powered=false": { "model": "netherendingenergy:block/terra_reactor_redstone_output_port_front", "y": 270 },
+    "facing=up,powered=false": { "model": "netherendingenergy:block/terra_reactor_redstone_output_port_front", "x": -90 },
+    "facing=down,powered=false": { "model": "netherendingenergy:block/terra_reactor_redstone_output_port_front", "x": 90 },
+    "facing=north,powered=true": { "model": "netherendingenergy:block/terra_reactor_redstone_output_port_powered" },
+    "facing=south,powered=true": { "model": "netherendingenergy:block/terra_reactor_redstone_output_port_powered", "y": 180 },
+    "facing=east,powered=true": { "model": "netherendingenergy:block/terra_reactor_redstone_output_port_powered", "y": 90 },
+    "facing=west,powered=true": { "model": "netherendingenergy:block/terra_reactor_redstone_output_port_powered", "y": 270 },
+    "facing=up,powered=true": { "model": "netherendingenergy:block/terra_reactor_redstone_output_port_powered", "x": -90 },
+    "facing=down,powered=true": { "model": "netherendingenergy:block/terra_reactor_redstone_output_port_powered", "x": 90 }
+  }
+}
