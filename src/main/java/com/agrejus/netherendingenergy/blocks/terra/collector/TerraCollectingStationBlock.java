@@ -38,12 +38,11 @@ public class TerraCollectingStationBlock extends Block {
     public TerraCollectingStationBlock() {
         super(Properties.create(Material.IRON)
                 .sound(SoundType.WOOD)
-                .hardnessAndResistance(2.0f)
+                .hardnessAndResistance(.5f)
                 .lightValue(0));
         setRegistryName(RegistryNames.TERRA_COLLECTING_STATION);
     }
 
-    // So the tank glass is translucent
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.TRANSLUCENT;
     }

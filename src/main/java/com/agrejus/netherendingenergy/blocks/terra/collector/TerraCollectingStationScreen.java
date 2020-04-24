@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.blocks.terra.collector;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
+import com.agrejus.netherendingenergy.client.gui.screen.RedstoneActivatableScreen;
 import com.agrejus.netherendingenergy.common.rendering.Rect;
 import com.agrejus.netherendingenergy.common.screen.ContainerScreenBase;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
-public class TerraCollectingStationScreen extends ContainerScreenBase<TerraCollectingStationContainer> {
+public class TerraCollectingStationScreen extends RedstoneActivatableScreen<TerraCollectingStationContainer> {
 
     private ResourceLocation GUI = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/terra_collecting_station_gui.png");
 
@@ -78,7 +79,7 @@ public class TerraCollectingStationScreen extends ContainerScreenBase<TerraColle
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        drawString(Minecraft.getInstance().fontRenderer, "Collecting Station", 6, 6, 0xffffff);
+        drawString(Minecraft.getInstance().fontRenderer, "Terra Collecting Station", 6, 6, 0xffffff);
     }
 
     @Override

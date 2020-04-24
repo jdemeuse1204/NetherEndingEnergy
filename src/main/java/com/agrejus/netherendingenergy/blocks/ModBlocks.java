@@ -21,6 +21,7 @@ import com.agrejus.netherendingenergy.blocks.general.wireless.redstone.WirelessR
 import com.agrejus.netherendingenergy.blocks.general.wireless.redstone.WirelessRedstoneTransferModuleTile;
 import com.agrejus.netherendingenergy.blocks.soil.CausticDirtBlock;
 import com.agrejus.netherendingenergy.blocks.terra.link.TerraLinkBlock;
+import com.agrejus.netherendingenergy.blocks.terra.link.TerraLinkContainer;
 import com.agrejus.netherendingenergy.blocks.terra.link.TerraLinkTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorTile;
@@ -200,6 +201,8 @@ public class ModBlocks {
     public static TerraLinkBlock TERRA_LINK_BLOCK;
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_LINK)
     public static TileEntityType<TerraLinkTile> TERRA_LINK_TILE;
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_LINK)
+    public static ContainerType<TerraLinkContainer> TERRA_LINK_CONTAINER;
 
     public static class Creative {
 

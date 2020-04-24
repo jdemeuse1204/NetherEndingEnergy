@@ -301,6 +301,11 @@ public abstract class ModuleTileBase extends NEETileEntity implements ITickableT
     }
 
     @Override
+    public boolean hasLink(BlockPos pos) {
+        return this.linkedBlockPosition != null && pos != null && pos.equals(this.linkedBlockPosition);
+    }
+
+    @Override
     public int totalLinks() {
         int totalLinks = 0;
         if (this.linkedBlockPosition != null) {

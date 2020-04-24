@@ -67,7 +67,6 @@ public class TerraMixerScreen extends RedstoneActivatableScreen<TerraMixerContai
 
         // Clear Input Tank
         this.addButton((new ImageButton(this.guiLeft + 139, this.guiTop + 26, 9, 9, 0, 30, 0, GUI_BUTTONS, (button) -> {
-            /*            ((ImageButton)button).*/
             this.container.voidInputTank();
         })));
 

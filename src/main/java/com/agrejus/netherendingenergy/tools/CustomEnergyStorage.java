@@ -6,8 +6,19 @@ import net.minecraftforge.energy.EnergyStorage;
 
 public class CustomEnergyStorage extends EnergyStorage implements INBTSerializable<CompoundNBT> {
 
+    private int usageTrackingStartingAmount;
+    private int usageTrackingEndingAmount;
+
     public CustomEnergyStorage(int capacity, int maxReceive, int maxExtract) {
         super(capacity, maxReceive, maxExtract);
+    }
+
+    public void consumeEnergyPerTick() {
+        this.extractEnergy(this.maxExtract, false);
+    }
+
+    public boolean hasEnoughEnergyStored() {
+        return this.getEnergyStored() >= this.maxExtract;
     }
 
     public int getMaxExtract() {
@@ -42,6 +53,18 @@ public class CustomEnergyStorage extends EnergyStorage implements INBTSerializab
         if (this.energy < 0) {
             this.energy = 0;
         }
+    }
+
+    public void startUsageTracking() {
+        this.usageTrackingStartingAmount = getEnergyStored();
+    }
+
+    public void endUsageTracking() {
+        this.usageTrackingEndingAmount = getEnergyStored();
+    }
+
+    public int getUsage() {
+        return this.usageTrackingStartingAmount - this.usageTrackingEndingAmount;
     }
 
     @Override

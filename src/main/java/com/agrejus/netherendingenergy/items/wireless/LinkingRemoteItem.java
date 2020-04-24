@@ -63,7 +63,7 @@ public class LinkingRemoteItem extends Item {
         if (this.source == null) {
             this.source = linkableTileEntity;
 
-            if (this.source.totalLinks() > 0) {
+            if (this.source.totalLinks() >= this.source.maxAllowedLinks()) {
                 player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "Source block is already linked"), false);
                 return ActionResultType.FAIL;
             }
@@ -87,7 +87,12 @@ public class LinkingRemoteItem extends Item {
         }
 
         if (destination.totalLinks() > 0) {
-            player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "Destination block is already linked"), false);
+            player.sendStatusMessage(new StringTextComponent(TextFormatting.YELLOW + "Destination block is already linked"), false);
+            return ActionResultType.FAIL;
+        }
+
+        if (this.source.hasLink(destination.getPos())) {
+            player.sendStatusMessage(new StringTextComponent(TextFormatting.YELLOW + "Destination block is already linked to source"), false);
             return ActionResultType.FAIL;
         }
 

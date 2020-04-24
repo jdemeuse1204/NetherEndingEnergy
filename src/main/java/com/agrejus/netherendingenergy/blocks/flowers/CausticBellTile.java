@@ -43,9 +43,9 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     private int abyssalSlurryCounter;
 
     // Statistics
-    private float yield;
-    private float strength;
-    private float purity;
+    private NumberRange yield;
+    private NumberRange strength;
+    private NumberRange purity;
     private float pHLevel;
     private int spreadAdvanceTicks;
     private int absorbTicks;
@@ -71,9 +71,9 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
             this.recessiveTrait = recessiveTrait;
         }
 
-        this.yield = CausticBellTraitConfig.getRandomYield(this.superiorTrait);
-        this.strength = CausticBellTraitConfig.getRandomStrength(this.superiorTrait);
-        this.purity = CausticBellTraitConfig.getRandomPurity(this.superiorTrait);
+        this.yield = CausticBellTraitConfig.getYield(this.superiorTrait);
+        this.strength = CausticBellTraitConfig.getStrength(this.superiorTrait);
+        this.purity = CausticBellTraitConfig.getPurity(this.superiorTrait);
 
         // add to NBT
         this.spreadAdvanceTicks = CausticBellTraitConfig.getStageAdvanceTimeTicks(this.superiorTrait);
@@ -84,9 +84,9 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     public CausticBellTile() {
         super(ModBlocks.CAUSTIC_BELL_TILE);
 
-        yield = 1f;
-        strength = 1f;
-        purity = 1f;
+        yield = new NumberRange(.1f, .1f);
+        strength = new NumberRange(.1f, .1f);
+        purity = new NumberRange(.1f, .1f);
     }
 
     public void setSuperiorTrait(CausticBellTrait superiorTrait) {
@@ -114,28 +114,28 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     }
 
 
-    public float getYield() {
+    public NumberRange getYield() {
         return yield;
     }
 
-    public float getStrength() {
+    public NumberRange getStrength() {
         return strength;
     }
 
-    public float getPurity() {
+    public NumberRange getPurity() {
         return purity;
     }
 
     private float getMaxStrength() {
-        return CausticBellTraitConfig.getMaxStrength(this.superiorTrait);
+        return this.strength.getMax();
     }
 
     private float getMaxPurity() {
-        return CausticBellTraitConfig.getMaxPurity(this.superiorTrait);
+        return this.purity.getMax();
     }
 
     private float getMaxYield() {
-        return CausticBellTraitConfig.getMaxYield(this.superiorTrait);
+        return this.yield.getMax();
     }
 
     @Override
@@ -424,41 +424,29 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     }
 
     private void addYield(float amount) {
-        this.yield += amount;
-        float max = this.getMaxYield();
+        float yield = this.yield.getCurrent();
+        yield += amount;
 
-        if (this.yield < 0) {
-            this.yield = 0;
-        }
-
-        if (this.yield > max) {
-            this.yield = max;
+        if (this.yield.isWithinRange(yield)) {
+            this.yield.setCurrent(yield);
         }
     }
 
     private void addPurity(float amount) {
-        this.purity += amount;
-        float max = this.getMaxPurity();
+        float yield = this.purity.getCurrent();
+        yield += amount;
 
-        if (this.purity < 0) {
-            this.purity = 0;
-        }
-
-        if (this.purity > max) {
-            this.purity = max;
+        if (this.purity.isWithinRange(yield)) {
+            this.purity.setCurrent(yield);
         }
     }
 
     private void addStrength(float amount) {
-        this.strength += amount;
-        float max = this.getMaxStrength();
+        float yield = this.strength.getCurrent();
+        yield += amount;
 
-        if (this.strength < 0) {
-            this.strength = 0;
-        }
-
-        if (this.strength > max) {
-            this.strength = max;
+        if (this.strength.isWithinRange(yield)) {
+            this.strength.setCurrent(yield);
         }
     }
 
@@ -657,9 +645,15 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     }
 
     private void readNBT(CompoundNBT tag) {
-        this.strength = tag.getFloat("strength");
-        this.purity = tag.getFloat("purity");
-        this.yield = tag.getFloat("yield");
+        CompoundNBT strengthTag = (CompoundNBT)tag.get("strength");
+        this.strength.deserializeNBT(strengthTag);
+
+        CompoundNBT purityTag = (CompoundNBT)tag.get("purity");
+        this.purity.deserializeNBT(purityTag);
+
+        CompoundNBT yieldTag = (CompoundNBT)tag.get("yield");
+        this.yield.deserializeNBT(yieldTag);
+
         this.pHLevel = tag.getFloat("ph_level");
         this.spreadAdvanceTicks = tag.getInt("stage_advance");
 
@@ -700,9 +694,10 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     }
 
     private void writeNBT(CompoundNBT tag) {
-        tag.putFloat("strength", this.strength);
-        tag.putFloat("purity", this.purity);
-        tag.putFloat("yield", this.yield);
+
+        tag.put("strength", this.strength.serializeNBT());
+        tag.put("purity", this.purity.serializeNBT());
+        tag.put("yield", this.yield.serializeNBT());
         tag.putFloat("ph_level", this.pHLevel);
         tag.putInt("stage_advance", this.spreadAdvanceTicks);
 

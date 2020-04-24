@@ -6,10 +6,16 @@ import com.agrejus.netherendingenergy.common.enumeration.TransferMode;
 import com.agrejus.netherendingenergy.common.helpers.NBTHelpers;
 import com.agrejus.netherendingenergy.common.interfaces.ILinkableTile;
 import com.agrejus.netherendingenergy.common.tank.MixableAcidFluidTank;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -21,7 +27,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TerraLinkTile extends NEETileEntity implements ILinkableTile {
+public class TerraLinkTile extends NEETileEntity implements ILinkableTile, INamedContainerProvider {
 
     private int tick;
     protected int transferRate = 10000;
@@ -193,6 +199,11 @@ public class TerraLinkTile extends NEETileEntity implements ILinkableTile {
     }
 
     @Override
+    public boolean hasLink(BlockPos pos) {
+        return this.links.contains(pos);
+    }
+
+    @Override
     public boolean addLink(BlockPos pos) {
         return this.links.add(pos);
     }
@@ -228,7 +239,7 @@ public class TerraLinkTile extends NEETileEntity implements ILinkableTile {
 
     @Override
     public int maxAllowedLinks() {
-        return 5;
+        return 10;
     }
 
     @Override
@@ -239,5 +250,16 @@ public class TerraLinkTile extends NEETileEntity implements ILinkableTile {
     @Override
     public void updateTile() {
         this.update();
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return new StringTextComponent(getType().getRegistryName().getPath());
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int worldId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new TerraLinkContainer(worldId, world, pos, playerInventory, playerEntity);
     }
 }

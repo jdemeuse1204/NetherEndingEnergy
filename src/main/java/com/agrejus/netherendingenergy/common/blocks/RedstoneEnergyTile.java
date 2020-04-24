@@ -4,12 +4,12 @@ import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
 import com.agrejus.netherendingenergy.common.interfaces.IRedstoneActivatable;
 import net.minecraft.tileentity.TileEntityType;
 
-public abstract class RedstoneEnergyBlock extends EnergyBlock implements IRedstoneActivatable {
+public abstract class RedstoneEnergyTile extends EnergyTile implements IRedstoneActivatable {
 
-    protected RedstoneActivationType redstoneActivationType;
+    protected RedstoneActivationType redstoneActivationType = RedstoneActivationType.ALWAYS_ACTIVE;
 
-    public RedstoneEnergyBlock(int energyUsePerTick, TileEntityType<?> tileEntityTypeIn) {
-        super(energyUsePerTick, tileEntityTypeIn);
+    public RedstoneEnergyTile(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
     }
 
     @Override

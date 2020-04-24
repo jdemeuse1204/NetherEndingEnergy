@@ -33,6 +33,7 @@ import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStat
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationContainer;
 import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
 import com.agrejus.netherendingenergy.blocks.terra.link.TerraLinkBlock;
+import com.agrejus.netherendingenergy.blocks.terra.link.TerraLinkContainer;
 import com.agrejus.netherendingenergy.blocks.terra.link.TerraLinkTile;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerBlock;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerContainer;
@@ -382,6 +383,11 @@ public class NetherEndingEnergy {
                 BlockPos pos = data.readBlockPos();
                 return new ImbuingMachineContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
             }).setRegistryName(RegistryNames.IMBUING_MACHINE));
+
+            event.getRegistry().register(IForgeContainerType.create((windowId, playerInventory, data) -> {
+                BlockPos pos = data.readBlockPos();
+                return new TerraLinkContainer(windowId, proxy.getClientWorld(), pos, playerInventory, proxy.getClientPlayer());
+            }).setRegistryName(RegistryNames.TERRA_LINK));
 
             event.getRegistry().register(IForgeContainerType.create((windowId, playerInventory, data) -> {
                 BlockPos pos = data.readBlockPos();
