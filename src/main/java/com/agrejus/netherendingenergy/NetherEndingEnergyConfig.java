@@ -46,6 +46,20 @@ public class NetherEndingEnergyConfig {
     }
 
     public static class General {
+
+        public ArrayList<Block> ores = new ArrayList<Block>() {
+            {
+                add(Blocks.COAL_ORE);
+                add(Blocks.DIAMOND_ORE);
+                add(Blocks.EMERALD_ORE);
+                add(Blocks.GOLD_ORE);
+                add(Blocks.IRON_ORE);
+                add(Blocks.LAPIS_ORE);
+                add(Blocks.REDSTONE_ORE);
+                add(Blocks.NETHER_QUARTZ_ORE);
+            }
+        };
+
         public ArrayList<Direction> horizontalDirections = new ArrayList<Direction>() {
             {
                 add(Direction.EAST);

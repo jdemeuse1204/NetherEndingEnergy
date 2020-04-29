@@ -3,17 +3,18 @@ package com.agrejus.netherendingenergy.blocks.terra.collector;
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.client.gui.screen.RedstoneActivatableScreen;
 import com.agrejus.netherendingenergy.common.rendering.Rect;
-import com.agrejus.netherendingenergy.common.screen.ContainerScreenBase;
+import com.agrejus.netherendingenergy.common.rendering.RectProgression;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,23 +26,56 @@ public class TerraCollectingStationScreen extends RedstoneActivatableScreen<Terr
     private Rect energyLocation;
     private Rect inputFluidLocation;
     private Rect outputFluidLocation;
-    private Rect progressSliceLocation;
+    private RectProgression progressSliceLocation;
+    private RectProgression energySliceLocation;
     private Rect progressDrawLocation;
+    private Rect progressLocation;
+
+    private RectProgression flowerSliceLocation;
+    private Rect flowerLocation;
+    private Rect flowerDrawLocation;
+
+    private Rect processingStageOneDrawLocation;
+    private RectProgression processingStageOneSliceLocation;
+
+    private Rect processingStageTwoDrawLocation;
+    private RectProgression processingStageTwoSliceLocation;
+
+    private Rect processingStageThreeDrawLocation;
+    private RectProgression processingStageThreeSliceLocation;
 
     public TerraCollectingStationScreen(TerraCollectingStationContainer container, PlayerInventory inv, ITextComponent name) {
-        super(container, inv, name, 176,176);
+        super(container, inv, name, 176, 184);
     }
 
     @Override
     protected void init() {
         super.init();
+        this.xSize = 176;
+        this.ySize = 184;
 
-        energyLocation = createRectBasedOnGui(17, 9, 20, 63);
-        inputFluidLocation = createRectBasedOnGui(11, 119, 136, 71);
-        outputFluidLocation = createRectBasedOnGui(11, 151, 168, 71);
+        energyLocation = createRectBasedOnGui(27, 152, 167, 67);
+        inputFluidLocation = createRectBasedOnGui(33, 70, 86, 65);
+        outputFluidLocation = createRectBasedOnGui(33, 121, 137, 65);
+        progressLocation = createRectBasedOnGui(75, 20, 35, 91);
 
-        progressSliceLocation = createSliceRect(0, this.defaultGuiScreenWidth, 0, 16);
-        progressDrawLocation = createSliceDrawDestination(39, 78);
+        energySliceLocation = createProgressionSliceRect(18, this.defaultGuiScreenWidth + 1, 192, 58);
+
+        progressSliceLocation = createProgressionSliceRect(88, this.defaultGuiScreenWidth, 191, 103);
+        progressDrawLocation = createSliceDrawDestination(75, 20);
+
+        flowerSliceLocation = createProgressionSliceRect(0, 177, 194, 17);
+        flowerLocation = createRectBasedOnGui(32, 20, 37, 49);
+        flowerDrawLocation = createSliceDrawDestination(32, 20);
+
+        processingStageOneDrawLocation = createSliceDrawDestination(37, 92);
+        processingStageOneSliceLocation = createProgressionSliceRect(61, this.defaultGuiScreenWidth, 185, 88);
+
+        processingStageTwoDrawLocation = createSliceDrawDestination(36, 98);
+        processingStageTwoSliceLocation = createProgressionSliceRect(60, 182, 199, 63);
+
+        processingStageThreeDrawLocation = createSliceDrawDestination(39, 104);
+        processingStageThreeSliceLocation = createProgressionSliceRect(63, 188, 199, 88);
     }
 
     @Override
@@ -55,20 +89,44 @@ public class TerraCollectingStationScreen extends RedstoneActivatableScreen<Terr
         List<String> tooltip = new ArrayList<>();
         if (this.isMouseOver(this.outputFluidLocation, mouseX, mouseY)) {
             int amount = container.getOutputFluidAmount();
-            tooltip.add("Output:");
+            tooltip.add("Acid of the Ordinary:");
             tooltip.add(String.format("%s mB", amount));
+        }
+
+        if (this.isMouseOver(this.flowerLocation, mouseX, mouseY)) {
+            boolean hasBellPlanted = container.hasBellPlanted();
+
+            if (hasBellPlanted == false) {
+                tooltip.add("No Bell Planted");
+            } else {
+                float yield = container.getBellYield();
+                float strength = container.getBellStrength();
+                float purity = container.getBellPurity();
+                tooltip.add(String.format("Yield: %s mB", yield));
+                tooltip.add("Strength: " + Math.round(strength * 100) + "%");
+                tooltip.add("Purity: " + Math.round(purity * 100) + "%");
+            }
         }
 
         if (this.isMouseOver(this.inputFluidLocation, mouseX, mouseY)) {
             int amount = container.getInputFluidAmount();
-            tooltip.add("Input:");
+            tooltip.add("Raw Acid:");
             tooltip.add(String.format("%s mB", amount));
+        }
+
+        if (this.isMouseOver(this.progressLocation, mouseX, mouseY)) {
+            float amount = container.getCycleCollectionAmount();
+            tooltip.add("Cycle Amount:");
+            tooltip.add(String.format("%s mB", new DecimalFormat("#.###").format(amount)));
+            tooltip.add("Cycle Length:");
+            tooltip.add(String.format("%s ticks", this.container.getCollectionTotalTicks()));
         }
 
         if (this.isMouseOver(this.energyLocation, mouseX, mouseY)) {
             int amount = container.getEnergyStored();
             tooltip.add("Energy:");
-            tooltip.add(String.format("%s FE", amount));
+            tooltip.add(getEnergyPerTick(this.container.getEnergyPerTick()));
+            tooltip.add(String.format("%s RF", amount));
         }
 
         if (!tooltip.isEmpty()) {
@@ -82,6 +140,14 @@ public class TerraCollectingStationScreen extends RedstoneActivatableScreen<Terr
         drawString(Minecraft.getInstance().fontRenderer, "Terra Collecting Station", 6, 6, 0xffffff);
     }
 
+    private int min(int a, int b) {
+        int result = Math.min(a, b);
+        if (result < 0) {
+            return 0;
+        }
+        return result;
+    }
+
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -92,29 +158,43 @@ public class TerraCollectingStationScreen extends RedstoneActivatableScreen<Terr
         // set the size of the GUI to slice off the right hand images
         this.blit(i, j, 0, 0, this.xSize, this.ySize);
 
+        // Refine progression
+        int refineTicks = this.container.getRefineTicks();
 
-        // 176,14 is where the image is from
-        // 16 is the height of the image
-        // 24 is the width, comes from getCookProgressionScaled
-        // 79 is the left location where the image should be
-        // 34 is the top location where the image should be
-        //this.blit(i + 78, j + 39, 176, 0, progression + 1, 16);
+        if (refineTicks > 0) {
+            int totalRefineTicks = this.container.getTotalTicksToRefine();
+            int tick = totalRefineTicks - refineTicks;
+            int split = totalRefineTicks / 3;
 
-        int progression = this.container.getProcessProgressionScaled();
-        progressSliceLocation.setRight(progression);
+            drawVerticalSliceWithProgressionUp(min((tick - (split * 1)) + split, split), split, this.processingStageOneSliceLocation, this.processingStageOneDrawLocation);
+            drawVerticalSliceWithProgressionRight(min((tick - (split * 2)) + split, split), split, this.processingStageTwoSliceLocation, this.processingStageTwoDrawLocation);
+            drawVerticalSliceWithProgressionDown(min((tick - (split * 3)) + split, split), split, this.processingStageThreeSliceLocation, this.processingStageThreeDrawLocation);
+        }
 
-        drawOverlaySlice(progressSliceLocation, progressDrawLocation);
+        // draw flower
+        if (this.container.hasBellPlanted()) {
+            this.blit(flowerDrawLocation.getLeft(),
+                    flowerDrawLocation.getTop(),
+                    flowerSliceLocation.getLeft(),
+                    flowerSliceLocation.getTop(),
+                    flowerSliceLocation.getWidth(),
+                    flowerSliceLocation.getHeight());
+        }
 
-        // fill energy
-        int energyStored = energyLocation.getComputedFillHeight(this.container.getMaxEnergyStored(), this.container.getEnergyStored());
-        fillVertical(energyLocation, energyStored, 0xff8cff72);
+        // Draw Energy
+        drawVerticalSliceWithProgressionUp(this.container.getEnergyStored(), this.container.getMaxEnergyStored(), this.energySliceLocation, this.energyLocation);
 
-        // fill output
-        int outputFillHeight = outputFluidLocation.getComputedFillHeight(this.container.getOutputTankCapacity(), this.container.getOutputFluidAmount());
-        fillVertical(outputFluidLocation, outputFillHeight, 0xffe68f00);
+        // Draw Collection Progression
+        int collectionTick = this.container.getCollectionTick();
+        if (collectionTick > 0) {
+            int ticksToCollect = this.container.getCollectionTotalTicks();
+            drawVerticalSliceWithProgressionDown(ticksToCollect - collectionTick, ticksToCollect, this.progressSliceLocation, this.progressDrawLocation);
+        }
 
-        // fill input
-        int inputFillHeight = inputFluidLocation.getComputedFillHeight(this.container.getInputTankCapacity(), this.container.getInputFluidAmount());
-        fillVertical(inputFluidLocation, inputFillHeight, 0xffb300e6);
+        // Draw Input Fluid
+        drawTankVertical(this.container.getInputFluidAmount(), this.container.getInputTankCapacity(), this.container.getInputTankFluidColor(), this.inputFluidLocation);
+
+        // Draw Output Fluid
+        drawTankVertical(this.container.getOutputFluidAmount(), this.container.getOutputTankCapacity(), this.container.getOutputTankFluidColor(), this.outputFluidLocation);
     }
 }

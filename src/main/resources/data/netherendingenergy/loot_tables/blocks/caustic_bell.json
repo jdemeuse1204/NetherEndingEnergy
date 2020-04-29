@@ -60,6 +60,21 @@
                   "source": "root_system",
                   "target": "BlockEntityTag.root_system",
                   "op": "replace"
+                },
+                {
+                  "source": "terra_slurry_chance",
+                  "target": "BlockEntityTag.terra_slurry_chance",
+                  "op": "replace"
+                },
+                {
+                  "source": "chaotic_slurry_chance",
+                  "target": "BlockEntityTag.chaotic_slurry_chance",
+                  "op": "replace"
+                },
+                {
+                  "source": "abyssal_slurry_chance",
+                  "target": "BlockEntityTag.abyssal_slurry_chance",
+                  "op": "replace"
                 }
               ]
             },

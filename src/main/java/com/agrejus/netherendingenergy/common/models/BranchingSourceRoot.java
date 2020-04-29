@@ -1,13 +1,23 @@
 package com.agrejus.netherendingenergy.common.models;
 
+import com.agrejus.netherendingenergy.NetherEndingEnergy;
+import com.agrejus.netherendingenergy.NetherEndingEnergyBlockStateProperties;
+import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.common.helpers.NBTHelpers;
+import com.agrejus.netherendingenergy.common.interfaces.IRoot;
 import com.agrejus.netherendingenergy.common.interfaces.ISourceRoot;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BranchingSourceRoot implements ISourceRoot {
@@ -22,6 +32,56 @@ public class BranchingSourceRoot implements ISourceRoot {
         this.pos = pos;
         this.source = new HashMap<>();
         this.maxSpread = maxSpread;
+    }
+
+    public BlockPos setGrowth(World world) {
+        if (this.source == null) {
+            return null;
+        }
+
+        Collection<RootBud> budCollection = this.source.values();
+        RootBud[] buds = new RootBud[budCollection.size()];
+        this.source.values().toArray(buds);
+
+        int index = NetherEndingEnergy.roll(0, (buds.length - 1));
+        RootBud bud = buds[index];
+
+        if (bud == null) {
+            return null;
+        }
+
+        IRoot root = bud.getRoot();
+
+        int max = root.size() - 1;
+        int randomIndex = NetherEndingEnergy.roll(0, max);
+        RootPoint point = root.get(randomIndex);
+        BlockState state = world.getBlockState(point.getPosition());
+        Block block = state.getBlock();
+
+        // check max of 5 times
+        for (int i = 0; i < 5; i++) {
+            if (block == ModBlocks.CAUSTIC_ROOTS_BLOCK) {
+                int rootStage = state.get(NetherEndingEnergyBlockStateProperties.CAUSTIC_0_5);
+
+                if (rootStage == 5) {
+                    BlockPos growthPos = point.getPosition().offset(Direction.UP);
+                    BlockState growthPositionState = world.getBlockState(growthPos);
+
+                    if(growthPositionState.getBlock() != Blocks.AIR) {
+
+                    }
+
+                    world.setBlockState(growthPos, ModBlocks.TERRA_CAUSTIC_PEARL_GROWTH_BLOCK.getDefaultState(),3);
+                    return growthPos;
+                }
+            }
+
+            randomIndex = NetherEndingEnergy.roll(0, max);
+            point = root.get(randomIndex);
+            state = world.getBlockState(point.getPosition());
+            block = state.getBlock();
+        }
+        return null;
     }
 
     public int getMaxSpread() {
@@ -85,7 +145,7 @@ public class BranchingSourceRoot implements ISourceRoot {
                 RootBud bud = null;
                 if (nbt.contains(budKey)) {
                     bud = new RootBud();
-                    CompoundNBT budNbt = (CompoundNBT)nbt.get(budKey);
+                    CompoundNBT budNbt = (CompoundNBT) nbt.get(budKey);
                     bud.deserializeNBT(budNbt);
                 }
 

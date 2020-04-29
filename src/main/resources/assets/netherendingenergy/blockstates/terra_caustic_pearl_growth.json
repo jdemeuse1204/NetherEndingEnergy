@@ -1,0 +1,11 @@
+{
+  "variants" : {
+    "pearl_growth=0": { "model": "netherendingenergy:block/terra_caustic_pearl_growth_0" },
+    "pearl_growth=1": { "model": "netherendingenergy:block/terra_caustic_pearl_growth_1" },
+    "pearl_growth=2": { "model": "netherendingenergy:block/terra_caustic_pearl_growth_2" },
+    "pearl_growth=3": { "model": "netherendingenergy:block/terra_caustic_pearl_growth_3" },
+    "pearl_growth=4": { "model": "netherendingenergy:block/terra_caustic_pearl_growth_4" },
+    "pearl_growth=5": { "model": "netherendingenergy:block/terra_caustic_pearl_growth_5" },
+    "pearl_growth=6": { "model": "netherendingenergy:block/terra_caustic_pearl_growth_6" }
+  }
+}

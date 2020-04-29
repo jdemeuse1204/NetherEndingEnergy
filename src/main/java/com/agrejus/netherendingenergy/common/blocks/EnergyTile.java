@@ -19,6 +19,11 @@ public abstract class EnergyTile extends NEETileEntity implements ITickableTileE
 
     protected abstract CustomEnergyStorage createEnergyStore();
 
+    @Override
+    protected void afterServerTick() {
+        this.trackEnergy();
+    }
+
     protected int getEnergyUsedPerTick() {
         return this.netEnergy;
     }

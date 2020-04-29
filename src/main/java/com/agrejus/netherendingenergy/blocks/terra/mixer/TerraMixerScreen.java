@@ -8,17 +8,13 @@ import com.agrejus.netherendingenergy.common.rendering.RectProgression;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.ImageButton;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -180,7 +176,7 @@ public class TerraMixerScreen extends RedstoneActivatableScreen<TerraMixerContai
         float energyPercent = this.getProgressionPercent(this.container.getEnergyStored(), this.container.getMaxEnergyStored());
         int energyProgression = Math.round(this.energySlice.getHeight() * energyPercent);
         this.energySlice.setProgression(energyProgression);
-        this.drawVerticalSliceWithProgression(this.energyDestination, this.energySlice);
+        this.drawVerticalSliceWithProgressionUp(this.energyDestination, this.energySlice);
 
 
         // fill input
@@ -230,53 +226,11 @@ public class TerraMixerScreen extends RedstoneActivatableScreen<TerraMixerContai
             int currentHeight = Math.round(currentStep * stepAmount);
             int height = Math.min(currentHeight, 64);
 
-            test(destinationLeft, destinationTop, originLeft, height, originWidth, originHeight);
+            innerBlitOverlay(destinationLeft, destinationTop, originLeft, height, originWidth, originHeight);
         }
 
         if (currentRecipe != null) {
             drawColoredRect(outputFluidMixingLocation.getLeft(), outputFluidMixingLocation.getTop(), outputFluidMixingLocation.getWidth(), outputFluidMixingLocation.getHeight(), currentRecipe.getResultFluid().getAttributes().getColor());
         }
     }
-
-    private void test(int p_blit_1_, int p_blit_2_, int p_blit_3_, int p_blit_4_, int p_blit_5_, int p_blit_6_) {
-        test2(p_blit_1_, p_blit_2_, this.blitOffset, (float) p_blit_3_, (float) p_blit_4_, p_blit_5_, p_blit_6_, 256, 256);
-    }
-
-    public void test2(int p_blit_0_, int p_blit_1_, int p_blit_2_, float p_blit_3_, float p_blit_4_, int p_blit_5_, int p_blit_6_, int p_blit_7_, int p_blit_8_) {
-        innerBlitx(p_blit_0_, p_blit_0_ + p_blit_5_, p_blit_1_, p_blit_1_ + p_blit_6_, p_blit_2_, p_blit_5_, p_blit_6_, p_blit_3_, p_blit_4_, p_blit_8_, p_blit_7_);
-    }
-
-    private void innerBlitx(int p_innerBlit_0_, int p_innerBlit_1_, int p_innerBlit_2_, int p_innerBlit_3_, int p_innerBlit_4_, int p_innerBlit_5_, int p_innerBlit_6_, float p_innerBlit_7_, float p_innerBlit_8_, int p_innerBlit_9_, int p_innerBlit_10_) {
-        innerBlit2(p_innerBlit_0_, p_innerBlit_1_, p_innerBlit_2_, p_innerBlit_3_, p_innerBlit_4_, (p_innerBlit_7_ + 0.0F) / (float) p_innerBlit_9_, (p_innerBlit_7_ + (float) p_innerBlit_5_) / (float) p_innerBlit_9_, (p_innerBlit_8_ + 0.0F) / (float) p_innerBlit_10_, (p_innerBlit_8_ + (float) p_innerBlit_6_) / (float) p_innerBlit_10_);
-    }
-
-    protected void innerBlit2(int p_innerBlit_0_, int p_innerBlit_1_, int p_innerBlit_2_, int p_innerBlit_3_, int p_innerBlit_4_, float p_innerBlit_5_, float p_innerBlit_6_, float p_innerBlit_7_, float p_innerBlit_8_) {
-
-        GlStateManager.disableRescaleNormal();
-        RenderHelper.disableStandardItemLighting();
-        GlStateManager.disableLighting();
-        GlStateManager.enableDepthTest();
-        GlStateManager.translatef(0, 0, 900);
-        this.blitOffset = 900;
-        this.itemRenderer.zLevel = 900;
-
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
-        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        bufferbuilder.pos((double) p_innerBlit_0_, (double) p_innerBlit_3_, (double) p_innerBlit_4_).tex((double) p_innerBlit_5_, (double) p_innerBlit_8_).endVertex();
-        bufferbuilder.pos((double) p_innerBlit_1_, (double) p_innerBlit_3_, (double) p_innerBlit_4_).tex((double) p_innerBlit_6_, (double) p_innerBlit_8_).endVertex();
-        bufferbuilder.pos((double) p_innerBlit_1_, (double) p_innerBlit_2_, (double) p_innerBlit_4_).tex((double) p_innerBlit_6_, (double) p_innerBlit_7_).endVertex();
-        bufferbuilder.pos((double) p_innerBlit_0_, (double) p_innerBlit_2_, (double) p_innerBlit_4_).tex((double) p_innerBlit_5_, (double) p_innerBlit_7_).endVertex();
-        tessellator.draw();
-
-        this.blitOffset = 0;
-        this.itemRenderer.zLevel = 0;
-        GlStateManager.translatef(0, 0, -300);
-        GlStateManager.enableLighting();
-        GlStateManager.disableDepthTest();
-        RenderHelper.enableStandardItemLighting();
-        GlStateManager.enableRescaleNormal();
-    }
-
-
 }

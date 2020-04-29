@@ -38,9 +38,9 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     private int spreadCounter;
     private int counter;
 
-    private int terraSlurryCounter;
-    private int chaoticSlurryCounter;
-    private int abyssalSlurryCounter;
+    private float terraSlurryChance;
+    private float chaoticSlurryChance;
+    private float abyssalSlurryChance;
 
     // Statistics
     private NumberRange yield;
@@ -55,6 +55,9 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     private CausticBellTrait superiorTrait;
     private CausticBellTrait inferiorTrait;
     private CausticBellTrait recessiveTrait;
+
+    // Settings
+    private static ArrayList<Block> ores = NetherEndingEnergyConfig.General().ores;
 
     public CausticBellTile(CausticBellTrait superiorTrait, CausticBellTrait inferiorTrait, CausticBellTrait recessiveTrait) {
         this();
@@ -164,27 +167,46 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         // Dequeue blocks to be absorbed, absorb every 5 ticks?
         if (this.absorbableBlocks.size() > 0) {
 
-            Map.Entry<BlockPos, AbsorbableBlock> entry = this.absorbableBlocks.entrySet().iterator().next();
+            // absorb 1 at a time
+            Collection<AbsorbableBlock> blockCollection = this.absorbableBlocks.values();
+            AbsorbableBlock[] blocks = new AbsorbableBlock[blockCollection.size()];
+            blockCollection.toArray(blocks);
+            AbsorbableBlock absorbableBlock = blocks[0];
 
-            while (entry != null) {
-                AbsorbableBlock absorbableBlock = this.absorbableBlocks.remove(entry.getKey());
-                this.tryAbsorbBlock(absorbableBlock);
+            this.absorbableBlocks.remove(absorbableBlock.getPos());
 
-                if (this.absorbableBlocks.entrySet().iterator().hasNext() == false) {
-                    break;
-                }
-                entry = this.absorbableBlocks.entrySet().iterator().next();
-            }
+            this.tryAbsorbBlock(absorbableBlock);
         }
 
         // Poison surrounding entities
         if (counter == 20) {
+            this.tryMakeGrowth();
             this.tryPoisonSurroundingEntities();
         }
 
         --this.counter;
         ++this.spreadCounter;
         ++this.absorbCounter;
+    }
+
+    private void tryMakeGrowth() {
+        if (this.terraSlurryChance == 0) {
+            return;
+        }
+
+        int max = Math.round(100 / this.terraSlurryChance);
+        int min = 1;
+        int target = max / 2;
+        int roll = NetherEndingEnergy.roll(min, max);
+
+        if (roll == target && this.rootSystem != null) {
+            // make growth randomly on root system
+            BlockPos growthPos = this.rootSystem.setRandomGrowth(world);
+            if (growthPos != null) {
+                this.terraSlurryChance = 0;
+                markDirty();
+            }
+        }
     }
 
     private void trySpread() {
@@ -501,6 +523,18 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         }
     }
 
+    private void eatBlock(BlockPos pos, Block block) {
+
+        if (ores.contains(block)) {
+            this.terraSlurryChance += .01;
+        } else {
+            this.terraSlurryChance += .001;
+        }
+
+        // Eat the block
+        world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+    }
+
     private void tryAbsorbBlock(AbsorbableBlock absorbableBlock) {
 
         BlockPos blockPosition = absorbableBlock.getPos();
@@ -525,7 +559,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
                 this.addYield(blockTraits.getYield());
 
                 // Eat the block
-                world.setBlockState(blockPosition, Blocks.AIR.getDefaultState(), 3);
+                eatBlock(blockPosition, blockToEat);
                 markDirty();
                 return;
             }
@@ -540,13 +574,13 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
                 this.addYield(materialTraits.getYield());
 
                 // Eat the block
-                world.setBlockState(blockPosition, Blocks.AIR.getDefaultState(), 3);
+                eatBlock(blockPosition, blockToEat);
                 markDirty();
                 return;
             }
 
             // just destroy, don't absorb
-            world.setBlockState(blockPosition, Blocks.AIR.getDefaultState(), 3);
+            eatBlock(blockPosition, blockToEat);
         }
     }
 
@@ -595,6 +629,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     private boolean canAbsorbAndDestroyBlock(Block blockToAbsorb, Block triggeringBlock) {
 
         return isImpenetrable(blockToAbsorb) == false &&
+                blockToAbsorb != ModBlocks.TERRA_CAUSTIC_PEARL_GROWTH_BLOCK &&
                 blockToAbsorb != ModBlocks.CAUSTIC_BELL_BLOCK &&
                 blockToAbsorb != ModBlocks.CAUSTIC_ROOTS_BLOCK &&
                 blockToAbsorb != ModBlocks.CAUSTIC_DIRT_BLOCK &&
@@ -645,13 +680,13 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     }
 
     private void readNBT(CompoundNBT tag) {
-        CompoundNBT strengthTag = (CompoundNBT)tag.get("strength");
+        CompoundNBT strengthTag = (CompoundNBT) tag.get("strength");
         this.strength.deserializeNBT(strengthTag);
 
-        CompoundNBT purityTag = (CompoundNBT)tag.get("purity");
+        CompoundNBT purityTag = (CompoundNBT) tag.get("purity");
         this.purity.deserializeNBT(purityTag);
 
-        CompoundNBT yieldTag = (CompoundNBT)tag.get("yield");
+        CompoundNBT yieldTag = (CompoundNBT) tag.get("yield");
         this.yield.deserializeNBT(yieldTag);
 
         this.pHLevel = tag.getFloat("ph_level");
@@ -660,6 +695,10 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         String superior = tag.getString("superior");
         String inferior = tag.getString("inferior");
         String recessive = tag.getString("recessive");
+
+        this.terraSlurryChance = tag.getFloat("terra_slurry_chance");
+        this.chaoticSlurryChance = tag.getFloat("chaotic_slurry_chance");
+        this.abyssalSlurryChance = tag.getFloat("abyssal_slurry_chance");
 
         // Default Them
         this.superiorTrait = CausticBellTrait.DORMANT;
@@ -694,6 +733,11 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     }
 
     private void writeNBT(CompoundNBT tag) {
+
+        tag.putFloat("terra_slurry_chance", this.terraSlurryChance);
+        tag.putFloat("chaotic_slurry_chance", this.chaoticSlurryChance);
+        tag.putFloat("abyssal_slurry_chance", this.abyssalSlurryChance);
+
 
         tag.put("strength", this.strength.serializeNBT());
         tag.put("purity", this.purity.serializeNBT());

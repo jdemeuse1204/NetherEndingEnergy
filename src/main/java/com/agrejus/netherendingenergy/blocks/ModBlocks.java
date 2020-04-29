@@ -6,6 +6,7 @@ import com.agrejus.netherendingenergy.blocks.abyssal.link.AbyssalLinkBlock;
 import com.agrejus.netherendingenergy.blocks.abyssal.link.AbyssalLinkTile;
 import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStoreBlock;
 import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStoreTile;
+import com.agrejus.netherendingenergy.blocks.flowers.pearls.TerraCausticPearlGrowthBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.roots.CausticBellRootBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.vines.CausticBellVineBlock;
 import com.agrejus.netherendingenergy.blocks.general.botanistscodex.BotanistsCodexBlock;
@@ -56,7 +57,6 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCore
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreContainer;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.stabilizer.TerraReactorItemStabilizerBlock;
-import com.agrejus.netherendingenergy.fluids.AcidOfTheTearfulFluid;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
@@ -101,6 +101,9 @@ public class ModBlocks {
 
     @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_ROOTS)
     public static CausticBellRootBlock CAUSTIC_ROOTS_BLOCK;
+
+    @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_CAUSTIC_PEARL_GROWTH)
+    public static TerraCausticPearlGrowthBlock TERRA_CAUSTIC_PEARL_GROWTH_BLOCK;
 
     /* Heat Sink */
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_HEAT_SINK)

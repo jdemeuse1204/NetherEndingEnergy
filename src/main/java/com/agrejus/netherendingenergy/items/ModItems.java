@@ -56,4 +56,7 @@ public class ModItems {
 
     @ObjectHolder("netherendingenergy:caustic_mash")
     public static Item CAUSTIC_MASH;
+
+    @ObjectHolder("netherendingenergy:terra_caustic_pearl")
+    public static Item TERRA_CAUSTIC_PEARL;
 }

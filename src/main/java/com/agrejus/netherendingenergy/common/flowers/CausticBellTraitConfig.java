@@ -41,21 +41,21 @@ public class CausticBellTraitConfig {
         switch (trait) {
             case STEADY:
             case ADAPTOR:
-                return new NumberRange(1, 8);
-            case AIMLESS:
                 return new NumberRange(1, 6);
-            case POLLINATING:
+            case AIMLESS:
                 return new NumberRange(1, 5);
-            case ROAMING:
+            case POLLINATING:
                 return new NumberRange(1, 3);
+            case ROAMING:
+                return new NumberRange(1, 2);
             case ALTITUDINAL:
-                return new NumberRange(1, 10);
+                return new NumberRange(1, 7);
             case NOXIOUS:
-                return new NumberRange(1, 35);
-            case POTENT:
-                return new NumberRange(1, 18);
-            case UNSTABLE:
                 return new NumberRange(1, 15);
+            case POTENT:
+                return new NumberRange(1, 11);
+            case UNSTABLE:
+                return new NumberRange(1, 12);
             case DORMANT:
             default:
                 return new NumberRange(1, 1);
@@ -65,20 +65,20 @@ public class CausticBellTraitConfig {
     public static NumberRange getPurity(CausticBellTrait trait) {
         switch (trait) {
             case ADAPTOR:
-                return new NumberRange(.25f, .85f);
-            case AIMLESS:
-                return new NumberRange(.25f, .9f);
+                return new NumberRange(.1f, .65f);
             case POLLINATING:
-            case ROAMING:
-            case NOXIOUS:
             case ALTITUDINAL:
+            case ROAMING:
+            case AIMLESS:
+                return new NumberRange(.1f, .75f);
+            case NOXIOUS:
             case POTENT:
             case UNSTABLE:
-                return new NumberRange(.25f, 1f);
+                return new NumberRange(.1f, 1f);
             case STEADY:
             case DORMANT:
             default:
-                return new NumberRange(.25f, .1f);
+                return new NumberRange(.1f, .1f);
         }
     }
 
@@ -113,20 +113,20 @@ public class CausticBellTraitConfig {
             case POLLINATING:
             case ROAMING:
             case ADAPTOR:
-                return new NumberRange(.25f, 1.1f);
+                return new NumberRange(.1f, .6f);
             case AIMLESS:
-                return new NumberRange(.25f, 1.6f);
+                return new NumberRange(.1f, .7f);
             case POTENT:
             case ALTITUDINAL:
-                return new NumberRange(.25f, 2f);
+                return new NumberRange(.1f, .75f);
             case NOXIOUS:
-                return new NumberRange(.25f, 5f);
+                return new NumberRange(.1f, 1f);
             case UNSTABLE:
-                return new NumberRange(.25f, 3f);
+                return new NumberRange(.1f, .85f);
             case STEADY:
             case DORMANT:
             default:
-                return new NumberRange(.25f, .1f);
+                return new NumberRange(.1f, .1f);
         }
     }
 

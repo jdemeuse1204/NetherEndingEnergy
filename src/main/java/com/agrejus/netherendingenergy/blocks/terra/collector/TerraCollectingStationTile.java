@@ -8,11 +8,11 @@ import com.agrejus.netherendingenergy.common.blocks.RedstoneEnergyTile;
 import com.agrejus.netherendingenergy.common.enumeration.LevelType;
 import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
 import com.agrejus.netherendingenergy.common.factories.EnergyStoreFactory;
+import com.agrejus.netherendingenergy.common.factories.ItemHandlerFactory;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
 import com.agrejus.netherendingenergy.common.interfaces.IRedstoneActivatable;
 import com.agrejus.netherendingenergy.common.reactor.ReactorBaseConfig;
 import com.agrejus.netherendingenergy.common.tank.MixableAcidFluidTank;
-import com.agrejus.netherendingenergy.common.tank.NEEFluidTank;
 import com.agrejus.netherendingenergy.common.tank.PartialNumberTank;
 import com.agrejus.netherendingenergy.fluids.ModFluids;
 import com.agrejus.netherendingenergy.network.NetherEndingEnergyNetworking;
@@ -51,11 +51,19 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
     private IntArraySupplierReferenceHolder referenceHolder;
 
     private int tick;
-    private int progress;
-    private final int ticksToCollect = 60; // 5 seconds
-    private final int ticksToProcess = 120;
+    private int collectionTick = 20;
+    private int progressTick;
+    private final int ticksToRefine = 120; // 5 seconds
+    private final int ticksToProcess = -1;
     private final int acidAmountToProcess = 100;
     private final float efficiency = .6f;
+    private boolean hasBellPlanted = false;
+
+    private float bellPurity = 0;
+    private float bellStrength = 0;
+    private float bellYield = 0;
+
+    private float cycleCollectionAmount = 0;
 
     public TerraCollectingStationTile() {
         super(ModBlocks.TERRA_COLLECTING_STATION_TILE);
@@ -66,7 +74,10 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
         return EnergyStoreFactory.createEnergyStore(LevelType.TERRA);
     }
 
-    private IItemHandler inventory =  new ItemStackHandler(1) {
+/*    private IItemHandler acidResultSlotInventory = this.createAcidResultSlotInventory();
+    private IItemHandler outputSlotInventory = ItemHandlerFactory.createEmptyBucketSlotInventory(() -> markDirty());*/
+
+    private IItemHandler inventory = new ItemStackHandler(1) {
 
         @Override
         public int getSlotLimit(int slot) {
@@ -148,54 +159,51 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
     @Override
     protected void serverTick() {
 
+        TileEntity aboveTileEntity = world.getTileEntity(this.pos.up());
+
+        this.hasBellPlanted = true;
+        if (aboveTileEntity == null || (aboveTileEntity instanceof CausticBellTile) == false) {
+            this.hasBellPlanted = false;
+        }
+
+        this.cycleCollectionAmount = 0;
         if (this.canTick() == false) {
             return;
         }
 
-        if (tick <= 0) {
-            tick = 20; // Every second
-        }
+        this.bellStrength = 0;
+        this.bellPurity = 0;
+        this.bellYield = 0;
 
-        TileEntity aboveTileEntity = world.getTileEntity(this.pos.up());
+        if (hasBellPlanted == true) {
+            this.refineRawAcid();
+            this.processBellAcidCollection(aboveTileEntity);
+            --this.tick;
 
-        // Collect every second
-        if (this.tick == 20) {
-
-            // Try and collect acid, doesn't require power
-            if (aboveTileEntity != null) {
-                if (this.inventory.getStackInSlot(0).getItem() == Items.DIRT) {
-
-                    if (aboveTileEntity instanceof CausticBellTile) {
-                        CausticBellTile bell = (CausticBellTile) aboveTileEntity;
-
-                        float yield = bell.getYield().getCurrent(); // mB
-                        float strength = bell.getStrength().getCurrent();
-                        float purity = bell.getPurity().getCurrent();
-
-                        float fillAmount = yield * strength * purity;
-
-                        inputTank.fill(new FluidStack(ModFluids.RAW_ACID_FLUID, (int)fillAmount), fillAmount, IFluidHandler.FluidAction.EXECUTE);
-                        markUpdateAndDirty();
-                    }
-                }
+            if (tick <= 0) {
+                tick = this.collectionTick; // Every second
             }
+        } else {
+            this.tick = 0;
         }
+    }
 
+    private void refineRawAcid() {
         boolean hasEnoughFluid = this.inputTank.getFluidInTank(0).getAmount() >= this.acidAmountToProcess;
 
         // Try and process
-        if (this.progress == 0 && hasEnoughFluid) {
-            this.progress = this.ticksToCollect;
+        if (this.progressTick == 0 && hasEnoughFluid) {
+            this.progressTick = this.ticksToRefine;
         }
 
-        if (this.progress > 0 && hasEnoughFluid) {
+        if (this.progressTick > 0 && hasEnoughFluid) {
             if (energyStore.hasEnoughEnergyStored()) {
                 energyStore.consumeEnergyPerTick();
 
-                --this.progress;
+                --this.progressTick;
 
                 // processing finished
-                if (this.progress == 0) {
+                if (this.progressTick == 0) {
                     // Drain Raw Acid
                     inputTank.drain(this.acidAmountToProcess, IFluidHandler.FluidAction.EXECUTE);
 
@@ -208,8 +216,29 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
                 markUpdateAndDirty();
             }
         }
+    }
 
-        --this.tick;
+    private float getBellCollectionAmount(CausticBellTile bell) {
+
+        this.bellStrength = bell.getStrength().getCurrent();
+        this.bellPurity = bell.getPurity().getCurrent();
+        this.bellYield = bell.getYield().getCurrent();
+
+        return 10;// bellYield * bellStrength * bellPurity;
+    }
+
+    private void processBellAcidCollection(TileEntity aboveTileEntity) {
+        // Collect every second
+        this.cycleCollectionAmount = getBellCollectionAmount((CausticBellTile) aboveTileEntity);
+
+        if (this.tick == this.collectionTick) {
+
+            if (this.inventory.getStackInSlot(0).getItem() == Items.DIRT) {
+
+                inputTank.fill(new FluidStack(ModFluids.RAW_ACID_FLUID, (int) this.cycleCollectionAmount), this.cycleCollectionAmount, IFluidHandler.FluidAction.EXECUTE);
+                markUpdateAndDirty();
+            }
+        }
     }
 
     private FluidStack getFillStack(int amount) {
@@ -292,10 +321,20 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
                 () -> this.outputTank.getFluidAmount(),
                 () -> this.inputTank.getCapacity(),
                 () -> this.inputTank.getFluidAmount(),
-                () -> this.progress,
-                () -> this.ticksToProcess,
+                () -> this.progressTick,
+                () -> this.ticksToRefine,
                 () -> this.energyStore.getEnergyStored(),
-                () -> this.energyStore.getMaxEnergyStored());
+                () -> this.energyStore.getMaxEnergyStored(),
+                () -> this.outputTank.getFluid().getFluid().getAttributes().getColor(),
+                () -> this.inputTank.getFluid().getFluid().getAttributes().getColor(),
+                () -> this.tick,
+                () -> this.collectionTick,
+                () -> (int) (this.cycleCollectionAmount * 10000),
+                () -> this.getEnergyUsedPerTick(),
+                () -> (int) (this.bellYield * 10000),
+                () -> (int) (this.bellStrength * 10000),
+                () -> (int) (this.bellPurity * 10000),
+                () -> this.hasBellPlanted ? 1 : 0);
 
         return new TerraCollectingStationContainer(worldId, world, pos, playerInventory, playerEntity, referenceHolder);
     }

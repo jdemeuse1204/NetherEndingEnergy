@@ -25,12 +25,23 @@ public abstract class NEETileEntity extends TileEntity implements ITickableTileE
     @Override
     public void tick() {
         if (world.isRemote) {
+            this.beforeClientTick();
             this.clientTick();
             this.afterClientTick();
             return;
         }
+
+        this.beforeServerTick();
         this.serverTick();
         this.afterServerTick();
+    }
+
+    protected void beforeServerTick() {
+
+    }
+
+    protected void beforeClientTick() {
+
     }
 
     protected void afterServerTick() {

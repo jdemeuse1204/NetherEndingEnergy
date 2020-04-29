@@ -151,13 +151,13 @@ public class TerraReactorCoreScreen extends ContainerScreenBase<TerraReactorCore
         float energyPercent = this.getProgressionPercent(this.container.getEnergyStored(), this.container.getMaxEnergyStored());
         int energyProgression = Math.round(this.energySlice.getHeight() * energyPercent);
         this.energySlice.setProgression(energyProgression);
-        this.drawVerticalSliceWithProgression(this.energyDestination, this.energySlice);
+        this.drawVerticalSliceWithProgressionUp(this.energyDestination, this.energySlice);
 
         // Draw Reactant Progression
         float progressionPercent = 1f - this.getProgressionPercent(this.container.getBurnItemTicksLeft(), this.container.getBurnItemTotalTicks());
         int currentProgression = progressionPercent == 1 ? 0 : Math.round(this.progressionSlice.getHeight() * progressionPercent);
         this.progressionSlice.setProgression(currentProgression);
-        this.drawVerticalSliceWithProgression(this.progressionDestination, this.progressionSlice);
+        this.drawVerticalSliceWithProgressionUp(this.progressionDestination, this.progressionSlice);
 
         // Draw Heat Progression
         float heatPercent = this.getProgressionPercent(this.container.getHeat(), this.container.getMaxHeat());
@@ -168,7 +168,7 @@ public class TerraReactorCoreScreen extends ContainerScreenBase<TerraReactorCore
         }
 
         this.heatSlice.setProgression(heatProgression);
-        this.drawVerticalSliceWithProgression(this.heatDestination, this.heatSlice);
+        this.drawVerticalSliceWithProgressionUp(this.heatDestination, this.heatSlice);
 
         // Draw Acid - Draw last otherwise colors will be goofy
         if (this.container.getAcidStored() > 0) {

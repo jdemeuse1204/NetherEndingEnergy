@@ -9,6 +9,7 @@ import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStore
 import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStoreTile;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
+import com.agrejus.netherendingenergy.blocks.flowers.pearls.TerraCausticPearlGrowthBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.roots.CausticBellRootBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.vines.CausticBellVineBlock;
 import com.agrejus.netherendingenergy.blocks.general.ImbuingMachineBlock;
@@ -58,6 +59,7 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraR
 import com.agrejus.netherendingenergy.blocks.terra.reactor.stabilizer.TerraReactorItemStabilizerBlock;
 import com.agrejus.netherendingenergy.fluids.*;
 import com.agrejus.netherendingenergy.items.CausticMashItem;
+import com.agrejus.netherendingenergy.items.TerraCausticPearlItem;
 import com.agrejus.netherendingenergy.items.wireless.LinkingRemoteItem;
 import com.agrejus.netherendingenergy.network.NetherEndingEnergyNetworking;
 import com.agrejus.netherendingenergy.setup.ClientProxy;
@@ -225,6 +227,7 @@ public class NetherEndingEnergy {
             /* General */
             event.getRegistry().register(new CausticBellRootBlock());
             event.getRegistry().register(new CausticBellVineBlock());
+            event.getRegistry().register(new TerraCausticPearlGrowthBlock());
             event.getRegistry().register(new CausticBellBlock());
             event.getRegistry().register(new CausticDirtBlock());
             event.getRegistry().register(new ImbuingMachineBlock());
@@ -273,15 +276,17 @@ public class NetherEndingEnergy {
 
 
 
-
+            event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_ROOTS_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_ROOTS));
+            event.getRegistry().register(new BlockItem(ModBlocks.TERRA_CAUSTIC_PEARL_GROWTH_BLOCK, properties).setRegistryName(RegistryNames.TERRA_CAUSTIC_PEARL_GROWTH));
 
             // Register Items
+            event.getRegistry().register(new TerraCausticPearlItem());
             event.getRegistry().register(new CausticMashItem());
             event.getRegistry().register(new LinkingRemoteItem());
 
             // New Stuff
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_VINES_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_VINES));
-            event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_ROOTS_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_ROOTS));
+
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_DIRT_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_DIRT));
 
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_LINK_BLOCK, properties).setRegistryName(RegistryNames.TERRA_LINK));

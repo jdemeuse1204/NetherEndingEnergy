@@ -1,15 +1,15 @@
 package com.agrejus.netherendingenergy.blocks.flowers.roots;
 
-import com.agrejus.netherendingenergy.NetherEndingEnergyConfig;
+import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.common.helpers.NBTHelpers;
-import com.agrejus.netherendingenergy.common.interfaces.IRoot;
 import com.agrejus.netherendingenergy.common.interfaces.ISourceRoot;
 import com.agrejus.netherendingenergy.common.models.BranchingSourceRoot;
-import com.agrejus.netherendingenergy.common.models.RootBud;
 import com.agrejus.netherendingenergy.common.models.SourceRoot;
+import jdk.nashorn.internal.ir.Block;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public class RootSystem implements INBTSerializable<CompoundNBT> {
@@ -18,7 +18,9 @@ public class RootSystem implements INBTSerializable<CompoundNBT> {
     private int branchingRootCount;
     private int size;
 
-    public RootSystem(){}
+    public RootSystem() {
+    }
+
     public RootSystem(int size, BlockPos origin) {
         this.origin = origin;
         this.sourceRoots = new ISourceRoot[size];
@@ -38,6 +40,31 @@ public class RootSystem implements INBTSerializable<CompoundNBT> {
         }
 
         this.size = size;
+    }
+
+    private BlockPos trySetRandomGrowth(World world) {
+        int rootIndex = NetherEndingEnergy.roll(0, (this.sourceRoots.length - 1));
+        ISourceRoot root = this.sourceRoots[rootIndex];
+
+        // Need a branching root
+        while (root == null || root instanceof SourceRoot) {
+            rootIndex = NetherEndingEnergy.roll(0, (this.sourceRoots.length - 1));
+            root = this.sourceRoots[rootIndex];
+        }
+
+        BranchingSourceRoot branchingSourceRoot = (BranchingSourceRoot) root;
+        return branchingSourceRoot.setGrowth(world);
+    }
+
+    public BlockPos setRandomGrowth(World world) {
+
+        for (int i = 0; i < 5; i++) {
+            BlockPos growthPosition = trySetRandomGrowth(world);
+            if (growthPosition != null) {
+                return growthPosition;
+            }
+        }
+        return null;
     }
 
     public int getBranchingRootCount() {
@@ -94,11 +121,11 @@ public class RootSystem implements INBTSerializable<CompoundNBT> {
             String key = "source_root" + i;
 
             if (nbt.contains(key)) {
-                CompoundNBT sourceRootNbt = (CompoundNBT)nbt.get(key);
+                CompoundNBT sourceRootNbt = (CompoundNBT) nbt.get(key);
 
                 boolean doesBranch = sourceRootNbt.getBoolean("does_branch");
                 ISourceRoot root;
-                if(doesBranch) {
+                if (doesBranch) {
                     root = new BranchingSourceRoot();
                 } else {
                     root = new SourceRoot();

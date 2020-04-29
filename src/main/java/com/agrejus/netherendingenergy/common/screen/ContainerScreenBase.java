@@ -6,12 +6,14 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.antlr.v4.runtime.misc.Interval;
@@ -41,15 +43,6 @@ public abstract class ContainerScreenBase<T extends Container> extends Container
 
         return (float) current / (float) total;
     }
-//GlStateManager.translatef(0.0F, 0.0F, 32.0F);
-//      this.blitOffset = 200;
-//      this.itemRenderer.zLevel = 200.0F;
-//      net.minecraft.client.gui.FontRenderer font = stack.getItem().getFontRenderer(stack);
-//      if (font == null) font = this.font;
-//      this.itemRenderer.renderItemAndEffectIntoGUI(stack, x, y);
-//      this.itemRenderer.renderItemOverlayIntoGUI(font, stack, x, y - (this.draggedStack.isEmpty() ? 0 : 8), altText);
-//      this.blitOffset = 0;
-//      this.itemRenderer.zLevel = 0.0F;
 
     protected void drawShadowCenteredOverlayString(FontRenderer renderer, String text, int left, int top, int color) {
 
@@ -61,8 +54,7 @@ public abstract class ContainerScreenBase<T extends Container> extends Container
         GlStateManager.enableBlend();
         GlStateManager.enableLighting();
         GlStateManager.enableDepthTest();
-        // Fixes opaque cooldown overlay a bit lower
-        // TODO: check if enabled blending still screws things up down the line.
+
         GlStateManager.enableBlend();
     }
 
@@ -74,16 +66,15 @@ public abstract class ContainerScreenBase<T extends Container> extends Container
         renderer.drawString(text, (float) (left - renderer.getStringWidth(text) / 2), (float) top, color);
     }
 
-    public static void drawGradientRect(int x0, int y0, int x1, int y1, int color0, int color1)
-    {
-        float alpha0 = (color0 >> 24&255)/255.0F;
-        float blue0 = (color0 >> 16&255)/255.0F;
-        float green0 = (color0 >> 8&255)/255.0F;
-        float red0 = (color0&255)/255.0F;
-        float alpha1 = (color1 >> 24&255)/255.0F;
-        float blue1 = (color1 >> 16&255)/255.0F;
-        float green1 = (color1 >> 8&255)/255.0F;
-        float red1 = (color1&255)/255.0F;
+    public static void drawGradientRect(int x0, int y0, int x1, int y1, int color0, int color1) {
+        float alpha0 = (color0 >> 24 & 255) / 255.0F;
+        float blue0 = (color0 >> 16 & 255) / 255.0F;
+        float green0 = (color0 >> 8 & 255) / 255.0F;
+        float red0 = (color0 & 255) / 255.0F;
+        float alpha1 = (color1 >> 24 & 255) / 255.0F;
+        float blue1 = (color1 >> 16 & 255) / 255.0F;
+        float green1 = (color1 >> 8 & 255) / 255.0F;
+        float red1 = (color1 & 255) / 255.0F;
         GlStateManager.disableTexture();
         GlStateManager.enableBlend();
         GlStateManager.disableAlphaTest();
@@ -101,6 +92,18 @@ public abstract class ContainerScreenBase<T extends Container> extends Container
         GlStateManager.disableBlend();
         GlStateManager.enableAlphaTest();
         GlStateManager.enableTexture();
+    }
+
+    protected String getEnergyPerTick(int amount) {
+        if (amount > 0) {
+            return String.format(TextFormatting.GREEN + "%s RF/t", amount);
+        }
+
+        if (amount < 0) {
+            return String.format(TextFormatting.RED + "%s RF/t", amount);
+        }
+
+        return String.format("%s RF/t", amount);
     }
 
     public void drawColoredRect(int x, int y, int w, int h, int color) {
@@ -186,13 +189,66 @@ public abstract class ContainerScreenBase<T extends Container> extends Container
     // 176 = screen width
     // k = return this.field_217064_e.get(0) * 13 / i;
     // this.blit(i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
-    protected void drawVerticalSliceWithProgression(Rect destination, RectProgression sliceLocation) {
+    protected void drawVerticalSliceWithProgressionUp(Rect destination, RectProgression sliceLocation) {
         this.blit(destination.getLeft(),
                 destination.getTop() + sliceLocation.getHeight() - sliceLocation.getProgression(),
                 sliceLocation.getLeft(),
                 sliceLocation.getBottom() - sliceLocation.getProgression(),
                 sliceLocation.getWidth(),
                 sliceLocation.getProgression());
+    }
+
+    public void drawVerticalSliceWithProgressionRight(int amount, int total, RectProgression slice, Rect destination) {
+        float energyPercent = this.getProgressionPercent(amount, total);
+        int energyProgression = slice.getWidth() - Math.round(slice.getWidth() * energyPercent);
+        slice.setProgression(energyProgression);
+        this.drawVerticalSliceWithProgressionRight(destination, slice);
+    }
+
+    protected void drawVerticalSliceWithProgressionRight(Rect destination, RectProgression sliceLocation) {
+        int destinationLeft = destination.getLeft();
+        int destinationTop = destination.getTop();
+        int sliceLeft = sliceLocation.getLeft();
+        int sliceTop = sliceLocation.getTop();
+        int sliceWidth = sliceLocation.getWidth() - sliceLocation.getProgression();
+        int sliceHeight = sliceLocation.getHeight();
+
+        this.blit(destinationLeft,
+                destinationTop,
+                sliceLeft,
+                sliceTop,
+                sliceWidth,
+                sliceHeight);
+    }
+
+    protected void drawVerticalSliceWithProgressionDown(Rect destination, RectProgression sliceLocation) {
+        int destinationLeft = destination.getLeft();
+        int destinationTop = destination.getTop();
+        int sliceLeft = sliceLocation.getLeft();
+        int sliceTop = sliceLocation.getTop();
+        int sliceWidth = sliceLocation.getWidth();
+        int sliceHeight = sliceLocation.getProgression();
+
+        this.blit(destinationLeft,
+                destinationTop,
+                sliceLeft,
+                sliceTop,
+                sliceWidth,
+                sliceHeight);
+    }
+
+    public void drawVerticalSliceWithProgressionUp(int amount, int total, RectProgression slice, Rect destination) {
+        float energyPercent = this.getProgressionPercent(amount, total);
+        int energyProgression = Math.round(slice.getHeight() * energyPercent);
+        slice.setProgression(energyProgression);
+        this.drawVerticalSliceWithProgressionUp(destination, slice);
+    }
+
+    public void drawVerticalSliceWithProgressionDown(int amount, int total, RectProgression slice, Rect destination) {
+        float percent = this.getProgressionPercent(amount, total);
+        int progression = Math.round(slice.getHeight() * percent);
+        slice.setProgression(progression);
+        this.drawVerticalSliceWithProgressionDown(destination, slice);
     }
 
     protected void drawOverlaySlice(Rect origin, Rect destination) {
@@ -224,6 +280,59 @@ public abstract class ContainerScreenBase<T extends Container> extends Container
                 mouseX <= (rect.getRight()) &&
                 mouseY >= (rect.getTop()) &&
                 mouseY <= (rect.getBottom());
+    }
+
+    protected void drawTankVertical(int fluidAmount, int tankCapacity, int color, Rect location) {
+
+        if (fluidAmount > 0) {
+            int inputTankCapacity = tankCapacity;
+            int inputFillHeight = location.getComputedFillHeight(inputTankCapacity, fluidAmount);
+
+            int totalHeight = location.getTop() + location.getHeight();
+            int h = totalHeight - inputFillHeight;
+            int y = totalHeight - h;
+            drawColoredRect(location.getLeft(), y, location.getWidth(), h, color);
+        }
+    }
+
+    protected void innerBlitOverlay(int p_blit_1_, int p_blit_2_, int p_blit_3_, int p_blit_4_, int p_blit_5_, int p_blit_6_) {
+        innerBlitOverlay(p_blit_1_, p_blit_2_, this.blitOffset, (float) p_blit_3_, (float) p_blit_4_, p_blit_5_, p_blit_6_, 256, 256);
+    }
+
+    protected void innerBlitOverlay(int p_blit_0_, int p_blit_1_, int p_blit_2_, float p_blit_3_, float p_blit_4_, int p_blit_5_, int p_blit_6_, int p_blit_7_, int p_blit_8_) {
+        innerBlitOverlay(p_blit_0_, p_blit_0_ + p_blit_5_, p_blit_1_, p_blit_1_ + p_blit_6_, p_blit_2_, p_blit_5_, p_blit_6_, p_blit_3_, p_blit_4_, p_blit_8_, p_blit_7_);
+    }
+
+    protected void innerBlitOverlay(int p_innerBlit_0_, int p_innerBlit_1_, int p_innerBlit_2_, int p_innerBlit_3_, int p_innerBlit_4_, int p_innerBlit_5_, int p_innerBlit_6_, float p_innerBlit_7_, float p_innerBlit_8_, int p_innerBlit_9_, int p_innerBlit_10_) {
+        innerBlitOverlay(p_innerBlit_0_, p_innerBlit_1_, p_innerBlit_2_, p_innerBlit_3_, p_innerBlit_4_, (p_innerBlit_7_ + 0.0F) / (float) p_innerBlit_9_, (p_innerBlit_7_ + (float) p_innerBlit_5_) / (float) p_innerBlit_9_, (p_innerBlit_8_ + 0.0F) / (float) p_innerBlit_10_, (p_innerBlit_8_ + (float) p_innerBlit_6_) / (float) p_innerBlit_10_);
+    }
+
+    protected void innerBlitOverlay(int p_innerBlit_0_, int p_innerBlit_1_, int p_innerBlit_2_, int p_innerBlit_3_, int p_innerBlit_4_, float p_innerBlit_5_, float p_innerBlit_6_, float p_innerBlit_7_, float p_innerBlit_8_) {
+
+        GlStateManager.disableRescaleNormal();
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableLighting();
+        GlStateManager.enableDepthTest();
+        GlStateManager.translatef(0, 0, 900);
+        this.blitOffset = 900;
+        this.itemRenderer.zLevel = 900;
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        bufferbuilder.pos((double) p_innerBlit_0_, (double) p_innerBlit_3_, (double) p_innerBlit_4_).tex((double) p_innerBlit_5_, (double) p_innerBlit_8_).endVertex();
+        bufferbuilder.pos((double) p_innerBlit_1_, (double) p_innerBlit_3_, (double) p_innerBlit_4_).tex((double) p_innerBlit_6_, (double) p_innerBlit_8_).endVertex();
+        bufferbuilder.pos((double) p_innerBlit_1_, (double) p_innerBlit_2_, (double) p_innerBlit_4_).tex((double) p_innerBlit_6_, (double) p_innerBlit_7_).endVertex();
+        bufferbuilder.pos((double) p_innerBlit_0_, (double) p_innerBlit_2_, (double) p_innerBlit_4_).tex((double) p_innerBlit_5_, (double) p_innerBlit_7_).endVertex();
+        tessellator.draw();
+
+        this.blitOffset = 0;
+        this.itemRenderer.zLevel = 0;
+        GlStateManager.translatef(0, 0, -300);
+        GlStateManager.enableLighting();
+        GlStateManager.disableDepthTest();
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.enableRescaleNormal();
     }
 
 /*    RenderHelper.setBlockTextureSheet();

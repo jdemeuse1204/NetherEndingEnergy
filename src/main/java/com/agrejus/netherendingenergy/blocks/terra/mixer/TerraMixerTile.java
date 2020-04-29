@@ -342,12 +342,6 @@ public class TerraMixerTile extends RedstoneEnergyTile implements INamedContaine
     }
 
     @Override
-    protected void afterServerTick() {
-        super.afterServerTick();
-        this.trackEnergy();
-    }
-
-    @Override
     public void clientTick() {
 
     }
