@@ -57,6 +57,8 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraR
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneOutputPortBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.ports.redstone.TerraReactorRedstoneOutputPortTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.stabilizer.TerraReactorItemStabilizerBlock;
+import com.agrejus.netherendingenergy.common.chunkloading.ChunkLoaderList;
+import com.agrejus.netherendingenergy.common.interfaces.IChunkLoaderList;
 import com.agrejus.netherendingenergy.fluids.*;
 import com.agrejus.netherendingenergy.items.CausticMashItem;
 import com.agrejus.netherendingenergy.items.TerraCausticPearlItem;
@@ -66,6 +68,7 @@ import com.agrejus.netherendingenergy.setup.ClientProxy;
 import com.agrejus.netherendingenergy.setup.IProxy;
 import com.agrejus.netherendingenergy.setup.ModSetup;
 import com.agrejus.netherendingenergy.setup.ServerProxy;
+import com.agrejus.netherendingenergy.tools.CapabilityChunkLoader;
 import com.agrejus.netherendingenergy.worldgen.feature.config.CausticBellConfig;
 import com.agrejus.netherendingenergy.worldgen.feature.CausticBellFeature;
 import com.agrejus.netherendingenergy.tools.CapabilityVapor;
@@ -75,15 +78,26 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.INBT;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.placement.IPlacementConfig;
 import net.minecraft.world.gen.placement.Placement;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.extensions.IForgeContainerType;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -107,6 +121,7 @@ import java.util.Set;
 public class NetherEndingEnergy {
 
     public static final String MODID = "netherendingenergy";
+    public static final String LOADERID = "loader";
 
     public static IProxy proxy = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
 
@@ -177,7 +192,32 @@ public class NetherEndingEnergy {
         proxy.init();
         NetherEndingEnergyNetworking.registerMessages();
         CapabilityVapor.register();
+        CapabilityChunkLoader.register();
         RegistryEvents.addWorldgen();
+    }
+
+    @SubscribeEvent
+    public void attachWorldCaps(AttachCapabilitiesEvent<World> event) {
+        if (event.getObject().isRemote) return;
+        final LazyOptional<IChunkLoaderList> inst = LazyOptional.of(() -> new ChunkLoaderList((ServerWorld)event.getObject()));
+        final ICapabilitySerializable<INBT> provider = new ICapabilitySerializable<INBT>() {
+            @Override
+            public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
+                return CapabilityChunkLoader.CHUNK_LOADER.orEmpty(cap, inst);
+            }
+
+            @Override
+            public INBT serializeNBT() {
+                return CapabilityChunkLoader.CHUNK_LOADER.writeNBT(inst.orElse(null), null);
+            }
+
+            @Override
+            public void deserializeNBT(INBT nbt) {
+                CapabilityChunkLoader.CHUNK_LOADER.readNBT(inst.orElse(null), null, nbt);
+            }
+        };
+        event.addCapability(new ResourceLocation(MODID, LOADERID), provider);
+        event.addListener(() -> inst.invalidate());
     }
 
 /*    private void doClientStuff(final FMLClientSetupEvent event) {

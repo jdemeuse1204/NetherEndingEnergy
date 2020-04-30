@@ -1,8 +1,10 @@
 package com.agrejus.netherendingenergy.blocks.terra.link;
 
+import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerTile;
 import com.agrejus.netherendingenergy.items.ModItems;
+import com.agrejus.netherendingenergy.tools.CapabilityChunkLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -89,5 +91,17 @@ public class TerraLinkBlock extends Block {
         }
 
         return false;
+    }
+
+    @Override
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
+        if (world.isRemote) return;
+        world.getCapability(CapabilityChunkLoader.CHUNK_LOADER, null).ifPresent(cap -> cap.add(pos));
+    }
+
+    @Override
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (world.isRemote) return;
+        world.getCapability(CapabilityChunkLoader.CHUNK_LOADER, null).ifPresent(cap -> cap.remove(pos));
     }
 }

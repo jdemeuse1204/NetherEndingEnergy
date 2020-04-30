@@ -10,12 +10,14 @@ import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
 import com.agrejus.netherendingenergy.common.factories.EnergyStoreFactory;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
 import com.agrejus.netherendingenergy.common.handlers.ReactorInventoryStackHandler;
+import com.agrejus.netherendingenergy.common.interfaces.IProcessingUnit;
+import com.agrejus.netherendingenergy.common.models.InvertedProcessingUnit;
 import com.agrejus.netherendingenergy.common.models.MixerRecipe;
+import com.agrejus.netherendingenergy.common.models.ProcessingUnit;
 import com.agrejus.netherendingenergy.common.reactor.ReactorBaseConfig;
 import com.agrejus.netherendingenergy.common.tank.CapabilityTank;
 import com.agrejus.netherendingenergy.common.tank.MixableAcidFluidTank;
 import com.agrejus.netherendingenergy.network.NetherEndingEnergyNetworking;
-import com.agrejus.netherendingenergy.network.PacketChangeRedstoneActivationType;
 import com.agrejus.netherendingenergy.network.PacketEmptyTank;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import net.minecraft.entity.player.PlayerEntity;
@@ -57,14 +59,12 @@ public class TerraMixerTile extends RedstoneEnergyTile implements INamedContaine
 
     protected float efficiency = .65f;
 
-    protected int destructibleItemTotalTicks;
-    protected int destructibleItemTicks;
-
-    protected int processingUnitTotalTicks;
-    protected int processingUnitTicks;
+    protected IProcessingUnit destructibleItemProcessingUnit = new InvertedProcessingUnit(0);
+    protected IProcessingUnit processingUnit = new ProcessingUnit(0);
 
     private MixerRecipe currentRecipe;
     private IntArraySupplierReferenceHolder referenceHolder;
+    private boolean isChopping = false;
 
     private IItemHandler acidInputSlotInventory = this.createAcidInputSlotInventory();
     private IItemHandler acidResultSlotInventory = this.createAcidResultSlotInventory();
@@ -83,6 +83,14 @@ public class TerraMixerTile extends RedstoneEnergyTile implements INamedContaine
 
     public LazyOptional<IItemHandler> getOutputSlotInventory() {
         return LazyOptional.of(() -> this.outputSlotInventory);
+    }
+
+    public LazyOptional<MixableAcidFluidTank> getOutputTank() {
+        return LazyOptional.of(() -> this.outputTank);
+    }
+
+    public LazyOptional<MixableAcidFluidTank> getInputTank() {
+        return LazyOptional.of(() -> this.inputTank);
     }
 
     private static Map<Item, Integer> destructibleItems = NetherEndingEnergyConfig.Mixer().destructibleItems;
@@ -264,16 +272,14 @@ public class TerraMixerTile extends RedstoneEnergyTile implements INamedContaine
         redstoneActivationType = RedstoneActivationType.ALWAYS_ACTIVE;
     }
 
-/*    @Override
-    public boolean hasFastRenderer() {
-        return true;
-    }*/
-
     public void voidInputTank() {
         int amount = inputTank.getFluidAmount();
         inputTank.drain(amount, IFluidHandler.FluidAction.EXECUTE);
         markDirty();
-        NetherEndingEnergyNetworking.sendToServer(new PacketEmptyTank(pos, Direction.DOWN));
+
+        if (world.isRemote) {
+            NetherEndingEnergyNetworking.sendToServer(new PacketEmptyTank(pos, Direction.DOWN));
+        }
     }
 
     public void voidOutputTank() {
@@ -283,15 +289,6 @@ public class TerraMixerTile extends RedstoneEnergyTile implements INamedContaine
 
         if (world.isRemote) {
             NetherEndingEnergyNetworking.sendToServer(new PacketEmptyTank(pos, Direction.EAST));
-        }
-    }
-
-    public void changeRedstoneActivationType(RedstoneActivationType type) {
-        this.setRedstoneActivationType(type);
-        markDirty();
-
-        if (world.isRemote) {
-            NetherEndingEnergyNetworking.sendToServer(new PacketChangeRedstoneActivationType(pos, type));
         }
     }
 
@@ -342,14 +339,10 @@ public class TerraMixerTile extends RedstoneEnergyTile implements INamedContaine
     }
 
     @Override
-    public void clientTick() {
-
-    }
-
-    @Override
     public void serverTick() {
 
-        if (this.canTick() == false) {
+        if (this.isEnabled() == false) {
+            this.isChopping = false;
             return;
         }
 
@@ -357,10 +350,80 @@ public class TerraMixerTile extends RedstoneEnergyTile implements INamedContaine
         FluidStack inputFluidStack = inputTank.getFluid();
         Fluid inputFluid = inputFluidStack.getFluid();
 
-        // No acid, remove the recipe
-        if ((inputFluidStack.getAmount() == 0 || this.destructibleItemTicks == 0) && this.currentRecipe != null) {
-            this.currentRecipe = null;
+        this.resolveRecipe(inputFluidStack, inputFluid);
+        this.tryConsumeItem(inputFluidStack, inputFluid);
+        this.processRecipe(inputFluidStack);
+
+        this.tryFillFromInputAcidSlot();
+        this.tryFillFromOutputTank();
+    }
+
+    private void processRecipe(FluidStack inputFluidStack) {
+        if (this.currentRecipe != null) {
+
+            // Make sure we have energy
+            if (this.energyStore.hasEnoughEnergyStored() == true) {
+
+                // Start Processing
+                if (this.processingUnit.getValue() == 0) {
+
+                    int itemUsagePerProcessingUnit = this.currentRecipe.getItemUsagePerProcessingUnit();
+                    int acidUsagePerProcessingUnit = this.currentRecipe.getAcidUsagePerProcessingUnit();
+
+                    if (this.destructibleItemProcessingUnit.getValue() >= itemUsagePerProcessingUnit && inputFluidStack.getAmount() >= acidUsagePerProcessingUnit) {
+
+                        // Consume Material
+                        this.processingUnit.setTotal(this.currentRecipe.getProcessingUnitTickLength());
+                        this.destructibleItemProcessingUnit.setNext(itemUsagePerProcessingUnit);
+                        this.isChopping = true;
+
+                        // Make sure we have enough input acid and energy
+                        if (acidUsagePerProcessingUnit == this.inputTank.drain(acidUsagePerProcessingUnit, IFluidHandler.FluidAction.SIMULATE).getAmount()) {
+
+                            this.inputTank.drain(acidUsagePerProcessingUnit, IFluidHandler.FluidAction.EXECUTE);
+                            this.energyStore.consumeEnergyPerTick();
+                            markUpdateAndDirty();
+                            this.processingUnit.setNext();
+                        }
+                    }
+                } else {
+                    this.energyStore.consumeEnergyPerTick();
+                    markUpdateAndDirty();
+                    this.processingUnit.setNext();
+                }
+
+                if (this.processingUnit.getValue() == this.currentRecipe.getProcessingUnitTickLength()) {
+
+                    // Make unit of acid
+                    int amountToFill = Math.round((float) this.currentRecipe.getResultFluidProcessingUnitAmount() * this.efficiency);
+                    FluidStack result = getFillStack(amountToFill, this.currentRecipe.getResultFluid());
+
+                    int amount = this.outputTank.fill(result, IFluidHandler.FluidAction.SIMULATE);
+
+                    if (amount == amountToFill) {
+                        this.outputTank.fill(result, IFluidHandler.FluidAction.EXECUTE);
+                        markUpdateAndDirty();
+                    }
+
+                    this.processingUnit.reset();
+                }
+            }
+        }
+    }
+
+    private void resolveRecipe(FluidStack inputFluidStack, Fluid inputFluid) {
+
+        if (inputFluidStack.getAmount() == 0) {
+            this.processingUnit.reset();
             markUpdateAndDirty();
+        }
+
+        if ((inputFluidStack.getAmount() == 0 || this.destructibleItemProcessingUnit.getValue() == 0)) {
+            this.isChopping = false;
+            if (this.currentRecipe != null) {
+                this.currentRecipe = null;
+                markUpdateAndDirty();
+            }
         }
 
         if (inputFluidStack.getAmount() > 0 && this.currentRecipe == null) {
@@ -372,8 +435,10 @@ public class TerraMixerTile extends RedstoneEnergyTile implements INamedContaine
                 markUpdateAndDirty();
             }
         }
+    }
 
-        if (this.destructibleItemTicks == 0) {
+    private void tryConsumeItem(FluidStack inputFluidStack, Fluid inputFluid) {
+        if (this.destructibleItemProcessingUnit.getValue() == 0) {
 
             // Make sure we have fluid and items
             // Do nothing until we have an acid in the input tank
@@ -405,66 +470,13 @@ public class TerraMixerTile extends RedstoneEnergyTile implements INamedContaine
                         // Set the recipe
                         this.currentRecipe = getRecipe(inputFluid, extractedStack.getItem());
 
-                        this.destructibleItemTicks = destructibleTime;
-                        this.destructibleItemTotalTicks = destructibleTime;
+                        this.destructibleItemProcessingUnit.setCurrent(destructibleTime);
+                        this.destructibleItemProcessingUnit.setTotal(destructibleTime);
                         markUpdateAndDirty();
                     }
                 }
             }
         }
-
-        if (this.currentRecipe != null) {
-
-            // Make sure we have energy
-            if (this.energyStore.hasEnoughEnergyStored() == true) {
-
-                // Start Processing
-                if (processingUnitTicks == 0) {
-
-                    int itemUsagePerProcessingUnit = this.currentRecipe.getItemUsagePerProcessingUnit();
-                    int acidUsagePerProcessingUnit = this.currentRecipe.getAcidUsagePerProcessingUnit();
-
-                    if (this.destructibleItemTicks >= itemUsagePerProcessingUnit && inputFluidStack.getAmount() >= acidUsagePerProcessingUnit) {
-
-                        // Consume Material
-                        this.processingUnitTotalTicks = this.currentRecipe.getProcessingUnitTickLength();
-                        this.destructibleItemTicks -= itemUsagePerProcessingUnit;
-
-                        // Make sure we have enough input acid and energy
-                        if (acidUsagePerProcessingUnit == this.inputTank.drain(acidUsagePerProcessingUnit, IFluidHandler.FluidAction.SIMULATE).getAmount()) {
-
-                            this.inputTank.drain(acidUsagePerProcessingUnit, IFluidHandler.FluidAction.EXECUTE);
-                            this.energyStore.consumeEnergyPerTick();
-                            markUpdateAndDirty();
-                            ++processingUnitTicks;
-                        }
-                    }
-                } else {
-                    this.energyStore.consumeEnergyPerTick();
-                    markUpdateAndDirty();
-                    ++processingUnitTicks;
-                }
-
-                if (processingUnitTicks == this.currentRecipe.getProcessingUnitTickLength()) {
-
-                    // Make unit of acid
-                    int amountToFill = Math.round((float) this.currentRecipe.getResultFluidProcessingUnitAmount() * this.efficiency);
-                    FluidStack result = getFillStack(amountToFill, this.currentRecipe.getResultFluid());
-
-                    int amount = this.outputTank.fill(result, IFluidHandler.FluidAction.SIMULATE);
-
-                    if (amount == amountToFill) {
-                        this.outputTank.fill(result, IFluidHandler.FluidAction.EXECUTE);
-                        markUpdateAndDirty();
-                    }
-
-                    this.processingUnitTicks = 0;
-                }
-            }
-        }
-
-        this.tryFillFromInputAcidSlot();
-        this.tryFillFromOutputTank();
     }
 
     private void tryFillFromOutputTank() {
@@ -568,10 +580,12 @@ public class TerraMixerTile extends RedstoneEnergyTile implements INamedContaine
         }
 
         this.redstoneActivationType = RedstoneActivationType.get(tag.getString("activation"));
-        this.destructibleItemTicks = tag.getInt("destructible_item_ticks");
-        this.destructibleItemTotalTicks = tag.getInt("destructible_item_total_ticks");
-        this.processingUnitTicks = tag.getInt("processing_unit_ticks");
-        this.processingUnitTotalTicks = tag.getInt("processing_unit_total_ticks");
+
+        CompoundNBT destructibleItemTag = (CompoundNBT) tag.get("destructible_item_ticks");
+        this.destructibleItemProcessingUnit.deserializeNBT(destructibleItemTag);
+
+        CompoundNBT processingUnitTag = (CompoundNBT) tag.get("processing_unit_ticks");
+        this.processingUnit.deserializeNBT(processingUnitTag);
     }
 
     @Override
@@ -600,10 +614,8 @@ public class TerraMixerTile extends RedstoneEnergyTile implements INamedContaine
         CompoundNBT energyCompound = ((INBTSerializable<CompoundNBT>) this.energyStore).serializeNBT();
         tag.put("energy", energyCompound);
 
-        tag.putInt("destructible_item_ticks", this.destructibleItemTicks);
-        tag.putInt("destructible_item_total_ticks", this.destructibleItemTotalTicks);
-        tag.putInt("processing_unit_ticks", this.processingUnitTicks);
-        tag.putInt("processing_unit_total_ticks", this.processingUnitTotalTicks);
+        tag.put("destructible_item_ticks", this.destructibleItemProcessingUnit.serializeNBT());
+        tag.put("processing_unit_ticks", this.processingUnit.serializeNBT());
         tag.putString("activation", this.redstoneActivationType.getName());
 
         if (this.currentRecipe != null) {
@@ -659,11 +671,14 @@ public class TerraMixerTile extends RedstoneEnergyTile implements INamedContaine
                 () -> this.energyStore.getEnergyStored(),
                 () -> this.energyStore.getMaxEnergyStored(),
                 () -> this.inputTank.getFluid().getFluid().getAttributes().getColor(),
-                () -> this.destructibleItemTicks,
-                () -> this.destructibleItemTotalTicks,
+                () -> this.destructibleItemProcessingUnit.getValue(),
+                () -> this.destructibleItemProcessingUnit.getTotal(),
                 () -> this.outputTank.getFluid().getFluid().getAttributes().getColor(),
                 () -> this.getEnergyUsedPerTick(),
-                () -> this.destructibleItemInventory.getStackInSlot(1).getCount());
+                () -> this.destructibleItemInventory.getStackInSlot(1).getCount(),
+                () -> this.processingUnit.getValue(),
+                () -> this.processingUnit.getTotal(),
+                () -> this.isChopping == true ? 1 : 0);
 
         return new TerraMixerContainer(worldId, world, pos, playerInventory, playerEntity, this.referenceHolder);
     }

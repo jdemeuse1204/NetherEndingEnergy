@@ -2,6 +2,8 @@ package com.agrejus.netherendingenergy.common.blocks;
 
 import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
 import com.agrejus.netherendingenergy.common.interfaces.IRedstoneActivatable;
+import com.agrejus.netherendingenergy.network.NetherEndingEnergyNetworking;
+import com.agrejus.netherendingenergy.network.PacketChangeRedstoneActivationType;
 import net.minecraft.tileentity.TileEntityType;
 
 public abstract class RedstoneEnergyTile extends EnergyTile implements IRedstoneActivatable {
@@ -23,7 +25,16 @@ public abstract class RedstoneEnergyTile extends EnergyTile implements IRedstone
         markDirty();
     }
 
-    protected boolean canTick() {
+    public void changeRedstoneActivationType(RedstoneActivationType type) {
+        this.setRedstoneActivationType(type);
+        markDirty();
+
+        if (world.isRemote) {
+            NetherEndingEnergyNetworking.sendToServer(new PacketChangeRedstoneActivationType(pos, type));
+        }
+    }
+
+    protected boolean isEnabled() {
         if (this.redstoneActivationType != RedstoneActivationType.ALWAYS_ACTIVE) {
             int redstonePower = world.getRedstonePowerFromNeighbors(pos);
             if (this.redstoneActivationType == RedstoneActivationType.ACTIVE_WITH_SIGNAL && redstonePower == 0) {

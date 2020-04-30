@@ -4,6 +4,8 @@
   "itemGroup.netherendingenergy.tools": "Nether Ending Energy: Tools",
 
   "item.netherendingenergy.caustic_mash":  "Caustic Mash",
+  "item.netherendingenergy.terra_caustic_pearl":  "Terra Caustic Pearl",
+
   "block.netherendingenergy.wireless_energy_transfer_module": "Wireless Energy Transfer Module",
   "block.netherendingenergy.wireless_item_transfer_module": "Wireless Item Transfer Module",
   "block.netherendingenergy.wireless_fluid_transfer_module": "Wireless Fluid Transfer Module",

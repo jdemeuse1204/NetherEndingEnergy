@@ -221,6 +221,22 @@ public abstract class ContainerScreenBase<T extends Container> extends Container
                 sliceHeight);
     }
 
+    protected void drawSlice(Rect destination, RectProgression sliceLocation) {
+        int destinationLeft = destination.getLeft();
+        int destinationTop = destination.getTop();
+        int sliceLeft = sliceLocation.getLeft();
+        int sliceTop = sliceLocation.getTop();
+        int sliceWidth = sliceLocation.getWidth();
+        int sliceHeight = sliceLocation.getHeight();
+
+        this.blit(destinationLeft,
+                destinationTop,
+                sliceLeft,
+                sliceTop,
+                sliceWidth,
+                sliceHeight);
+    }
+
     protected void drawVerticalSliceWithProgressionDown(Rect destination, RectProgression sliceLocation) {
         int destinationLeft = destination.getLeft();
         int destinationTop = destination.getTop();

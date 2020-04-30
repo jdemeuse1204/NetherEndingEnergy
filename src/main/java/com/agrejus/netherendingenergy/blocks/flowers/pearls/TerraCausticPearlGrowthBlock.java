@@ -25,7 +25,7 @@ public class TerraCausticPearlGrowthBlock extends Block implements IGrowable {
     public TerraCausticPearlGrowthBlock() {
         super(Properties.create(Material.PLANTS)
                 .sound(SoundType.PLANT)
-                .hardnessAndResistance(0.05f)
+                .hardnessAndResistance(0.01f)
                 .tickRandomly()
                 .lightValue(0));
         setRegistryName(RegistryNames.TERRA_CAUSTIC_PEARL_GROWTH);

@@ -33,6 +33,13 @@ public class TerraMixerScreen extends RedstoneActivatableScreen<TerraMixerContai
     private RectProgression progressionSlice;
     private Rect progressionDestination;
 
+    private Rect choppingDestination;
+    private RectProgression choppingSliceOne;
+    private RectProgression choppingSliceTwo;
+    private RectProgression choppingSliceThree;
+    private RectProgression choppingSliceFour;
+    private int counter = 0;
+
     public TerraMixerScreen(TerraMixerContainer container, PlayerInventory inv, ITextComponent name) {
         super(container, inv, name, 176, 184);
     }
@@ -49,8 +56,14 @@ public class TerraMixerScreen extends RedstoneActivatableScreen<TerraMixerContai
         // _7_ = height of hovered button? of button when hovered ? Offset?
         // _6_ = top of still button
 
-        progressionDestination = createRectBasedOnGui(59, 71, 84, 73);
-        progressionSlice = createProgressionSliceRect(19, this.defaultGuiScreenWidth, 190, 33);
+        choppingDestination = createRectBasedOnGui(28, 46, 99, 53);
+        choppingSliceOne = createProgressionSliceRect(85, this.defaultGuiScreenWidth, 229, 110);
+        choppingSliceTwo = createProgressionSliceRect(110, this.defaultGuiScreenWidth, 229, 135);
+        choppingSliceThree = createProgressionSliceRect(135, this.defaultGuiScreenWidth, 229, 160);
+        choppingSliceFour = createProgressionSliceRect(160, this.defaultGuiScreenWidth, 229, 185);
+
+        progressionDestination = createRectBasedOnGui(58, 66, 79, 72);
+        progressionSlice = createProgressionSliceRect(19, this.defaultGuiScreenWidth, 189, 33);
 
         energyDestination = createRectBasedOnGui(27, 152, 167, 67);
         energySlice = createProgressionSliceRect(44, this.defaultGuiScreenWidth + 1, 192, 84);
@@ -164,20 +177,33 @@ public class TerraMixerScreen extends RedstoneActivatableScreen<TerraMixerContai
         // set the size of the GUI to slice off the right hand images
         this.blit(i, j, 0, 0, this.xSize, this.ySize);
 
-        // Processing Progression
-/*        this.blit(this.progressionDestination.getLeft(),
-                this.progressionDestination.getTop(),
-                this.progressionSlice.getLeft(),
-                this.progressionSlice.getBottom(),
-                this.progressionSlice.getWidth(),
-                this.progressionSlice.getHeight());*/
+        // Draw Energy
+        drawVerticalSliceWithProgressionUp(this.container.getEnergyStored(), this.container.getMaxEnergyStored(), this.energySlice, this.energyDestination);
 
-        // Draw Energy Progression
-        float energyPercent = this.getProgressionPercent(this.container.getEnergyStored(), this.container.getMaxEnergyStored());
-        int energyProgression = Math.round(this.energySlice.getHeight() * energyPercent);
-        this.energySlice.setProgression(energyProgression);
-        this.drawVerticalSliceWithProgressionUp(this.energyDestination, this.energySlice);
+        // Draw Collection Progression
+        int collectionTick = this.container.getProcessingTicks();
+        if (collectionTick > 0) {
+            int ticksToCollect = this.container.getTotalProcessingTicks();
+            drawVerticalSliceWithProgressionDown(collectionTick, ticksToCollect, this.progressionSlice, this.progressionDestination);
+        }
 
+        if (this.container.isChopping() == true) {
+            counter++;
+            if (counter <= 10) {
+                drawSlice(this.choppingDestination, choppingSliceOne);
+            } else if (counter > 10 && counter <= 20) {
+                drawSlice(this.choppingDestination, choppingSliceTwo);
+            } else if (counter > 20 && counter <= 30) {
+                drawSlice(this.choppingDestination, choppingSliceThree);
+            } else if (counter > 30 && counter < 40) {
+                drawSlice(this.choppingDestination, choppingSliceFour);
+            } else {
+                drawSlice(this.choppingDestination, choppingSliceFour);
+                counter = 0;
+            }
+        } else {
+            counter = 0;
+        }
 
         // fill input
         int inputTankAmount = this.container.getInputFluidAmount();
@@ -219,7 +245,7 @@ public class TerraMixerScreen extends RedstoneActivatableScreen<TerraMixerContai
         int destructibleItemTotalTicks = this.container.getDestructibleItemTotalTicks();
         int destructibleItemTicks = this.container.getDestructibleItemTotalTicks() - this.container.getDestructibleItemTicks();
 
-        if (destructibleItemTotalTicks > 0) {
+        if (this.container.getDestructibleItemTotalTicks() != this.container.getDestructibleItemTicks()) {
             int step = destructibleItemTotalTicks / 5;
             int currentStep = Math.round(destructibleItemTicks / step) * step;
             float stepAmount = 64f / (float) destructibleItemTotalTicks;

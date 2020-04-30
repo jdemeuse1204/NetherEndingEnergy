@@ -41,6 +41,13 @@ public class TerraCollectingStationContainer extends RedstoneActivatableContaine
             addSlot(new SlotItemHandler(w, 0, 21, 55));
         });
 
+        this.tileEntity.getOutputResultSlotInventory().ifPresent(w -> {
+            addSlot(new SlotItemHandler(w, 0, 152, 72));
+        });
+        this.tileEntity.getOutputSlotInventory().ifPresent(w -> {
+            addSlot(new SlotItemHandler(w, 0, 121, 72));
+        });
+
         // where is the top left slot? This is the player inventory
         layoutPlayerInventorySlots(8, 103);
 

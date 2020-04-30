@@ -44,6 +44,8 @@ public class TerraCollectingStationScreen extends RedstoneActivatableScreen<Terr
     private Rect processingStageThreeDrawLocation;
     private RectProgression processingStageThreeSliceLocation;
 
+    private Rect processingLocation;
+
     public TerraCollectingStationScreen(TerraCollectingStationContainer container, PlayerInventory inv, ITextComponent name) {
         super(container, inv, name, 176, 184);
     }
@@ -76,6 +78,8 @@ public class TerraCollectingStationScreen extends RedstoneActivatableScreen<Terr
 
         processingStageThreeDrawLocation = createSliceDrawDestination(39, 104);
         processingStageThreeSliceLocation = createProgressionSliceRect(63, 188, 199, 88);
+
+        processingLocation = createRectBasedOnGui(35, 92, 115, 64);
     }
 
     @Override
@@ -127,6 +131,14 @@ public class TerraCollectingStationScreen extends RedstoneActivatableScreen<Terr
             tooltip.add("Energy:");
             tooltip.add(getEnergyPerTick(this.container.getEnergyPerTick()));
             tooltip.add(String.format("%s RF", amount));
+        }
+
+        if (this.isMouseOver(this.processingLocation, mouseX, mouseY)) {
+            int refineTicks = this.container.getRefineTicks();
+            int totalRefineTicks = this.container.getTotalTicksToRefine();
+            tooltip.add("Progress:");
+            int progress = (int) (((float) (totalRefineTicks - refineTicks) / (float) totalRefineTicks) * 100);
+            tooltip.add(progress + "%");
         }
 
         if (!tooltip.isEmpty()) {
@@ -188,7 +200,7 @@ public class TerraCollectingStationScreen extends RedstoneActivatableScreen<Terr
         int collectionTick = this.container.getCollectionTick();
         if (collectionTick > 0) {
             int ticksToCollect = this.container.getCollectionTotalTicks();
-            drawVerticalSliceWithProgressionDown(ticksToCollect - collectionTick, ticksToCollect, this.progressSliceLocation, this.progressDrawLocation);
+            drawVerticalSliceWithProgressionDown(collectionTick, ticksToCollect, this.progressSliceLocation, this.progressDrawLocation);
         }
 
         // Draw Input Fluid

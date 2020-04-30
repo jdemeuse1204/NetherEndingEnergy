@@ -6,19 +6,18 @@ import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
 import com.agrejus.netherendingenergy.common.attributes.CustomFluidAttributes;
 import com.agrejus.netherendingenergy.common.blocks.RedstoneEnergyTile;
 import com.agrejus.netherendingenergy.common.enumeration.LevelType;
-import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
 import com.agrejus.netherendingenergy.common.factories.EnergyStoreFactory;
 import com.agrejus.netherendingenergy.common.factories.ItemHandlerFactory;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
+import com.agrejus.netherendingenergy.common.interfaces.IProcessingUnit;
 import com.agrejus.netherendingenergy.common.interfaces.IRedstoneActivatable;
+import com.agrejus.netherendingenergy.common.models.InvertedProcessingUnit;
+import com.agrejus.netherendingenergy.common.models.ProcessingUnit;
 import com.agrejus.netherendingenergy.common.reactor.ReactorBaseConfig;
 import com.agrejus.netherendingenergy.common.tank.MixableAcidFluidTank;
 import com.agrejus.netherendingenergy.common.tank.PartialNumberTank;
 import com.agrejus.netherendingenergy.fluids.ModFluids;
-import com.agrejus.netherendingenergy.network.NetherEndingEnergyNetworking;
-import com.agrejus.netherendingenergy.network.PacketChangeRedstoneActivationType;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -50,19 +49,19 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
 
     private IntArraySupplierReferenceHolder referenceHolder;
 
-    private int tick;
-    private int collectionTick = 20;
-    private int progressTick;
-    private final int ticksToRefine = 120; // 5 seconds
-    private final int ticksToProcess = -1;
-    private final int acidAmountToProcess = 100;
-    private final float efficiency = .6f;
-    private boolean hasBellPlanted = false;
+    // Processing
+    private IProcessingUnit collectionProcessingUnit = new ProcessingUnit(20);
+    private IProcessingUnit refineProcessingUnit = new InvertedProcessingUnit(120);
 
+    // Machine Settings
+    private final int acidAmountToProcess = 10;
+    private final float efficiency = .6f;
+
+    // Fields
+    private boolean hasBellPlanted = false;
     private float bellPurity = 0;
     private float bellStrength = 0;
     private float bellYield = 0;
-
     private float cycleCollectionAmount = 0;
 
     public TerraCollectingStationTile() {
@@ -74,8 +73,16 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
         return EnergyStoreFactory.createEnergyStore(LevelType.TERRA);
     }
 
-/*    private IItemHandler acidResultSlotInventory = this.createAcidResultSlotInventory();
-    private IItemHandler outputSlotInventory = ItemHandlerFactory.createEmptyBucketSlotInventory(() -> markDirty());*/
+    private IItemHandler outputSlotInventory = ItemHandlerFactory.createEmptyBucketSlotInventory(() -> markDirty());
+    private IItemHandler outputResultSlotInventory = ItemHandlerFactory.createResultSlotInventory(() -> markDirty());
+
+    public LazyOptional<IItemHandler> getOutputSlotInventory() {
+        return LazyOptional.of(() -> this.outputSlotInventory);
+    }
+
+    public LazyOptional<IItemHandler> getOutputResultSlotInventory() {
+        return LazyOptional.of(() -> this.outputResultSlotInventory);
+    }
 
     private IItemHandler inventory = new ItemStackHandler(1) {
 
@@ -92,8 +99,7 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
         @Override
         protected void onContentsChanged(int slot) {
             // Marks the tile entity as changed so the system knows it needs to be saved
-            BlockState state = world.getBlockState(pos);
-            world.notifyBlockUpdate(pos, state, state, 3);
+            update();
             markDirty();
         }
 
@@ -111,9 +117,7 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
                 return stack;
             }
 
-            // Remove this?
-            BlockState state = world.getBlockState(pos);
-            world.notifyBlockUpdate(pos, state, state, 3);
+            update();
             markDirty();
             return super.insertItem(slot, stack, simulate);
         }
@@ -121,9 +125,7 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
         @Nonnull
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            // Remove this?
-            BlockState state = world.getBlockState(pos);
-            world.notifyBlockUpdate(pos, state, state, 3);
+            update();
             markDirty();
             return super.extractItem(slot, amount, simulate);
         }
@@ -132,8 +134,7 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
     private PartialNumberTank inputTank = new PartialNumberTank(1000) {
         @Override
         protected void onContentsChanged() {
-            BlockState state = world.getBlockState(pos);
-            world.notifyBlockUpdate(pos, state, state, 3);
+            update();
             markDirty();
         }
     };
@@ -141,8 +142,7 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
     private MixableAcidFluidTank outputTank = new MixableAcidFluidTank(4000) {
         @Override
         protected void onContentsChanged() {
-            BlockState state = world.getBlockState(pos);
-            world.notifyBlockUpdate(pos, state, state, 3);
+            update();
             markDirty();
         }
     };
@@ -159,6 +159,7 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
     @Override
     protected void serverTick() {
 
+        this.tryFillFromOutputTank();
         TileEntity aboveTileEntity = world.getTileEntity(this.pos.up());
 
         this.hasBellPlanted = true;
@@ -167,7 +168,17 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
         }
 
         this.cycleCollectionAmount = 0;
-        if (this.canTick() == false) {
+
+        if (this.hasBellPlanted == true && this.hasGrowthMedium() == false) {
+            // remove planted bell
+            world.destroyBlock(pos.up(), true);
+
+            // Update above tile entity
+            aboveTileEntity = world.getTileEntity(pos.up());
+            this.hasBellPlanted = false;
+        }
+
+        if (this.isEnabled() == false) {
             return;
         }
 
@@ -178,13 +189,8 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
         if (hasBellPlanted == true) {
             this.refineRawAcid();
             this.processBellAcidCollection(aboveTileEntity);
-            --this.tick;
-
-            if (tick <= 0) {
-                tick = this.collectionTick; // Every second
-            }
         } else {
-            this.tick = 0;
+            this.collectionProcessingUnit.reset();
         }
     }
 
@@ -192,18 +198,20 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
         boolean hasEnoughFluid = this.inputTank.getFluidInTank(0).getAmount() >= this.acidAmountToProcess;
 
         // Try and process
-        if (this.progressTick == 0 && hasEnoughFluid) {
-            this.progressTick = this.ticksToRefine;
+        int value = this.refineProcessingUnit.getValue();
+        if (value == 0 && hasEnoughFluid) {
+            this.refineProcessingUnit.reset();
         }
 
-        if (this.progressTick > 0 && hasEnoughFluid) {
+        if (value > 0 && hasEnoughFluid) {
             if (energyStore.hasEnoughEnergyStored()) {
                 energyStore.consumeEnergyPerTick();
 
-                --this.progressTick;
+                this.refineProcessingUnit.setNext();
 
                 // processing finished
-                if (this.progressTick == 0) {
+                if (this.refineProcessingUnit.canProcess()) {
+
                     // Drain Raw Acid
                     inputTank.drain(this.acidAmountToProcess, IFluidHandler.FluidAction.EXECUTE);
 
@@ -218,20 +226,28 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
         }
     }
 
+    private boolean hasGrowthMedium() {
+        return this.inventory.getStackInSlot(0).isEmpty() == false;
+    }
+
+    private void tryFillFromOutputTank() {
+        FluidHelpers.fillBucketFromTankAndPutInInventory(outputTank, outputSlotInventory, outputResultSlotInventory, () -> markUpdateAndDirty());
+    }
+
     private float getBellCollectionAmount(CausticBellTile bell) {
 
         this.bellStrength = bell.getStrength().getCurrent();
         this.bellPurity = bell.getPurity().getCurrent();
         this.bellYield = bell.getYield().getCurrent();
 
-        return 10;// bellYield * bellStrength * bellPurity;
+        return bellYield * bellStrength * bellPurity;
     }
 
     private void processBellAcidCollection(TileEntity aboveTileEntity) {
         // Collect every second
         this.cycleCollectionAmount = getBellCollectionAmount((CausticBellTile) aboveTileEntity);
 
-        if (this.tick == this.collectionTick) {
+        if (this.collectionProcessingUnit.canProcess() == true) {
 
             if (this.inventory.getStackInSlot(0).getItem() == Items.DIRT) {
 
@@ -239,6 +255,8 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
                 markUpdateAndDirty();
             }
         }
+
+        this.collectionProcessingUnit.setNext();
     }
 
     private FluidStack getFillStack(int amount) {
@@ -321,14 +339,14 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
                 () -> this.outputTank.getFluidAmount(),
                 () -> this.inputTank.getCapacity(),
                 () -> this.inputTank.getFluidAmount(),
-                () -> this.progressTick,
-                () -> this.ticksToRefine,
+                () -> this.refineProcessingUnit.getValue(),
+                () -> this.refineProcessingUnit.getTotal(),
                 () -> this.energyStore.getEnergyStored(),
                 () -> this.energyStore.getMaxEnergyStored(),
                 () -> this.outputTank.getFluid().getFluid().getAttributes().getColor(),
                 () -> this.inputTank.getFluid().getFluid().getAttributes().getColor(),
-                () -> this.tick,
-                () -> this.collectionTick,
+                () -> this.collectionProcessingUnit.getValue(),
+                () -> this.collectionProcessingUnit.getTotal(),
                 () -> (int) (this.cycleCollectionAmount * 10000),
                 () -> this.getEnergyUsedPerTick(),
                 () -> (int) (this.bellYield * 10000),
@@ -337,14 +355,5 @@ public class TerraCollectingStationTile extends RedstoneEnergyTile implements IN
                 () -> this.hasBellPlanted ? 1 : 0);
 
         return new TerraCollectingStationContainer(worldId, world, pos, playerInventory, playerEntity, referenceHolder);
-    }
-
-    public void changeRedstoneActivationType(RedstoneActivationType type) {
-        this.setRedstoneActivationType(type);
-        markDirty();
-
-        if (world.isRemote) {
-            NetherEndingEnergyNetworking.sendToServer(new PacketChangeRedstoneActivationType(pos, type));
-        }
     }
 }

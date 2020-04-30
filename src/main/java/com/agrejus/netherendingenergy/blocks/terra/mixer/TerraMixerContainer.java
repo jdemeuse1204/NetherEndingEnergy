@@ -42,7 +42,7 @@ public class TerraMixerContainer extends RedstoneActivatableContainer<TerraMixer
     // Exists on both server and client
     // Has slots of inventory and their links
     public TerraMixerContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        this(id, world, pos, playerInventory, playerEntity, new IntArray(12));
+        this(id, world, pos, playerInventory, playerEntity, new IntArray(15));
 
         this.world = world;
         this.pos = pos;
@@ -52,7 +52,7 @@ public class TerraMixerContainer extends RedstoneActivatableContainer<TerraMixer
         super(ModBlocks.TERRA_MIXER_CONTAINER, id, world, pos, playerInventory, playerEntity);
 
         this.world = world;
-        this.tileEntity = (TerraMixerTile)this.world.getTileEntity(pos);
+        this.tileEntity = (TerraMixerTile) this.world.getTileEntity(pos);
 
         this.tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(w -> {
             addSlot(new SlotItemHandler(w, 0, 10, 33));
@@ -128,11 +128,11 @@ public class TerraMixerContainer extends RedstoneActivatableContainer<TerraMixer
     }
 
     public FluidStack getInputTankFluid() {
-        return this.tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, Direction.DOWN).map(w -> w.getFluidInTank(0)).orElse(FluidStack.EMPTY);
+        return this.tileEntity.getInputTank().map(w -> w.getFluidInTank(0)).orElse(FluidStack.EMPTY);
     }
 
     public FluidStack getOutputTankFluid() {
-        return this.tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, Direction.EAST).map(w -> w.getFluidInTank(0)).orElse(FluidStack.EMPTY);
+        return this.tileEntity.getOutputTank().map(w -> w.getFluidInTank(0)).orElse(FluidStack.EMPTY);
     }
 
     public int getInputTankCapacity() {
@@ -161,5 +161,17 @@ public class TerraMixerContainer extends RedstoneActivatableContainer<TerraMixer
 
     public int getBurningItemUsageCount() {
         return this.tracking.get(11);
+    }
+
+    public int getProcessingTicks() {
+        return this.tracking.get(12);
+    }
+
+    public int getTotalProcessingTicks() {
+        return this.tracking.get(13);
+    }
+
+    public boolean isChopping() {
+        return this.tracking.get(14) == 1;
     }
 }

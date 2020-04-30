@@ -1,46 +1,85 @@
 package com.agrejus.netherendingenergy.common.models;
 
+import com.agrejus.netherendingenergy.common.interfaces.IProcessingUnit;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.common.util.INBTSerializable;
 
-public class ProcessingUnit implements INBTSerializable<CompoundNBT> {
+public class ProcessingUnit implements IProcessingUnit {
 
-    private int tick;
-    private int totalTicks;
+    public int current;
+    public int total;
 
-    public ProcessingUnit(int totalTicks) {
-        this(0, totalTicks);
+    public ProcessingUnit() {
+        this(0, 0);
     }
 
-    public ProcessingUnit(int tick, int totalTicks) {
-        this.tick = tick;
-        this.totalTicks = totalTicks;
+    public ProcessingUnit(int total) {
+        this(total, 0);
     }
 
-    public int getTick() {
-        return tick;
+    public ProcessingUnit(int total, int seed) {
+        this.total = total;
+        this.current = seed;
     }
 
-    public int getTotalTicks() {
-        return totalTicks;
+    @Override
+    public boolean canProcess() {
+        return this.total == this.current;
     }
 
-    public boolean isProcessingFinished() {
-        return this.tick >= this.totalTicks;
+    @Override
+    public int getTotal() {
+        return this.total;
     }
 
-    public int increment() {
-        ++this.tick;
-        return this.tick;
+    @Override
+    public void setCurrent(int current) {
+        this.current = current;
+    }
+
+    @Override
+    public void setTotal(int total) {
+        this.total = total;
+    }
+
+    @Override
+    public void reset() {
+        this.current = 0;
     }
 
     @Override
     public CompoundNBT serializeNBT() {
-        return null;
+        CompoundNBT tag = new CompoundNBT();
+        tag.putInt("total", this.total);
+        tag.putInt("current", this.current);
+        return tag;
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
+        this.total = nbt.getInt("total");
+        this.current = nbt.getInt("current");
+    }
 
+    @Override
+    public int getValue() {
+        return this.current;
+    }
+
+    @Override
+    public void setNext() {
+        ++this.current;
+
+        if (this.current > this.total) {
+            this.current = 0;
+        }
+    }
+
+    @Override
+    public void setNext(int amount) {
+        this.current += amount;
+
+        if (this.current > this.total) {
+            this.current = 0;
+        }
     }
 }
