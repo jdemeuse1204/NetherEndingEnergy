@@ -41,6 +41,7 @@ public class RegistryNames {
 
     public static final String LINKING_REMOTE = "linking_remote";
     public static final String BOTANISTS_CODEX = "botanists_codex";
+    public static final String WIRELESS_BOTANISTS_CODEX = "wireless_botanists_codex";
 
 
     public static final String IMBUING_MACHINE = "imbuing_machine";

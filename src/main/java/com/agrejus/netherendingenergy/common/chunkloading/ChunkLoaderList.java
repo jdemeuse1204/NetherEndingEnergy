@@ -77,7 +77,7 @@ public class ChunkLoaderList implements IChunkLoaderList {
 
     private void forceload(BlockPos pos, String action) {
         if (this.world == null || this.world.getServer() == null) return;
-        CommandSource source = this.world.getServer().getCommandSource().withWorld(this.world); //TODO: Use custom source that doesn't spam chat?
+        CommandSource source = this.world.getServer().getCommandSource().withWorld(this.world).withFeedbackDisabled(); //TODO: Use custom source that doesn't spam chat?
         @SuppressWarnings("unused")
         int ret = this.world.getServer().getCommandManager().handleCommand(source, "forceload " + action + " " + pos.getX() + " " + pos.getZ());
     }

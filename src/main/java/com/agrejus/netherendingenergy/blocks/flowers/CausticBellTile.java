@@ -53,11 +53,43 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
     // Traits
     private CausticBellTrait superiorTrait;
+    private boolean isSuperiorTraitIdentified = false;
+
     private CausticBellTrait inferiorTrait;
+    private boolean isInferiorTraitIdentified = false;
+
     private CausticBellTrait recessiveTrait;
+    private boolean isRecessiveTraitIdentified = false;
 
     // Settings
     private static ArrayList<Block> ores = NetherEndingEnergyConfig.General().ores;
+
+    public void identifySuperiorTrait() {
+        this.isSuperiorTraitIdentified = true;
+        markDirty();
+    }
+
+    public void identifyInferiorTrait() {
+        this.isInferiorTraitIdentified = true;
+        markDirty();
+    }
+
+    public void identifyRecessiveTrait() {
+        this.isRecessiveTraitIdentified = true;
+        markDirty();
+    }
+
+    public boolean isSuperiorTraitIdentified() {
+        return isSuperiorTraitIdentified;
+    }
+
+    public boolean isInferiorTraitIdentified() {
+        return isInferiorTraitIdentified;
+    }
+
+    public boolean isRecessiveTraitIdentified() {
+        return isRecessiveTraitIdentified;
+    }
 
     public CausticBellTile(CausticBellTrait superiorTrait, CausticBellTrait inferiorTrait, CausticBellTrait recessiveTrait) {
         this();
@@ -724,6 +756,10 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
             this.rootSystem = new RootSystem();
             this.rootSystem.deserializeNBT(rootSystemNbt);
         }
+
+        this.isSuperiorTraitIdentified = tag.getBoolean("superior_trait_identified");
+        this.isInferiorTraitIdentified = tag.getBoolean("inferior_trait_identified");
+        this.isRecessiveTraitIdentified = tag.getBoolean("recessive_trait_identified");
     }
 
     @Override
@@ -751,6 +787,10 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         if (this.rootSystem != null) {
             tag.put("root_system", this.rootSystem.serializeNBT());
         }
+
+        tag.putBoolean("superior_trait_identified", this.isSuperiorTraitIdentified);
+        tag.putBoolean("inferior_trait_identified", this.isInferiorTraitIdentified);
+        tag.putBoolean("recessive_trait_identified", this.isRecessiveTraitIdentified);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.agrejus.netherendingenergy;
 
-import com.agrejus.netherendingenergy.blocks.*;
+import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.blocks.abyssal.heatsink.AbyssHeatSinkBlock;
 import com.agrejus.netherendingenergy.blocks.abyssal.link.AbyssalLinkBlock;
 import com.agrejus.netherendingenergy.blocks.abyssal.link.AbyssalLinkTile;
@@ -63,15 +63,15 @@ import com.agrejus.netherendingenergy.fluids.*;
 import com.agrejus.netherendingenergy.items.CausticMashItem;
 import com.agrejus.netherendingenergy.items.TerraCausticPearlItem;
 import com.agrejus.netherendingenergy.items.wireless.LinkingRemoteItem;
+import com.agrejus.netherendingenergy.items.wireless.WirelessBotanistsCodexItem;
 import com.agrejus.netherendingenergy.network.NetherEndingEnergyNetworking;
 import com.agrejus.netherendingenergy.setup.ClientProxy;
 import com.agrejus.netherendingenergy.setup.IProxy;
 import com.agrejus.netherendingenergy.setup.ModSetup;
 import com.agrejus.netherendingenergy.setup.ServerProxy;
-import com.agrejus.netherendingenergy.tools.CapabilityChunkLoader;
-import com.agrejus.netherendingenergy.worldgen.feature.config.CausticBellConfig;
-import com.agrejus.netherendingenergy.worldgen.feature.CausticBellFeature;
 import com.agrejus.netherendingenergy.tools.CapabilityVapor;
+import com.agrejus.netherendingenergy.worldgen.feature.CausticBellFeature;
+import com.agrejus.netherendingenergy.worldgen.feature.config.CausticBellConfig;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.block.Block;
 import net.minecraft.fluid.Fluid;
@@ -91,6 +91,7 @@ import net.minecraft.world.gen.placement.IPlacementConfig;
 import net.minecraft.world.gen.placement.Placement;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -135,6 +136,9 @@ public class NetherEndingEnergy {
     public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, MODID);
     public static final Feature<CausticBellConfig> CAUSTIC_BELLS = new CausticBellFeature(CausticBellConfig::deserialize);
 
+    @CapabilityInject(IChunkLoaderList.class)
+    public static Capability<IChunkLoaderList> CAPABILITY = null;
+
     static {
         ModFluids.RawAcidFluid = new RawAcidFluid();
         ModFluids.AcidOfTheOrdinary = new AcidOfTheOrdinaryFluid();
@@ -168,6 +172,29 @@ public class NetherEndingEnergy {
         return rnd.nextInt(max - min + 1) + min;
     }
 
+    @SubscribeEvent
+    public void attachWorldCaps(AttachCapabilitiesEvent<World> event) {
+        if (event.getObject().isRemote) return;
+        final LazyOptional<IChunkLoaderList> inst = LazyOptional.of(() -> new ChunkLoaderList((ServerWorld)event.getObject()));
+        final ICapabilitySerializable<INBT> provider = new ICapabilitySerializable<INBT>() {
+            @Override
+            public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
+                return CAPABILITY.orEmpty(cap, inst);
+            }
+
+            @Override
+            public INBT serializeNBT() {
+                return CAPABILITY.writeNBT(inst.orElse(null), null);
+            }
+
+            @Override
+            public void deserializeNBT(INBT nbt) {
+                CAPABILITY.readNBT(inst.orElse(null), null, nbt);
+            }
+        };
+        event.addCapability(new ResourceLocation(NetherEndingEnergy.MODID, NetherEndingEnergy.LOADERID), provider);
+        event.addListener(() -> inst.invalidate());
+    }
 
     public NetherEndingEnergy() {
 
@@ -176,6 +203,8 @@ public class NetherEndingEnergy {
 
         // Register the setup method for modloading
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        MinecraftForge.EVENT_BUS.register(this);
 
         modEventBus.addListener(this::setup);
 
@@ -192,32 +221,8 @@ public class NetherEndingEnergy {
         proxy.init();
         NetherEndingEnergyNetworking.registerMessages();
         CapabilityVapor.register();
-        CapabilityChunkLoader.register();
+        CapabilityManager.INSTANCE.register(IChunkLoaderList.class, new ChunkLoaderList.Storage(), () -> new ChunkLoaderList(null));
         RegistryEvents.addWorldgen();
-    }
-
-    @SubscribeEvent
-    public void attachWorldCaps(AttachCapabilitiesEvent<World> event) {
-        if (event.getObject().isRemote) return;
-        final LazyOptional<IChunkLoaderList> inst = LazyOptional.of(() -> new ChunkLoaderList((ServerWorld)event.getObject()));
-        final ICapabilitySerializable<INBT> provider = new ICapabilitySerializable<INBT>() {
-            @Override
-            public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-                return CapabilityChunkLoader.CHUNK_LOADER.orEmpty(cap, inst);
-            }
-
-            @Override
-            public INBT serializeNBT() {
-                return CapabilityChunkLoader.CHUNK_LOADER.writeNBT(inst.orElse(null), null);
-            }
-
-            @Override
-            public void deserializeNBT(INBT nbt) {
-                CapabilityChunkLoader.CHUNK_LOADER.readNBT(inst.orElse(null), null, nbt);
-            }
-        };
-        event.addCapability(new ResourceLocation(MODID, LOADERID), provider);
-        event.addListener(() -> inst.invalidate());
     }
 
 /*    private void doClientStuff(final FMLClientSetupEvent event) {
@@ -323,6 +328,7 @@ public class NetherEndingEnergy {
             event.getRegistry().register(new TerraCausticPearlItem());
             event.getRegistry().register(new CausticMashItem());
             event.getRegistry().register(new LinkingRemoteItem());
+            event.getRegistry().register(new WirelessBotanistsCodexItem());
 
             // New Stuff
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_VINES_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_VINES));

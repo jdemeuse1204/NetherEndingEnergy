@@ -75,6 +75,21 @@
                   "source": "abyssal_slurry_chance",
                   "target": "BlockEntityTag.abyssal_slurry_chance",
                   "op": "replace"
+                },
+                {
+                  "source": "superior_trait_identified",
+                  "target": "BlockEntityTag.superior_trait_identified",
+                  "op": "replace"
+                },
+                {
+                  "source": "inferior_trait_identified",
+                  "target": "BlockEntityTag.inferior_trait_identified",
+                  "op": "replace"
+                },
+                {
+                  "source": "recessive_trait_identified",
+                  "target": "BlockEntityTag.recessive_trait_identified",
+                  "op": "replace"
                 }
               ]
             },

@@ -2,9 +2,7 @@ package com.agrejus.netherendingenergy.blocks.terra.link;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.RegistryNames;
-import com.agrejus.netherendingenergy.blocks.terra.mixer.TerraMixerTile;
 import com.agrejus.netherendingenergy.items.ModItems;
-import com.agrejus.netherendingenergy.tools.CapabilityChunkLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -19,9 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.server.TicketManager;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -96,12 +92,16 @@ public class TerraLinkBlock extends Block {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
         if (world.isRemote) return;
-        world.getCapability(CapabilityChunkLoader.CHUNK_LOADER, null).ifPresent(cap -> cap.add(pos));
+        world.getCapability(NetherEndingEnergy.CAPABILITY, null).ifPresent(cap -> {
+            cap.add(pos);
+        });
     }
 
     @Override
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (world.isRemote) return;
-        world.getCapability(CapabilityChunkLoader.CHUNK_LOADER, null).ifPresent(cap -> cap.remove(pos));
+        world.getCapability(NetherEndingEnergy.CAPABILITY, null).ifPresent(cap -> {
+            cap.remove(pos);
+        });
     }
 }
