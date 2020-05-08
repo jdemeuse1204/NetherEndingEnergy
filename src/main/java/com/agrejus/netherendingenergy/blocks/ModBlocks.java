@@ -6,6 +6,7 @@ import com.agrejus.netherendingenergy.blocks.abyssal.link.AbyssalLinkBlock;
 import com.agrejus.netherendingenergy.blocks.abyssal.link.AbyssalLinkTile;
 import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStoreBlock;
 import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStoreTile;
+import com.agrejus.netherendingenergy.blocks.flowers.cloud.CausticCloudBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.pearls.TerraCausticPearlGrowthBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.roots.CausticBellRootBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.vines.CausticBellVineBlock;
@@ -68,6 +69,9 @@ public class ModBlocks {
     public static CausticBellBlock CAUSTIC_BELL_BLOCK;
     @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_BELL)
     public static TileEntityType<CausticBellTile> CAUSTIC_BELL_TILE;
+
+    @ObjectHolder("netherendingenergy:" + RegistryNames.CAUSTIC_CLOUD)
+    public static CausticCloudBlock CAUSTIC_CLOUD_BLOCK;
 
     /* General */
     @ObjectHolder("netherendingenergy:" + RegistryNames.TERRA_REACTOR_CASING)

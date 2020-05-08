@@ -1,5 +1,6 @@
 package com.agrejus.netherendingenergy.common.container;
 
+import com.agrejus.netherendingenergy.client.gui.container.DestructibleContainer;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -16,6 +17,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 
 public abstract class InventoryContainerBase<T extends TileEntity> extends Container {
 
@@ -24,6 +26,7 @@ public abstract class InventoryContainerBase<T extends TileEntity> extends Conta
     protected IItemHandler playerInventory;
     protected BlockPos pos;
     protected World world;
+    private ArrayList<Integer> playerInventorySlotIndices = new ArrayList<>();
 
     protected InventoryContainerBase(@Nullable ContainerType<?> type, int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         super(type, id);
@@ -32,6 +35,10 @@ public abstract class InventoryContainerBase<T extends TileEntity> extends Conta
         this.playerInventory = new InvWrapper(playerInventory);
         this.pos = pos;
         this.world = world;
+    }
+
+    public void removePlayerInventory() {
+        this.inventorySlots.clear();
     }
 
     protected void addSlot(IItemHandler handler, int index, int x, int y) {
@@ -55,13 +62,32 @@ public abstract class InventoryContainerBase<T extends TileEntity> extends Conta
         return index;
     }
 
-    protected void layoutPlayerInventorySlots(int leftCol, int topRow) {
-        // Player Inventory
-        addSlotBox(this.playerInventory, 9, leftCol, topRow, 9, 18, 3, 18);
+    protected int addPlayerInventorySlotBox(IItemHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
+        for (int j = 0; j < verAmount; j++) {
+            this.playerInventorySlotIndices.add(j);
+            index = addSlotRange(handler, index, x, y, horAmount, dx);
+            y += dy;
+        }
+        return index;
+    }
 
+    protected void layoutPlayerInventory(int leftCol, int topRow) {
+        // Player Inventory
+        addPlayerInventorySlotBox(this.playerInventory, 9, leftCol, topRow, 9, 18, 3, 18);
+    }
+
+    protected void layoutPlayerHotbar(int leftCol, int topRow) {
         // Hotbar
         topRow += 58;
         addSlotRange(this.playerInventory, 0, leftCol, topRow, 9, 18);
+    }
+
+    protected void layoutPlayerInventorySlots(int leftCol, int topRow) {
+        // Hotbar
+        layoutPlayerHotbar(leftCol, topRow);
+
+        // Player Inventory
+        layoutPlayerInventory(leftCol, topRow);
     }
 
     @Override

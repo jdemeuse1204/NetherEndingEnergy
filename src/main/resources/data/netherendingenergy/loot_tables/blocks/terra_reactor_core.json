@@ -32,18 +32,18 @@
                   "op": "replace"
                 },
                 {
-                  "source": "burntime",
-                  "target": "BlockEntityTag.burntime",
-                  "op": "replace"
-                },
-                {
-                  "source": "burntimetotal",
-                  "target": "BlockEntityTag.burntimetotal",
+                  "source": "dissolution_time",
+                  "target": "BlockEntityTag.dissolution_time",
                   "op": "replace"
                 },
                 {
                   "source": "heat",
                   "target": "BlockEntityTag.heat",
+                  "op": "replace"
+                },
+                {
+                  "source": "fatal_heat_time",
+                  "target": "BlockEntityTag.fatal_heat_time",
                   "op": "replace"
                 }
               ]

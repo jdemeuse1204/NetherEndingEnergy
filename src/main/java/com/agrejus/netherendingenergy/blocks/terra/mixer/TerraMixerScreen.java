@@ -86,14 +86,7 @@ public class TerraMixerScreen extends RedstoneActivatableScreen<TerraMixerContai
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground();
-        super.render(mouseX, mouseY, partialTicks);
-
-        this.renderHoveredToolTip(mouseX, mouseY);
-
-        List<String> tooltip = new ArrayList<>();
-
+    protected void renderHoverToolTip(List<String> tooltip, int mouseX, int mouseY, float partialTicks) {
         if (this.isMouseOver(this.inputFluidLocation, mouseX, mouseY)) {
             int amount = this.container.getInputFluidAmount();
 
@@ -154,10 +147,7 @@ public class TerraMixerScreen extends RedstoneActivatableScreen<TerraMixerContai
             tooltip.add(String.format("%s mB", amount));
         }
 
-        if (!tooltip.isEmpty()) {
-            this.renderTooltip(tooltip, mouseX, mouseY);
-            RenderHelper.enableGUIStandardItemLighting();
-        }
+        super.renderHoverToolTip(tooltip, mouseX, mouseY, partialTicks);
     }
 
     @Override

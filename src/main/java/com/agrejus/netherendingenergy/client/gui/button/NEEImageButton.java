@@ -13,8 +13,8 @@ public class NEEImageButton extends ImageButton {
     private boolean isVisible;
     private int savedHeight;
 
-    public NEEImageButton(boolean isVisible, int p_i51134_1_, int p_i51134_2_, int p_i51134_3_, int p_i51134_4_, int p_i51134_5_, int p_i51134_6_, int p_i51134_7_, ResourceLocation p_i51134_8_, Button.IPressable p_i51134_9_) {
-        super(p_i51134_1_, p_i51134_2_, p_i51134_3_, p_i51134_4_, p_i51134_5_, p_i51134_6_, p_i51134_7_, p_i51134_8_, 256, 256, p_i51134_9_);
+    public NEEImageButton(boolean isVisible, int guiLeft, int guiTop, int buttonWidth, int buttonHeight, int sliceLeft, int sliceTop, int p_i51134_7_, ResourceLocation resourceLocation, Button.IPressable action) {
+        super(guiLeft, guiTop, buttonWidth, buttonHeight, sliceLeft, sliceTop, p_i51134_7_, resourceLocation, 256, 256, action);
         this.setVisibility(isVisible);
     }
 

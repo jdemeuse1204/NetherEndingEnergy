@@ -9,6 +9,8 @@ import com.agrejus.netherendingenergy.common.factories.RootFactory;
 import com.agrejus.netherendingenergy.common.flowers.CausticBellTrait;
 import com.agrejus.netherendingenergy.common.flowers.CausticBellTraitConfig;
 import com.agrejus.netherendingenergy.common.helpers.BlockHelpers;
+import com.agrejus.netherendingenergy.common.interfaces.ICaustic;
+import com.agrejus.netherendingenergy.common.interfaces.IProcessingUnit;
 import com.agrejus.netherendingenergy.common.interfaces.IRoot;
 import com.agrejus.netherendingenergy.common.interfaces.ISourceRoot;
 import com.agrejus.netherendingenergy.common.models.*;
@@ -34,10 +36,13 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
 
     private Map<BlockPos, AbsorbableBlock> absorbableBlocks = new HashMap<>();
 
-    private int absorbCounter;
-    private int spreadCounter;
-    private int counter;
+    // Processing
+    private IProcessingUnit causticCloudProcessingUnit = new ProcessingUnit(100);
+    private IProcessingUnit growthProcessingUnit = new ProcessingUnit(20);
+    private IProcessingUnit spreadProcessingUnit = new ProcessingUnit();
+    private IProcessingUnit absorbProcessingUnit = new ProcessingUnit();
 
+    // Slurry
     private float terraSlurryChance;
     private float chaoticSlurryChance;
     private float abyssalSlurryChance;
@@ -47,8 +52,6 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     private NumberRange strength;
     private NumberRange purity;
     private float pHLevel;
-    private int spreadAdvanceTicks;
-    private int absorbTicks;
     private RootSystem rootSystem;
 
     // Traits
@@ -111,8 +114,8 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         this.purity = CausticBellTraitConfig.getPurity(this.superiorTrait);
 
         // add to NBT
-        this.spreadAdvanceTicks = CausticBellTraitConfig.getStageAdvanceTimeTicks(this.superiorTrait);
-        this.absorbTicks = CausticBellTraitConfig.getStageAdvanceTimeTicks(this.superiorTrait);
+        this.spreadProcessingUnit.setTotal(CausticBellTraitConfig.getStageAdvanceTimeTicks(this.superiorTrait));
+        this.absorbProcessingUnit.setTotal(CausticBellTraitConfig.getAbsorbTicks(this.superiorTrait));
         this.pHLevel = CausticBellTraitConfig.getpHLevel(this.superiorTrait);
     }
 
@@ -180,19 +183,13 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
             return;
         }
 
-        if (counter == 0) {
-            counter = 20;
-        }
-
         // stageAdvanceTime is also the time it takes to eat a block, better flowers = faster eating
-        if (spreadCounter >= this.spreadAdvanceTicks) {
-            spreadCounter = 0; // reset
+        if (this.spreadProcessingUnit.canProcess() == true) {
             this.trySpread();
         }
 
         // Enqueue blocks to be absorbed
-        if (this.absorbCounter >= this.absorbTicks) {
-            this.absorbCounter = 0;
+        if (this.absorbProcessingUnit.canProcess() == true) {
             this.enqueueAbsorbableBlocks();
         }
 
@@ -210,15 +207,18 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
             this.tryAbsorbBlock(absorbableBlock);
         }
 
-        // Poison surrounding entities
-        if (counter == 20) {
+        if (this.growthProcessingUnit.canProcess() == true) {
             this.tryMakeGrowth();
-            this.tryPoisonSurroundingEntities();
         }
 
-        --this.counter;
-        ++this.spreadCounter;
-        ++this.absorbCounter;
+        if (causticCloudProcessingUnit.canProcess() == true) {
+            // add caustic cloud around bell randomly
+        }
+
+        this.growthProcessingUnit.setNext();
+        this.spreadProcessingUnit.setNext();
+        this.absorbProcessingUnit.setNext();
+        this.causticCloudProcessingUnit.setNext();
     }
 
     private void tryMakeGrowth() {
@@ -661,10 +661,7 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
     private boolean canAbsorbAndDestroyBlock(Block blockToAbsorb, Block triggeringBlock) {
 
         return isImpenetrable(blockToAbsorb) == false &&
-                blockToAbsorb != ModBlocks.TERRA_CAUSTIC_PEARL_GROWTH_BLOCK &&
-                blockToAbsorb != ModBlocks.CAUSTIC_BELL_BLOCK &&
-                blockToAbsorb != ModBlocks.CAUSTIC_ROOTS_BLOCK &&
-                blockToAbsorb != ModBlocks.CAUSTIC_DIRT_BLOCK &&
+                (blockToAbsorb instanceof ICaustic) == false &&
                 (triggeringBlock == ModBlocks.CAUSTIC_DIRT_BLOCK || triggeringBlock == ModBlocks.CAUSTIC_ROOTS_BLOCK);
     }
 
@@ -689,18 +686,6 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         return getRandomDirection(NetherEndingEnergyConfig.CausticBell().spreadableDirections);
     }
 
-    private void tryPoisonSurroundingEntities() {
-        if (isNoxious()) {
-            List<LivingEntity> entities = world.getEntitiesWithinAABB(LivingEntity.class, this.getRenderBoundingBox().grow(1.5D, 1.5D, 1.5D));
-
-            int size = entities.size();
-            for (int i = 0; i < size; i++) {
-                LivingEntity entity = entities.get(i);
-                entity.addPotionEffect(new EffectInstance(Effects.NAUSEA, 200));
-            }
-        }
-    }
-
     public boolean isNoxious() {
         return this.superiorTrait == CausticBellTrait.NOXIOUS;
     }
@@ -722,7 +707,18 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         this.yield.deserializeNBT(yieldTag);
 
         this.pHLevel = tag.getFloat("ph_level");
-        this.spreadAdvanceTicks = tag.getInt("stage_advance");
+
+        CompoundNBT stageAdvanceTag = (CompoundNBT) tag.get("stage_advance");
+
+        if (stageAdvanceTag.isEmpty() == false) {
+            this.spreadProcessingUnit.deserializeNBT(stageAdvanceTag);
+        }
+
+        CompoundNBT absorbTag = (CompoundNBT) tag.get("absorb");
+
+        if (absorbTag.isEmpty() == false) {
+            this.absorbProcessingUnit.deserializeNBT(absorbTag);
+        }
 
         String superior = tag.getString("superior");
         String inferior = tag.getString("inferior");
@@ -779,7 +775,12 @@ public class CausticBellTile extends TileEntity implements ITickableTileEntity {
         tag.put("purity", this.purity.serializeNBT());
         tag.put("yield", this.yield.serializeNBT());
         tag.putFloat("ph_level", this.pHLevel);
-        tag.putInt("stage_advance", this.spreadAdvanceTicks);
+
+        CompoundNBT spreadProcessingUnitTag = this.spreadProcessingUnit.serializeNBT();
+        tag.put("stage_advance", spreadProcessingUnitTag);
+
+        CompoundNBT absorbTag = this.absorbProcessingUnit.serializeNBT();
+        tag.put("absorb", absorbTag);
 
         tag.putString("superior", this.superiorTrait.getName());
         tag.putString("inferior", this.inferiorTrait.getName());

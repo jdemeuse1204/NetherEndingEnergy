@@ -83,14 +83,8 @@ public class TerraCollectingStationScreen extends RedstoneActivatableScreen<Terr
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground();
-        super.render(mouseX, mouseY, partialTicks);
+    protected void renderHoverToolTip(List<String> tooltip, int mouseX, int mouseY, float partialTicks) {
 
-        // Tool Tip - Here would be the place for a custom tool tip
-        this.renderHoveredToolTip(mouseX, mouseY);
-
-        List<String> tooltip = new ArrayList<>();
         if (this.isMouseOver(this.outputFluidLocation, mouseX, mouseY)) {
             int amount = container.getOutputFluidAmount();
             tooltip.add("Acid of the Ordinary:");
@@ -141,10 +135,7 @@ public class TerraCollectingStationScreen extends RedstoneActivatableScreen<Terr
             tooltip.add(progress + "%");
         }
 
-        if (!tooltip.isEmpty()) {
-            this.renderTooltip(tooltip, mouseX, mouseY);
-            RenderHelper.enableGUIStandardItemLighting();
-        }
+        super.renderHoverToolTip(tooltip, mouseX, mouseY, partialTicks);
     }
 
     @Override

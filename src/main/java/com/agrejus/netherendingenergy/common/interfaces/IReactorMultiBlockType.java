@@ -5,6 +5,7 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactor
 import com.agrejus.netherendingenergy.common.models.BlockInformation;
 import com.agrejus.netherendingenergy.common.models.TopLeftPos;
 import com.agrejus.netherendingenergy.common.reactor.IReactorConfig;
+import com.agrejus.netherendingenergy.common.reactor.Injector;
 import com.agrejus.netherendingenergy.common.reactor.ReactorSlotType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -19,7 +20,7 @@ import java.util.Map;
 public interface IReactorMultiBlockType {
 
     void tryFormMultiBlock(IWorld world, BlockPos pos, BlockState state, PlayerEntity player);
-    List<TerraReactorInjectorTile> getInjectorsFromControllerPosition(IWorld world, BlockPos controllerPosition, IReactorConfig config);
+    List<Injector> getInjectorsFromControllerPosition(IWorld world, BlockPos controllerPosition, IReactorConfig config);
     Map<ReactorSlotType, TopLeftPos> getSlotLocations();
     BlockInformation getBlockFromControllerPosition(IWorld world, BlockPos controllerPosition, TerraReactorPartIndex part);
     BlockPos getBlockFromControllerPosition(IWorld world, BlockPos controllerPosition, Block findBlock, IReactorConfig config);

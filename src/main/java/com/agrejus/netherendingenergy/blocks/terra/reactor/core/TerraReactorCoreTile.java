@@ -6,53 +6,56 @@ import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorReactorMultiBlock;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorTile;
 import com.agrejus.netherendingenergy.common.IntArraySupplierReferenceHolder;
+import com.agrejus.netherendingenergy.common.attributes.AcidAttributes;
+import com.agrejus.netherendingenergy.common.attributes.PotionAttributes;
+import com.agrejus.netherendingenergy.common.blocks.RedstoneEnergyTile;
 import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
 import com.agrejus.netherendingenergy.common.fluids.FluidHelpers;
 import com.agrejus.netherendingenergy.common.handlers.NonExtractingItemUsageStackHandler;
 import com.agrejus.netherendingenergy.common.handlers.ReactorInventoryStackHandler;
 import com.agrejus.netherendingenergy.common.helpers.RedstoneHelpers;
-import com.agrejus.netherendingenergy.common.interfaces.IRedstoneActivatable;
+import com.agrejus.netherendingenergy.common.interfaces.IProcessingUnit;
 import com.agrejus.netherendingenergy.common.models.BlockInformation;
+import com.agrejus.netherendingenergy.common.models.InvertedProcessingUnit;
+import com.agrejus.netherendingenergy.common.models.ProcessingUnit;
+import com.agrejus.netherendingenergy.common.reactor.Injector;
 import com.agrejus.netherendingenergy.common.reactor.InjectorPackage;
 import com.agrejus.netherendingenergy.common.reactor.ReactorBaseConfig;
 import com.agrejus.netherendingenergy.common.reactor.ReactorBaseType;
-import com.agrejus.netherendingenergy.common.attributes.AcidAttributes;
-import com.agrejus.netherendingenergy.common.attributes.PotionAttributes;
 import com.agrejus.netherendingenergy.common.tank.MixableAcidFluidTank;
 import com.agrejus.netherendingenergy.fluids.ModFluids;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.PotionItem;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.AbstractFurnaceTileEntity;
-import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.Explosion;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,29 +63,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TerraReactorCoreTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider, IRedstoneActivatable {
+public class TerraReactorCoreTile extends RedstoneEnergyTile implements INamedContainerProvider {
 
-    private int tick;
-    private int generatedEnergyPerTick;
-    private int currentBurnItemTicks;
-    private int currentBurnItemTotalTicks;
+    private IProcessingUnit dissolutionProcessingUnit = new InvertedProcessingUnit(0);
+    private IProcessingUnit fatalHeatProcessingUnit = new ProcessingUnit(100);
 
     private int heatTickRate = 20;
-    private float heat;
+    private float heat = 0;
     private final int maxHeat = 3000;
     private final int fatalHeat = 2000;
     private float heatAbsorptionRate = .9f;
 
     private RedstoneActivationType redstoneActivationType;
+    private ReactorInventoryStackHandler inventory = this.createInventory();
 
-    private LazyOptional<IItemHandler> inventory = LazyOptional.of(this::createInventory);
-    private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
+    @Override
+    protected CustomEnergyStorage createEnergyStore() {
+        return this.createEnergy();
+    }
 
     private MixableAcidFluidTank acidTank = new MixableAcidFluidTank(5000) {
         @Override
         protected void onContentsChanged() {
-            BlockState state = world.getBlockState(pos);
-            world.notifyBlockUpdate(pos, state, state, 3);
+            update();
             markDirty();
         }
     };
@@ -128,23 +131,30 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
         super(ModBlocks.TERRA_REACTOR_CORE_TILE);
     }
 
-    private IEnergyStorage createEnergy() {
+    private CustomEnergyStorage createEnergy() {
         return new CustomEnergyStorage(1000000, 0, 20000);
     }
 
-    private IItemHandler createInventory() {
+    private ReactorInventoryStackHandler createInventory() {
         return new ReactorInventoryStackHandler() {
 
             @Override
             protected void onContentsChanged(int slot) {
-/*                BlockState state = world.getBlockState(pos);
-                world.notifyBlockUpdate(pos, state, state, 3);*/
+                update();
                 markDirty();
             }
 
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                return burnTimes.containsKey(stack.getItem());
+                Item item = stack.getItem();
+               if (item instanceof BlockItem) {
+                   BlockItem blockItem = (BlockItem)item;
+                   Block block = blockItem.getBlock();
+                   Material material = block.getDefaultState().getMaterial();
+                   return material != null;
+               }
+
+               return false;
             }
 
             @Nonnull
@@ -184,20 +194,25 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
         return true;
     }
 
-    private List<TerraReactorInjectorTile> getInjectors() {
+    public List<Injector> getInjectors() {
         return TerraReactorReactorMultiBlock.INSTANCE.getInjectorsFromControllerPosition(world, pos, TerraReactorConfig.INSTANCE);
     }
 
     private InjectorPackage getInjectorPotions() {
-        List<TerraReactorInjectorTile> injectors = getInjectors();
+        List<Injector> injectors = getInjectors();
         ArrayList<PotionAttributes> attributes = new ArrayList<>();
         ArrayList<Runnable> deferredUsages = new ArrayList<>();
 
         int size = injectors.size(); // Small optimization
 
         for (int i = 0; i < size; i++) {
-            TerraReactorInjectorTile injector = injectors.get(i);
-            injector.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(w -> {
+            Injector injector = injectors.get(i);
+
+            if (injector.isActive() == false) {
+                continue;
+            }
+
+            injector.getTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(w -> {
                 NonExtractingItemUsageStackHandler handler = (NonExtractingItemUsageStackHandler) w;
                 ItemStack stack = handler.getStackInSlot(0);
 
@@ -223,29 +238,30 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
         return new InjectorPackage(attributes, deferredUsages);
     }
 
+    private void processFatalHeat() {
+        if (this.heat > this.fatalHeat) {
+            this.fatalHeatProcessingUnit.setNext();
+
+            if (this.fatalHeatProcessingUnit.canProcess() == true) {
+                // need to make our own explosion, MC's is trash
+                world.createExplosion(null, pos.getX(), pos.getY(), pos.getZ(), 50, Explosion.Mode.DESTROY);
+                this.fatalHeatProcessingUnit.reset();
+            }
+        } else {
+            this.fatalHeatProcessingUnit.reset();
+        }
+    }
+
     @Override
-    public void tick() {
-
-        if (world.isRemote) {
-            return;
-        }
-
-        if (this.redstoneActivationType != RedstoneActivationType.ALWAYS_ACTIVE) {
-
-        }
-
-        // Set generated per tick to 0, we will set this later
-        this.generatedEnergyPerTick = 0;
-
-        if (tick <= 0) {
-            tick = 20; // Every second
-        }
+    protected void serverTick() {
 
         if (isReactorFormed() == false) {
             return;
         }
 
-        if (this.isReactorOn() == true) {
+        this.processFatalHeat();
+
+        if (this.isEnabled() == true) {
 
             FluidStack fluidStack = acidTank.getFluid();
 
@@ -259,91 +275,84 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
                 InjectorPackage injectorPackage = getInjectorPotions();
 
                 // make sure we have an item to react with
-                if (this.currentBurnItemTicks == 0) {
+                if (this.dissolutionProcessingUnit.getValue() == 0) {
 
                     // reset total ticks
-                    this.currentBurnItemTotalTicks = 0;
+                    this.dissolutionProcessingUnit.setTotal(0);
 
-                    inventory.ifPresent(w -> {
-                        ReactorInventoryStackHandler reactorInventory = (ReactorInventoryStackHandler) w;
-                        ItemStack burningStack = reactorInventory.getStackInBurningSlot();
+                    ItemStack burningStack = inventory.getStackInBurningSlot();
 
-                        // If we have an item that was burning, lets extract it
-                        if (burningStack.isEmpty() == false) {
-                            // consume the item from the burning inventory because burn time ticks are 0
-                            reactorInventory.extractBurningSlot(1, false);
+                    // If we have an item that was burning, lets extract it
+                    if (burningStack.isEmpty() == false) {
+                        // consume the item from the burning inventory because burn time ticks are 0
+                        inventory.extractBurningSlot(1, false);
+                    }
+
+                    ItemStack backlogStack = inventory.getStackInBacklogSlot();
+
+                    // Do we have items in the backlog
+                    if (backlogStack.isEmpty() == false) {
+
+                        int burnTime = getBurnTimes().get(backlogStack.getItem());
+
+                        if (burnTime > 0) {
+
+                            // Consume the item
+                            ItemStack extractedStack = inventory.extractBacklogSlot(1, false);
+                            inventory.insertBurningSlot(extractedStack, false);
+                            List<PotionAttributes> injectedPotions = injectorPackage.getPotionAttributes();
+                            float efficiency = TerraReactorEnergyMatrix.getEfficiency(ReactorBaseType.Terra, attributes, injectedPotions);
+
+                            int dissolutionTicks = TerraReactorEnergyMatrix.computeBurnTime(burnTime, efficiency, ReactorBaseType.Terra, attributes, injectedPotions);
+                            this.dissolutionProcessingUnit.setTotal(dissolutionTicks);
+                            this.dissolutionProcessingUnit.setCurrent(dissolutionTicks);
+
+                            markDirty();
                         }
-
-                        ItemStack backlogStack = reactorInventory.getStackInBacklogSlot();
-
-                        // Do we have items in the backlog
-                        if (backlogStack.isEmpty() == false) {
-
-                            int burnTime = getBurnTimes().get(backlogStack.getItem());
-
-                            if (burnTime > 0) {
-
-                                // Consume the item
-                                ItemStack extractedStack = reactorInventory.extractBacklogSlot(1, false);
-                                reactorInventory.insertBurningSlot(extractedStack, false);
-                                List<PotionAttributes> injectedPotions = injectorPackage.getPotionAttributes();
-                                float efficiency = TerraReactorEnergyMatrix.getEfficiency(ReactorBaseType.Terra, attributes, injectedPotions);
-                                this.currentBurnItemTicks = TerraReactorEnergyMatrix.computeBurnTime(burnTime, efficiency, ReactorBaseType.Terra, attributes, injectedPotions);
-                                this.currentBurnItemTotalTicks = this.currentBurnItemTicks;
-
-                                // set block state?
-                                markDirty();
-                            }
-                        }
-                    });
+                    }
                 }
 
                 // this will be zero if we don't have any items to react with
-                if (this.currentBurnItemTicks > 0) {
+                if (this.dissolutionProcessingUnit.getValue() > 0) {
 
                     // can we add energy?
-                    energy.ifPresent(x -> {
-                        CustomEnergyStorage customEnergyStorage = (CustomEnergyStorage) x;
-                        int energyStored = x.getEnergyStored();
-                        int energyMaxStored = x.getMaxEnergyStored();
-                        int delta = energyMaxStored - energyStored;
+                    int energyStored = this.energyStore.getEnergyStored();
+                    int energyMaxStored = this.energyStore.getMaxEnergyStored();
+                    int delta = energyMaxStored - energyStored;
 
-                        // Try to consume the acid and make sure it drained properly
-                        if (acidTank.drain(1, IFluidHandler.FluidAction.EXECUTE).getAmount() == 1) {
+                    // Try to consume the acid and make sure it drained properly
+                    if (acidTank.drain(1, IFluidHandler.FluidAction.EXECUTE).getAmount() == 1) {
 
-                            // Make sure we can add energy
-                            if (delta > 0) {
-                                //usages
-                                int energyToAdd = TerraReactorEnergyMatrix.getEnergyPerTick(ReactorBaseType.Terra, attributes, injectorPackage.getPotionAttributes());
-                                this.addHeat(attributes, injectorPackage);
+                        // Make sure we can add energy
+                        if (delta > 0) {
+                            //usages
+                            int energyToAdd = TerraReactorEnergyMatrix.getEnergyPerTick(ReactorBaseType.Terra, attributes, injectorPackage.getPotionAttributes());
+                            this.addHeat(attributes, injectorPackage);
 
-                                // Use the potions/items
-                                List<Runnable> usages = injectorPackage.getDeferredUsages();
-                                int usageSize = usages.size();
-                                for (int i = 0; i < usageSize; i++) {
-                                    usages.get(i).run();
-                                }
-
-                                // Decrement the current items burn time
-                                --this.currentBurnItemTicks;
-
-                                // Make sure we don't overfill
-                                if (energyToAdd > delta) {
-                                    energyToAdd = delta;
-                                }
-
-                                this.generatedEnergyPerTick = energyToAdd;
-
-                                customEnergyStorage.addEnergy(energyToAdd);
-                                this.updateRedstoneOutputLevel(energyStored, energyMaxStored, customEnergyStorage);
-
-                            } else {
-                                // Still add heat, still reacting
-                                // Still on, have active and a burnable item
-                                this.addHeat(attributes, injectorPackage);
+                            // Use the potions/items
+                            List<Runnable> usages = injectorPackage.getDeferredUsages();
+                            int usageSize = usages.size();
+                            for (int i = 0; i < usageSize; i++) {
+                                usages.get(i).run();
                             }
+
+                            // Decrement the current items burn time
+                            this.dissolutionProcessingUnit.setNext();
+
+                            // Make sure we don't overfill
+                            if (energyToAdd > delta) {
+                                energyToAdd = delta;
+                            }
+
+                            this.energyStore.addEnergy(energyToAdd);
+                            this.updateRedstoneOutputLevel(energyStored, energyMaxStored, this.energyStore);
+
+                        } else {
+                            // Still add heat, still reacting
+                            // Still on, have active and a burnable item
+                            this.addHeat(attributes, injectorPackage);
                         }
-                    });
+                    }
                 } else {
                     // lose heat
                     this.loseHeat();
@@ -356,14 +365,6 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
             // lose heat
             this.loseHeat();
         }
-
-        // Send out power
-        BlockPos energyPortPosition = this.getEnergyPortPosition();
-        if (energyPortPosition != null) {
-            this.sendOutPower(energyPortPosition);
-        }
-
-        --this.tick;
     }
 
     private void updateRedstoneOutputLevel(int energyStored, int energyMaxStored, CustomEnergyStorage energyStorage) {
@@ -398,7 +399,8 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
         this.heat = TerraReactorEnergyMatrix.computeHeat(this.heat, this.heatAbsorptionRate, this.heatTickRate, ReactorBaseType.Terra, attributes, injectorPackage.getPotionAttributes());
     }
 
-    private boolean isReactorOn() {
+    @Override
+    protected boolean isEnabled() {
         BlockPos redstoneInputPortPosition = this.getRedstoneInputPortPosition();
         if (redstoneInputPortPosition != null) {
             BlockState redstonePortState = world.getBlockState(redstoneInputPortPosition);
@@ -408,102 +410,49 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
                 return false;
             }
 
-            return redstonePortState != null && redstonePortState.get(BlockStateProperties.POWERED) == true;
+            return world.getRedstonePowerFromNeighbors(redstoneInputPortPosition) > 0;
 
         }
         return false;
     }
 
-    private void sendOutPower(BlockPos energyPortPosition) {
-        energy.ifPresent(w -> {
-
-            CustomEnergyStorage energyStore = (CustomEnergyStorage) w;
-
-            if (energyStore.getEnergyStored() > 0) {
-
-                Direction direction = world.getBlockState(energyPortPosition).get(BlockStateProperties.FACING);
-                TileEntity tileEntity = world.getTileEntity(energyPortPosition.offset(direction));
-
-                if (tileEntity != null) {
-                    tileEntity.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite()).ifPresent(x -> {
-                        if (x.canReceive() == false) {
-                            return;
-                        }
-
-                        int amountReceived = x.receiveEnergy(((CustomEnergyStorage) w).getMaxExtract(), true);
-                        if (amountReceived > 0) {
-                            x.receiveEnergy(amountReceived, false);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
     @Override
-    public void read(CompoundNBT tag) {
-        readNBT(tag);
-        super.read(tag);
-    }
+    protected void readNBT(CompoundNBT tag) {
+        CompoundNBT dissolutionTag = tag.getCompound("dissolution_time");
+        this.dissolutionProcessingUnit.deserializeNBT(dissolutionTag);
 
-    private void readNBT(CompoundNBT tag) {
-        this.currentBurnItemTotalTicks = tag.getInt("burntimetotal");
-        this.currentBurnItemTicks = tag.getInt("burntime");
+        CompoundNBT fatalHeatTag = tag.getCompound("fatal_heat_time");
+        this.fatalHeatProcessingUnit.deserializeNBT(fatalHeatTag);
+
         this.heat = tag.getFloat("heat");
 
         acidTank.readFromNBT(tag.getCompound("acid"));
 
         CompoundNBT invTag = tag.getCompound("inv");
 
-        inventory.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(invTag));
+        ((INBTSerializable<CompoundNBT>) inventory).deserializeNBT(invTag);
 
         CompoundNBT energyTag = tag.getCompound("energy");
-        // Save energy when block is broken
-        energy.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(energyTag));
+        ((INBTSerializable<CompoundNBT>) this.energyStore).deserializeNBT(energyTag);
     }
 
-    private void writeNBT(CompoundNBT tag) {
-        inventory.ifPresent(w -> {
-            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
-            tag.put("inv", compound);
-        });
+    @Override
+    protected void writeNBT(CompoundNBT tag) {
+        CompoundNBT inventoryTag = ((INBTSerializable<CompoundNBT>) inventory).serializeNBT();
+        tag.put("inv", inventoryTag);
 
-        energy.ifPresent(w -> {
-            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
-            tag.put("energy", compound);
-        });
+        CompoundNBT energyTag = ((INBTSerializable<CompoundNBT>) this.energyStore).serializeNBT();
+        tag.put("energy", energyTag);
 
         CompoundNBT acidTankNBT = new CompoundNBT();
         tag.put("acid", acidTank.writeToNBT(acidTankNBT));
 
-        tag.putInt("burntime", this.currentBurnItemTicks);
-        tag.putInt("burntimetotal", this.currentBurnItemTotalTicks);
+        CompoundNBT dissolutionTag = this.dissolutionProcessingUnit.serializeNBT();
+        tag.put("dissolution_time", dissolutionTag);
         tag.putFloat("heat", this.heat);
-    }
 
-    @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        this.writeNBT(tag);
-        return super.write(tag);
-    }
-
-    @Override
-    public CompoundNBT getUpdateTag() {
-        CompoundNBT tag = super.getUpdateTag();
-        this.writeNBT(tag);
-        return tag;
-    }
-
-    @Nullable
-    @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
-        CompoundNBT nbt = packet.getNbtCompound();
-        readNBT(nbt);
+        CompoundNBT fatalHeatTag = this.fatalHeatProcessingUnit.serializeNBT();
+        tag.put("fatal_heat_time", fatalHeatTag);
     }
 
     @Nonnull
@@ -511,15 +460,15 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return inventory.cast();
+            return  LazyOptional.of(() -> (T)this.inventory);
         }
 
         if (cap == CapabilityEnergy.ENERGY) {
-            return energy.cast();
+            return LazyOptional.of(() -> (T)this.energyStore);
         }
 
         if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return LazyOptional.of(() -> (T) acidTank);
+            return LazyOptional.of(() -> (T) this.acidTank);
         }
 
         return super.getCapability(cap, side);
@@ -540,11 +489,11 @@ public class TerraReactorCoreTile extends TileEntity implements ITickableTileEnt
         this.referenceHolder = new IntArraySupplierReferenceHolder(
                 () -> this.acidTank.getCapacity(),
                 () -> this.acidTank.getFluidAmount(),
-                () -> this.energy.map(w -> w.getEnergyStored()).orElse(0),
-                () -> this.energy.map(w -> w.getMaxEnergyStored()).orElse(0),
-                () -> this.generatedEnergyPerTick,
-                () -> this.currentBurnItemTicks,
-                () -> this.currentBurnItemTotalTicks,
+                () -> this.energyStore.getEnergyStored(),
+                () -> this.energyStore.getMaxEnergyStored(),
+                () -> this.getEnergyUsedPerTick(),
+                () -> this.dissolutionProcessingUnit.getValue(),
+                () -> this.dissolutionProcessingUnit.getTotal(),
                 () -> this.getUsagesLeftForInjector(locations.get(0)),
                 () -> this.getUsagesLeftForInjector(locations.get(1)),
                 () -> this.getUsagesLeftForInjector(locations.get(2)),

@@ -3,6 +3,7 @@ package com.agrejus.netherendingenergy.blocks.flowers;
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.common.flowers.CausticBellTrait;
+import com.agrejus.netherendingenergy.common.interfaces.ICaustic;
 import com.agrejus.netherendingenergy.items.ModItems;
 import com.agrejus.netherendingenergy.particle.ModParticles;
 import net.minecraft.block.*;
@@ -40,7 +41,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class CausticBellBlock extends FlowerBlock {
+public class CausticBellBlock extends FlowerBlock implements ICaustic {
 
     public static final EnumProperty<CausticBellTrait> SUPERIOR_TRAIT = EnumProperty.<CausticBellTrait>create("superior_trait", CausticBellTrait.class);
     public static final EnumProperty<CausticBellTrait> INFERIOR_TRAIT = EnumProperty.<CausticBellTrait>create("inferior_trait", CausticBellTrait.class);

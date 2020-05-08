@@ -52,6 +52,11 @@
                   "op": "replace"
                 },
                 {
+                  "source": "absorb",
+                  "target": "BlockEntityTag.absorb",
+                  "op": "replace"
+                },
+                {
                   "source": "stage_advance",
                   "target": "BlockEntityTag.stage_advance",
                   "op": "replace"

@@ -1,12 +1,17 @@
 package com.agrejus.netherendingenergy.blocks.terra.reactor.core;
 
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
+import com.agrejus.netherendingenergy.blocks.terra.collector.TerraCollectingStationTile;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorReactorMultiBlock;
+import com.agrejus.netherendingenergy.blocks.terra.reactor.injector.TerraReactorInjectorTile;
+import com.agrejus.netherendingenergy.client.gui.container.RedstoneActivatableContainer;
 import com.agrejus.netherendingenergy.common.container.InventoryContainerBase;
+import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
 import com.agrejus.netherendingenergy.common.handlers.ReadOnlySlotItemHandler;
 import com.agrejus.netherendingenergy.common.models.BlockInformation;
 import com.agrejus.netherendingenergy.common.models.TopLeftPos;
+import com.agrejus.netherendingenergy.common.reactor.Injector;
 import com.agrejus.netherendingenergy.common.reactor.ReactorSlotType;
 import com.agrejus.netherendingenergy.tools.CustomEnergyStorage;
 import net.minecraft.block.Block;
@@ -39,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TerraReactorCoreContainer extends InventoryContainerBase<TerraReactorCoreTile> {
+public class TerraReactorCoreContainer extends RedstoneActivatableContainer<TerraReactorCoreTile> {
 
     private IIntArray tracking;
 
@@ -52,6 +57,24 @@ public class TerraReactorCoreContainer extends InventoryContainerBase<TerraReact
     public TerraReactorCoreContainer(int id, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity, IIntArray intArray) {
         super(ModBlocks.TERRA_REACTOR_CORE_CONTAINER, id, world, pos, playerInventory, playerEntity);
 
+        layoutInterfaceSlots();
+
+        layoutAllPlayerSlots();
+
+        tracking = intArray;
+
+        trackIntArray(intArray);
+    }
+
+    public List<Injector> getInjectors() {
+        return this.tileEntity.getInjectors();
+    }
+
+    public void layoutPlayerHotbarSlots() {
+        layoutPlayerHotbar(8, 103);
+    }
+
+    public void layoutInterfaceSlots() {
         Map<ReactorSlotType, TopLeftPos> slotLocations = TerraReactorReactorMultiBlock.INSTANCE.getSlotLocations();
 
         // Add the burn and backlog slot
@@ -60,38 +83,45 @@ public class TerraReactorCoreContainer extends InventoryContainerBase<TerraReact
             addSlot(new SlotItemHandler(w, 0, backlogSlotPosition.getLeft(), backlogSlotPosition.getTop()));
         });
 
-        List<TerraReactorPartIndex> possibleInjectorLocations = new ArrayList<TerraReactorPartIndex>(){
-            { add(TerraReactorPartIndex.P_n2_0_0); }
-            { add(TerraReactorPartIndex.P_2_0_0); }
-            { add(TerraReactorPartIndex.P_0_0_2); }
-            { add(TerraReactorPartIndex.P_0_0_n2); }
-        };
+        List<Injector> injectors = tileEntity.getInjectors();
 
-        for(int i = 0; i < possibleInjectorLocations.size(); i++) {
+        int size = injectors.size();
+        for (int i = 0; i < size; i++) {
 
-            TerraReactorPartIndex part = possibleInjectorLocations.get(i);
-            BlockInformation blockInformation = TerraReactorReactorMultiBlock.INSTANCE.getBlockFromControllerPosition(world, pos, part);
+            Injector injector = injectors.get(i);
+            TerraReactorInjectorTile injectorTile = injector.getTileEntity();
 
-            if (blockInformation.getBlock() != ModBlocks.TERRA_REACTOR_INJECTOR_BLOCK) {
+            if (injectorTile == null) {
                 continue;
             }
 
-            TileEntity injectorTile = world.getTileEntity(blockInformation.getPos());
-
-            AtomicInteger index = new AtomicInteger(i + 2);
             injectorTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(w -> {
-                ReactorSlotType slotType = ReactorSlotType.VALUES[index.get()];
+
+                ReactorSlotType slotType;
+                switch (injector.getFacing()) {
+                    default:
+                    case NORTH:
+                        slotType = ReactorSlotType.NorthInjector;
+                        break;
+                    case SOUTH:
+                        slotType = ReactorSlotType.SouthInjector;
+                        break;
+                    case EAST:
+                        slotType = ReactorSlotType.EastInjector;
+                        break;
+                    case WEST:
+                        slotType = ReactorSlotType.WestInjector;
+                        break;
+                }
+
                 TopLeftPos slotPosition = slotLocations.get(slotType);
                 addSlot(new ReadOnlySlotItemHandler(w, 0, slotPosition.getLeft(), slotPosition.getTop()));
             });
         }
+    }
 
-        // where is the top left slot? This is the player inventory
+    public void layoutAllPlayerSlots() {
         layoutPlayerInventorySlots(8, 103);
-
-        tracking = intArray;
-
-        trackIntArray(intArray);
     }
 
     @Override
@@ -99,20 +129,69 @@ public class TerraReactorCoreContainer extends InventoryContainerBase<TerraReact
         return canInteractWith(ModBlocks.TERRA_REACTOR_CORE_BLOCK);
     }
 
-    public int getAcidStored() { return this.tracking.get(1); }
-    public int getMaxAcidStored() { return this.tracking.get(0); }
+    public int getAcidStored() {
+        return this.tracking.get(1);
+    }
 
-    public int getEnergyStored() { return this.tracking.get(2); }
-    public int getMaxEnergyStored() { return this.tracking.get(3); }
-    public int getGeneratedEnergyPerTick() { return this.tracking.get(4); }
-    public int getBurnItemTicksLeft() { return this.tracking.get(5); }
-    public int getBurnItemTotalTicks() { return this.tracking.get(6); }
+    public int getMaxAcidStored() {
+        return this.tracking.get(0);
+    }
 
-    public int getUsesLeftInjectorOne() { return this.tracking.get(7); }
-    public int getUsesLeftInjectorTwo() { return this.tracking.get(8); }
-    public int getUsesLeftInjectorThree() { return this.tracking.get(9); }
-    public int getUsesLeftInjectorFour() { return this.tracking.get(10); }
-    public int getHeat() { return this.tracking.get(11); }
-    public int getMaxHeat() { return this.tracking.get(12); }
-    public FluidStack getFluid() { return this.tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).map(w -> w.getFluidInTank(0)).orElse(null); }
+    public int getEnergyStored() {
+        return this.tracking.get(2);
+    }
+
+    public int getMaxEnergyStored() {
+        return this.tracking.get(3);
+    }
+
+    public int getGeneratedEnergyPerTick() {
+        return this.tracking.get(4);
+    }
+
+    public int getBurnItemTicksLeft() {
+        return this.tracking.get(5);
+    }
+
+    public int getBurnItemTotalTicks() {
+        return this.tracking.get(6);
+    }
+
+    public int getUsesLeftInjectorOne() {
+        return this.tracking.get(7);
+    }
+
+    public int getUsesLeftInjectorTwo() {
+        return this.tracking.get(8);
+    }
+
+    public int getUsesLeftInjectorThree() {
+        return this.tracking.get(9);
+    }
+
+    public int getUsesLeftInjectorFour() {
+        return this.tracking.get(10);
+    }
+
+    public int getHeat() {
+        return this.tracking.get(11);
+    }
+
+    public int getMaxHeat() {
+        return this.tracking.get(12);
+    }
+
+    public FluidStack getFluid() {
+        return this.tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).map(w -> w.getFluidInTank(0)).orElse(null);
+    }
+
+    @Override
+    public RedstoneActivationType getRedstoneActivationType() {
+        return null;
+    }
+
+    @Override
+    public void changeRedstoneActivationType(RedstoneActivationType type) {
+
+    }
 }

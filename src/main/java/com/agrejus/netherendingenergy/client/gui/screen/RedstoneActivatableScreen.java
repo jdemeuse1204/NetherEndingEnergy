@@ -4,12 +4,17 @@ import com.agrejus.netherendingenergy.NetherEndingEnergy;
 import com.agrejus.netherendingenergy.client.gui.button.NEEImageButton;
 import com.agrejus.netherendingenergy.client.gui.container.RedstoneActivatableContainer;
 import com.agrejus.netherendingenergy.common.enumeration.RedstoneActivationType;
+import com.agrejus.netherendingenergy.common.rendering.Rect;
 import com.agrejus.netherendingenergy.common.screen.ContainerScreenBase;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class RedstoneActivatableScreen<T extends RedstoneActivatableContainer> extends ContainerScreenBase<T> {
@@ -17,6 +22,7 @@ public abstract class RedstoneActivatableScreen<T extends RedstoneActivatableCon
     private NEEImageButton redstoneActiveWithSignal;
     private NEEImageButton redstoneActibeWithoutSignal;
     private NEEImageButton redstoneAlwaysActive;
+    private Rect redstoneButtonLocation;
     protected static final ResourceLocation GUI_BUTTONS = new ResourceLocation(NetherEndingEnergy.MODID, "textures/gui/gui_buttons.png");
 
     public RedstoneActivatableScreen(T screenContainer, PlayerInventory inv, ITextComponent titleIn, int defaultGuiScreenWidth, int defaultGuiScreenHeight) {
@@ -52,8 +58,35 @@ public abstract class RedstoneActivatableScreen<T extends RedstoneActivatableCon
     }
 
     @Override
+    protected void renderHoverToolTip(List<String> tooltip, int mouseX, int mouseY, float partialTicks) {
+
+        if (this.isMouseOver(redstoneButtonLocation, mouseX, mouseY)) {
+            RedstoneActivationType redstoneActivationType = this.container.getRedstoneActivationType();
+
+            if (redstoneActivationType != null) {
+                switch (redstoneActivationType) {
+                    default:
+                    case ALWAYS_ACTIVE:
+                        tooltip.add("Always Active");
+                        break;
+                    case ACTIVE_WITHOUT_SIGNAL:
+                        tooltip.add("Active Without Signal");
+                        break;
+                    case ACTIVE_WITH_SIGNAL:
+                        tooltip.add("Active With Signal");
+                        break;
+                }
+            }
+        }
+
+        super.renderHoverToolTip(tooltip, mouseX, mouseY, partialTicks);
+    }
+
+    @Override
     protected void init() {
         super.init();
+
+        this.redstoneButtonLocation = createRectBasedOnGui(20, 178, 192, 34);
 
         // Swap between redstone signals
         RedstoneActivationType redstoneActivationType = this.container.getRedstoneActivationType();

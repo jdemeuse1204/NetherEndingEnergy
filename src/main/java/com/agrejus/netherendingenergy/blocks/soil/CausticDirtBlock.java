@@ -3,6 +3,7 @@ package com.agrejus.netherendingenergy.blocks.soil;
 import com.agrejus.netherendingenergy.NetherEndingEnergyBlockStateProperties;
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.terra.reactor.TerraReactorPartIndex;
+import com.agrejus.netherendingenergy.common.interfaces.ICaustic;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,7 +14,7 @@ import net.minecraft.state.StateContainer;
 
 import static com.agrejus.netherendingenergy.blocks.terra.reactor.core.TerraReactorCoreBlock.FORMED;
 
-public class CausticDirtBlock extends Block {
+public class CausticDirtBlock extends Block implements ICaustic {
     public CausticDirtBlock() {
         super(Block.Properties.create(Material.EARTH)
                 .sound(SoundType.GROUND)

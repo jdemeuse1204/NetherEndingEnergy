@@ -1,6 +1,7 @@
 package com.agrejus.netherendingenergy.common.reactor;
 
 import com.agrejus.netherendingenergy.common.attributes.PotionAttributes;
+import net.minecraft.util.Direction;
 
 import java.util.List;
 
@@ -8,6 +9,7 @@ public class InjectorPackage {
 
     private final List<PotionAttributes> potionAttributes;
     private final List<Runnable> deferredUsages;
+
 
     public InjectorPackage(List<PotionAttributes> potionAttributes, List<Runnable> deferredUsages) {
         this.potionAttributes = potionAttributes;

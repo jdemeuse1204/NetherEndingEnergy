@@ -3,7 +3,11 @@ package com.agrejus.netherendingenergy.blocks.terra.reactor.injector;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
 import com.agrejus.netherendingenergy.common.handlers.NonExtractingItemUsageStackHandler;
 import com.agrejus.netherendingenergy.common.helpers.PotionsHelper;
+import com.agrejus.netherendingenergy.common.interfaces.IActivatable;
 import com.agrejus.netherendingenergy.common.reactor.ReactorBaseConfig;
+import com.agrejus.netherendingenergy.network.NetherEndingEnergyNetworking;
+import com.agrejus.netherendingenergy.network.PacketChangeActiveStatus;
+import com.agrejus.netherendingenergy.network.PacketEmptyTank;
 import com.google.common.collect.Maps;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -33,12 +37,29 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class TerraReactorInjectorTile extends TileEntity {
+public class TerraReactorInjectorTile extends TileEntity implements IActivatable {
 
-    private LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
+    private boolean isActive = false;
+    private IItemHandler handler = this.createHandler();
 
     public TerraReactorInjectorTile() {
         super(ModBlocks.TERRA_REACTOR_INJECTOR_TILE);
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+
+        if (world.isRemote) {
+            NetherEndingEnergyNetworking.sendToServer(new PacketChangeActiveStatus(pos, isActive));
+        }
+
+        BlockState state = world.getBlockState(pos);
+        world.notifyBlockUpdate(pos, state, state, 3);
+        this.markDirty();
+    }
+
+    public boolean getActive() {
+        return this.isActive;
     }
 
     private IItemHandler createHandler() {
@@ -101,34 +122,36 @@ public class TerraReactorInjectorTile extends TileEntity {
         };
     }
 
+    private void readNBT(CompoundNBT tag) {
+        CompoundNBT invTag = tag.getCompound("inv");
+        ((INBTSerializable<CompoundNBT>) handler).deserializeNBT(invTag);
+
+        this.isActive = tag.getBoolean("is_active");
+    }
+
+    private void writeNBT(CompoundNBT tag) {
+        CompoundNBT compound = ((INBTSerializable<CompoundNBT>) handler).serializeNBT();
+        tag.put("inv", compound);
+
+        tag.putBoolean("is_active", this.isActive);
+    }
+
     @Override
     public void read(CompoundNBT tag) {
-        CompoundNBT invTag = tag.getCompound("inv");
-
-        handler.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(invTag));
+        readNBT(tag);
         super.read(tag);
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tag) {
-        // when block is placed?
-        handler.ifPresent(w -> {
-            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
-            tag.put("inv", compound);
-        });
-
+        writeNBT(tag);
         return super.write(tag);
     }
 
     @Override
     public CompoundNBT getUpdateTag() {
         CompoundNBT tag = super.getUpdateTag();
-
-        handler.ifPresent(w -> {
-            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) w).serializeNBT();
-            tag.put("inv", compound);
-        });
-
+        writeNBT(tag);
         return tag;
     }
 
@@ -141,10 +164,7 @@ public class TerraReactorInjectorTile extends TileEntity {
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
         CompoundNBT nbt = packet.getNbtCompound();
-
-        CompoundNBT invTag = nbt.getCompound("inv");
-
-        handler.ifPresent(w -> ((INBTSerializable<CompoundNBT>) w).deserializeNBT(invTag));
+        readNBT(nbt);
     }
 
     @Nonnull
@@ -152,7 +172,7 @@ public class TerraReactorInjectorTile extends TileEntity {
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return handler.cast();
+            return LazyOptional.of(() -> (T) handler);
         }
 
         return super.getCapability(cap, side);

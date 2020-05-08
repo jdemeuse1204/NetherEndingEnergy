@@ -9,6 +9,7 @@ import com.agrejus.netherendingenergy.common.models.BlockInformation;
 import com.agrejus.netherendingenergy.common.models.TopLeftPos;
 import com.agrejus.netherendingenergy.common.multiblock.MultiBlockTools;
 import com.agrejus.netherendingenergy.common.reactor.IReactorConfig;
+import com.agrejus.netherendingenergy.common.reactor.Injector;
 import com.agrejus.netherendingenergy.common.reactor.ReactorSlotType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -18,6 +19,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -130,9 +132,9 @@ public class TerraReactorReactorMultiBlock implements IReactorMultiBlockType {
         return new BlockInformation(position, state.getBlock(), state);
     }
 
-    public List<TerraReactorInjectorTile> getInjectorsFromControllerPosition(IWorld world, BlockPos controllerPosition, IReactorConfig config) {
+    public List<Injector> getInjectorsFromControllerPosition(IWorld world, BlockPos controllerPosition, IReactorConfig config) {
 
-        List<TerraReactorInjectorTile> result = new ArrayList<>();
+        List<Injector> result = new ArrayList<>();
         int startX = controllerPosition.getX();
         int startY = controllerPosition.getY();
         int startZ = controllerPosition.getZ();
@@ -145,7 +147,9 @@ public class TerraReactorReactorMultiBlock implements IReactorMultiBlockType {
 
             if (entity != null && entity instanceof TerraReactorInjectorTile) {
                 TerraReactorInjectorTile injector = (TerraReactorInjectorTile) entity;
-                result.add(injector);
+                BlockState injectorBlockState = world.getBlockState(position);
+                Direction facing = injectorBlockState.get(BlockStateProperties.FACING);
+                result.add(new Injector(injector, facing, injector.getActive()));
             }
         }
 

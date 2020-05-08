@@ -4,6 +4,7 @@ public class RegistryNames {
     public static final String CAUSTIC_ROOTS = "caustic_roots";
     public static final String CAUSTIC_VINES = "caustic_vines";
     public static final String CAUSTIC_BELL = "caustic_bell";
+    public static final String CAUSTIC_CLOUD = "caustic_cloud";
     public static final String CAUSTIC_DIRT = "caustic_dirt";
     public static final String CAUSTIC_MASH = "caustic_mash";
 

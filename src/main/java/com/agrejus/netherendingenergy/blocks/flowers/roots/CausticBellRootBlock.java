@@ -2,6 +2,7 @@ package com.agrejus.netherendingenergy.blocks.flowers.roots;
 
 import com.agrejus.netherendingenergy.NetherEndingEnergyBlockStateProperties;
 import com.agrejus.netherendingenergy.RegistryNames;
+import com.agrejus.netherendingenergy.common.interfaces.ICaustic;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -11,7 +12,7 @@ import net.minecraft.potion.Effects;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.BlockRenderLayer;
 
-public class CausticBellRootBlock extends Block {
+public class CausticBellRootBlock extends Block implements ICaustic {
     public CausticBellRootBlock() {
         super(Properties.create(Material.WOOD)
                 .sound(SoundType.WOOD)

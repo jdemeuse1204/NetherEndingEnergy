@@ -22,6 +22,8 @@ import org.lwjgl.opengl.GL11;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class ContainerScreenBase<T extends Container> extends ContainerScreen<T> {
@@ -56,6 +58,26 @@ public abstract class ContainerScreenBase<T extends Container> extends Container
         GlStateManager.enableDepthTest();
 
         GlStateManager.enableBlend();
+    }
+
+    @Override
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground();
+        super.render(mouseX, mouseY, partialTicks);
+        this.renderHoveredToolTip(mouseX, mouseY);
+
+        List<String> tooltip = new ArrayList<>();
+
+        this.renderHoverToolTip(tooltip, mouseX, mouseY, partialTicks);
+
+        if (!tooltip.isEmpty()) {
+            this.renderTooltip(tooltip, mouseX, mouseY);
+            RenderHelper.enableGUIStandardItemLighting();
+        }
+    }
+
+    protected void renderHoverToolTip(List<String> tooltip, int mouseX, int mouseY, float partialTicks) {
+
     }
 
     protected void drawNoShadowString(FontRenderer renderer, String text, int left, int top, int color) {

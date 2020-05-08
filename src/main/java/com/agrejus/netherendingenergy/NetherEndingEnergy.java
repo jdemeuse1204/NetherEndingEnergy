@@ -9,6 +9,7 @@ import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStore
 import com.agrejus.netherendingenergy.blocks.creative.energy.CreativeEnergyStoreTile;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.CausticBellTile;
+import com.agrejus.netherendingenergy.blocks.flowers.cloud.CausticCloudBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.pearls.TerraCausticPearlGrowthBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.roots.CausticBellRootBlock;
 import com.agrejus.netherendingenergy.blocks.flowers.vines.CausticBellVineBlock;
@@ -270,6 +271,7 @@ public class NetherEndingEnergy {
 
 
             /* General */
+            event.getRegistry().register(new CausticCloudBlock());
             event.getRegistry().register(new CausticBellRootBlock());
             event.getRegistry().register(new CausticBellVineBlock());
             event.getRegistry().register(new TerraCausticPearlGrowthBlock());
@@ -314,6 +316,8 @@ public class NetherEndingEnergy {
         @SubscribeEvent
         public static void onItemsRegistry(final RegistryEvent.Register<Item> event) {
             // register a new item here
+            // registering something as an item makes it show in menu's
+
             Item.Properties properties = new Item.Properties().group(setup.itemGroup);
 
             // CREATIVE
@@ -321,6 +325,7 @@ public class NetherEndingEnergy {
 
 
 
+            event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_CLOUD_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_CLOUD));
             event.getRegistry().register(new BlockItem(ModBlocks.CAUSTIC_ROOTS_BLOCK, properties).setRegistryName(RegistryNames.CAUSTIC_ROOTS));
             event.getRegistry().register(new BlockItem(ModBlocks.TERRA_CAUSTIC_PEARL_GROWTH_BLOCK, properties).setRegistryName(RegistryNames.TERRA_CAUSTIC_PEARL_GROWTH));
 

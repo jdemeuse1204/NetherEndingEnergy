@@ -3,6 +3,7 @@ package com.agrejus.netherendingenergy.blocks.flowers.pearls;
 import com.agrejus.netherendingenergy.NetherEndingEnergyBlockStateProperties;
 import com.agrejus.netherendingenergy.RegistryNames;
 import com.agrejus.netherendingenergy.blocks.ModBlocks;
+import com.agrejus.netherendingenergy.common.interfaces.ICaustic;
 import com.agrejus.netherendingenergy.items.ModItems;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
@@ -21,7 +22,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class TerraCausticPearlGrowthBlock extends Block implements IGrowable {
+public class TerraCausticPearlGrowthBlock extends Block implements IGrowable, ICaustic {
     public TerraCausticPearlGrowthBlock() {
         super(Properties.create(Material.PLANTS)
                 .sound(SoundType.PLANT)

@@ -33,6 +33,7 @@ public class NetherEndingEnergyNetworking {
         INSTANCE.registerMessage(nextID(), PacketFillTank.class, PacketFillTank::writeBytes, PacketFillTank::new, PacketFillTank::handle);
         INSTANCE.registerMessage(nextID(), PacketChangeRedstoneActivationType.class, PacketChangeRedstoneActivationType::writeBytes, PacketChangeRedstoneActivationType::new, PacketChangeRedstoneActivationType::handle);
         INSTANCE.registerMessage(nextID(), PacketShowLocationParticles.class, PacketShowLocationParticles::writeBytes, PacketShowLocationParticles::new, PacketShowLocationParticles::handle);
+        INSTANCE.registerMessage(nextID(), PacketChangeActiveStatus.class, PacketChangeActiveStatus::writeBytes, PacketChangeActiveStatus::new, PacketChangeActiveStatus::handle);
     }
 
     public static <MSG> void sendToServer(MSG message) {

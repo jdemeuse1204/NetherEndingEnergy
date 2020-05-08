@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "caustic_cloud=1,caustic_cloud_effect=poison": { "model": "netherendingenergy:block/caustic_cloud_poison_1" },
+    "caustic_cloud=2,caustic_cloud_effect=poison": { "model": "netherendingenergy:block/caustic_cloud_poison_2" },
+    "caustic_cloud=3,caustic_cloud_effect=poison": { "model": "netherendingenergy:block/caustic_cloud_poison_3" },
+
+    "caustic_cloud=1,caustic_cloud_effect=wither": { "model": "netherendingenergy:block/caustic_cloud_wither_1" },
+    "caustic_cloud=2,caustic_cloud_effect=wither": { "model": "netherendingenergy:block/caustic_cloud_wither_2" },
+    "caustic_cloud=3,caustic_cloud_effect=wither": { "model": "netherendingenergy:block/caustic_cloud_wither_3" },
+
+    "caustic_cloud=1,caustic_cloud_effect=weakness": { "model": "netherendingenergy:block/caustic_cloud_weakness_1" },
+    "caustic_cloud=2,caustic_cloud_effect=weakness": { "model": "netherendingenergy:block/caustic_cloud_weakness_2" },
+    "caustic_cloud=3,caustic_cloud_effect=weakness": { "model": "netherendingenergy:block/caustic_cloud_weakness_3" },
+
+    "caustic_cloud=1,caustic_cloud_effect=nausea": { "model": "netherendingenergy:block/caustic_cloud_nausea_1" },
+    "caustic_cloud=2,caustic_cloud_effect=nausea": { "model": "netherendingenergy:block/caustic_cloud_nausea_2" },
+    "caustic_cloud=3,caustic_cloud_effect=nausea": { "model": "netherendingenergy:block/caustic_cloud_nausea_3" }
+  }
+}
